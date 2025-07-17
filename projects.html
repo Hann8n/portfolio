@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jack Hannon | Projects</title>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-theme');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index.html" class="brand">Jack Hannon</a>
+      <ul class="menu">
+        <li><a href="index.html">About</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button id="theme-toggle">Dark Mode</button>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Projects</h1>
+    <section>
+      <h2>The Allentown Village Initiative <small>(Project Lead, 2019–2021)</small></h2>
+      <p>
+        Led a community-based restoration of a historic cemetery in Allentown, NJ. 
+        Coordinated volunteers and managed all project logistics to revitalize the site and engage local participants.
+      </p>
+    </section>
+    <section>
+      <h2>VT Gym Tracker <small>(Independent Developer, 2024–2025)</small></h2>
+      <p>
+        Developed and launched a mobile app for Virginia Tech campus gyms that provides real-time occupancy data and schedules. 
+        Created a marketing campaign to drive user adoption during the app’s App Store release.
+      </p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
