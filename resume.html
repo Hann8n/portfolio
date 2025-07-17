@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jack Hannon | Resume</title>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-theme');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index.html" class="brand">Jack Hannon</a>
+      <ul class="menu">
+        <li><a href="index.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html" class="active">Resume</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button id="theme-toggle">Dark Mode</button>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Resume</h1>
+    <p>
+      <!-- Download link for PDF resume -->
+      <a href="Jack_Hannon_Marketing_Resume.pdf" class="btn" download>Download PDF Version</a>
+    </p>
+
+    <h2>Education</h2>
+    <ul>
+      <li><strong>Virginia Tech, Blacksburg, VA</strong> – Bachelor of Arts in Advertising (Minor in Organizational Leadership), May 2025</li>
+    </ul>
+
+    <h2>Skills</h2>
+    <ul>
+      <li><strong>Communication &amp; Customer Service:</strong> Excellent written and verbal communication; adept at crafting engaging correspondence with a customer-first mindset.</li>
+      <li><strong>Technical Proficiency:</strong> Proficient in Google Workspace, Adobe Creative Suite, and Meta Business Suite; familiar with Mailchimp, HubSpot, WordPress, and Google Analytics.</li>
+      <li><strong>Community Engagement:</strong> Experience in community outreach, event coordination, and audience engagement strategies.</li>
+    </ul>
+
+    <h2>Experience</h2>
+    <h3>Campus Ambassador, Yik Yak <small>(Feb 2022 – Feb 2024)</small></h3>
+    <ul>
+      <li>Managed Yik Yak’s online presence at Virginia Tech.</li>
+      <li>Launched campus-specific marketing campaigns.</li>
+      <li>Designed content and facilitated on-campus promotional events.</li>
+      <li>Collected and analyzed user feedback to optimize campaigns.</li>
+      <li>Collaborated with Yik Yak’s team on strategies for audience growth.</li>
+    </ul>
+
+    <h3>Recreation Assistant, Christiansburg Parks &amp; Recreation <small>(Oct 2023 – Present)</small></h3>
+    <ul>
+      <li>Provided customer service to park patrons and local sports leagues.</li>
+      <li>Enforced department policies and maintained public safety.</li>
+      <li>Assisted with event coordination and facility management.</li>
+      <li>Addressed inquiries and resolved issues to enhance visitor satisfaction.</li>
+    </ul>
+
+    <h3>Student Employee, VT Dining Services <small>(Mar 2023 – May 2023)</small></h3>
+    <ul>
+      <li>Interacted with customers to ensure a positive dining experience.</li>
+      <li>Resolved customer disputes and issues promptly.</li>
+    </ul>
+
+    <h2>Projects</h2>
+    <h3>Project Lead – The Allentown Village Initiative <small>(Aug 2019 – Jul 2021)</small></h3>
+    <ul>
+      <li>Led the restoration of a historic cemetery in Allentown, NJ.</li>
+      <li>Coordinated volunteers and managed all project logistics.</li>
+    </ul>
+
+    <h3>Independent Developer – VT Gym Tracker <small>(Aug 2024 – Feb 2025)</small></h3>
+    <ul>
+      <li>Developed and launched a mobile app for Virginia Tech gyms (iOS).</li>
+      <li>Created a marketing campaign to coincide with the App Store launch.</li>
+    </ul>
+
+    <h2>Awards</h2>
+    <ul>
+      <li>Eagle Scout (Boy Scouts of America), July 2021</li>
+    </ul>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
