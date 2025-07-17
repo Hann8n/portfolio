@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jack Hannon | Contact</title>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-theme');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index.html" class="brand">Jack Hannon</a>
+      <ul class="menu">
+        <li><a href="index.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+      </ul>
+      <button id="theme-toggle">Dark Mode</button>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Contact</h1>
+    <p>If you’d like to get in touch, please fill out the form below or reach out directly via email or LinkedIn.</p>
+    <form id="contact-form" action="#" method="post">
+      <p>
+        <label> Name:<br/>
+          <input type="text" name="name" required>
+        </label>
+      </p>
+      <p>
+        <label> Email:<br/>
+          <input type="email" name="email" required>
+        </label>
+      </p>
+      <p>
+        <label> Message:<br/>
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+      </p>
+      <p><button type="submit" class="btn">Send Message</button></p>
+    </form>
+    <p>
+      You can also email me at <a href="mailto:hannon@vt.edu">hannon@vt.edu</a> or connect with me on 
+      <a href="https://www.linkedin.com/in/jackphannon" target="_blank" rel="noopener">LinkedIn</a>.<br/>
+      Phone: <a href="tel:+16096584398">(609) 658-4398</a>
+    </p>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
