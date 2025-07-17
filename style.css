@@ -1,0 +1,209 @@
+/* Enable cross-document view transitions (smooth page transitions) */
+@view-transition {
+  navigation: auto;
+}
+
+/* Keyframes for page transition animations (slide out to left, slide in from right) */
+@keyframes slide-out-left {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+::view-transition-old(root) {
+  animation: 0.4s ease-in both slide-out-left;
+}
+::view-transition-new(root) {
+  animation: 0.4s ease-out both slide-in-right;
+}
+
+/* Color theme variables */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --link-color: #3498db;
+  --link-hover-color: #1D6FA5;
+  --input-bg: #ffffff;
+  --input-text: #000000;
+  --input-border: #cccccc;
+}
+.dark-theme {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --link-color: #3498db;        /* use same accent for dark */
+  --link-hover-color: #5dade2;  /* lighten accent on hover in dark mode */
+  --input-bg: #333333;
+  --input-text: #f0f0f0;
+  --input-border: #555555;
+}
+
+/* Global resets/base styles */
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Layout containers */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header navigation */
+header nav {
+  display: flex;
+  align-items: center;
+}
+.brand {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-decoration: none;
+  color: var(--text-color);
+  margin-right: auto;  /* push navigation links to the right */
+}
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+.menu li + li {
+  margin-left: 1rem;
+}
+nav a {
+  text-decoration: none;
+  color: var(--link-color);
+}
+nav a:hover {
+  text-decoration: underline;
+}
+nav a.active {
+  text-decoration: underline;
+  font-weight: bold;
+}
+/* Theme toggle button */
+#theme-toggle {
+  margin-left: 1rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--text-color);
+  background: none;
+  color: var(--text-color);
+  border-radius: 4px;
+  cursor: pointer;
+}
+#theme-toggle:hover {
+  background: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* Responsive adjustments: hide brand name on very small screens to save space */
+@media (max-width: 400px) {
+  .brand { display: none; }
+  header nav { justify-content: space-between; }
+}
+
+/* Intro (About section) */
+.intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+.headshot {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.intro-text {
+  /* additional intro text styling if needed */
+}
+.intro-text h1 {
+  margin: 0 0 0.3rem;
+}
+.tagline {
+  font-style: italic;
+  opacity: 0.8;
+  margin: 0 0 1rem;
+}
+.tagline .sep {
+  opacity: 0.5;
+  margin: 0 0.4em;
+}
+
+/* Typography & element spacing */
+h1 {
+  font-size: 2em;
+  margin: 1rem 0;
+}
+h2 {
+  font-size: 1.5em;
+  margin: 1.5rem 0 0.75rem;
+}
+h3 {
+  font-size: 1.2em;
+  margin: 1rem 0 0.5rem;
+}
+h1, h2, h3, h4, strong {
+  color: var(--text-color);
+}
+small {
+  opacity: 0.7;
+}
+p {
+  margin: 0.5rem 0 1rem;
+}
+ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0 1rem;
+}
+ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Buttons (including links styled as buttons) */
+.btn {
+  display: inline-block;
+  background: var(--link-color);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--link-hover-color);
+  text-decoration: none;
+}
+
+/* Form styles */
+form p {
+  margin: 0 0 1rem;
+}
+label {
+  font-weight: 500;
+}
+input[type=text], input[type=email], textarea {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  font: inherit;
+}
+textarea {
+  resize: vertical;
+}
