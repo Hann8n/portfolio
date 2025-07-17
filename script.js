@@ -2,18 +2,23 @@
   // Theme toggle
   const themeToggleBtn = document.getElementById('theme-toggle');
   if (themeToggleBtn) {
-    // Initial button label
-    if (document.documentElement.classList.contains('dark-theme')) {
-      themeToggleBtn.textContent = 'Light Mode';
-    } else {
-      themeToggleBtn.textContent = 'Dark Mode';
+    const sunIcon = themeToggleBtn.querySelector('.icon-sun');
+    const moonIcon = themeToggleBtn.querySelector('.icon-moon');
+    function updateThemeIcon() {
+      if (document.documentElement.classList.contains('dark-theme')) {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      }
     }
-    // Toggle handler
+    updateThemeIcon();
     themeToggleBtn.addEventListener('click', () => {
       const html = document.documentElement;
       const isDark = html.classList.toggle('dark-theme');
-      themeToggleBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeIcon();
     });
   }
 
