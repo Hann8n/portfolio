@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jack Hannon | About</title>
+  <script>
+    // Apply saved theme or OS preference before CSS loads to prevent flash
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-theme');
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="index.html" class="brand">Jack Hannon</a>
+      <ul class="menu">
+        <li><a href="index.html" class="active">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button id="theme-toggle">Dark Mode</button>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="intro">
+      <!-- Headshot image placeholder; replace "headshot.jpg" with actual image file -->
+      <img src="headshot.jpg" alt="Jack Hannon headshot" class="headshot" />
+      <div class="intro-text">
+        <h1>Jack Hannon</h1>
+        <p class="tagline">
+          Marketing &amp; Advertising Graduate 
+          <span class="sep">|</span> Community Engagement 
+          <span class="sep">|</span> Tech Enthusiast
+        </p>
+        <p>
+          I'm a recent Virginia Tech graduate with a B.A. in Advertising and a passion for connecting communities through creative marketing. I specialize in social media outreach, content creation, and event coordination – blending strong communication skills with technical know-how to engage audiences effectively.
+        </p>
+        <p>
+          During my time at Virginia Tech, I managed campus marketing campaigns for the Yik Yak app, coordinated community service initiatives as an Eagle Scout, and even developed a mobile app to help students track gym occupancy in real-time. These experiences honed my leadership and problem-solving abilities, and I'm excited to leverage them in new professional opportunities.
+        </p>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
