@@ -8,10 +8,6 @@
   --input-bg: #ffffff;
   --input-text: #000000;
   --input-border: #cccccc;
-
-  /* Default transition animations (will be overridden dynamically) */
-  --vt-old-animation: 0.4s ease-in both slide-out-left;
-  --vt-new-animation: 0.4s ease-out both slide-in-right;
 }
 
 /* Dark theme overrides */
@@ -23,32 +19,6 @@
   --input-bg: #333333;
   --input-text: #f0f0f0;
   --input-border: #555555;
-}
-
-/* Directional keyframes */
-@keyframes slide-out-left {
-  from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(-100%); opacity: 0; }
-}
-@keyframes slide-out-right {
-  from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(100%); opacity: 0; }
-}
-@keyframes slide-in-left {
-  from { transform: translateX(-100%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
-}
-@keyframes slide-in-right {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
-}
-
-/* View Transition API hooks */
-::view-transition-old(root) {
-  animation: var(--vt-old-animation);
-}
-::view-transition-new(root) {
-  animation: var(--vt-new-animation);
 }
 
 /* Global resets/base styles */
