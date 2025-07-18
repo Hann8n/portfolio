@@ -371,6 +371,18 @@ ul {
 }
 ul li { margin-bottom: 0.5rem; }
 
+/* General link styles */
+a {
+  color: var(--text-color);
+  text-decoration: underline;
+  transition: color 0.15s;
+}
+
+a:hover, a:focus {
+  color: var(--text-color);
+  text-decoration: underline;
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -853,4 +865,93 @@ html, body {
   outline-offset: 2px !important;
   background: #222 !important;
   color: #ffff00 !important;
+}
+
+/* Project media carousel styles */
+.project-media {
+  margin: 2rem 0;
+}
+
+.project-media .carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem; /* space for scrollbar */
+}
+
+.project-media .carousel img {
+  flex: 0 0 auto;
+  width: 250px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  scroll-snap-align: start;
+}
+
+/* Optional: custom scrollbar styling */
+.project-media .carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.project-media .carousel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-media .carousel::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Screenshots grid styling */
+.screenshots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.screenshots-grid img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* App Store link styling */
+.app-store-link {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.app-store-link a {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.app-store-link img {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+  .project-media .carousel {
+    gap: 0.5rem;
+  }
+  .project-media .carousel img {
+    width: 70vw;
+  }
+  
+  .screenshots-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .app-store-link img {
+    width: 140px;
+  }
 }
