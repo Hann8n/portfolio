@@ -25,10 +25,13 @@
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <header>
-    <nav class="container" role="navigation" aria-label="Main navigation">
-      <a href="index.html" class="brand">Jack Hannon</a>
-      <div class="header-controls">
-        <ul class="menu" role="menubar">
+    <nav class="container" role="navigation" aria-label="Main navigation" style="display: flex; align-items: center; justify-content: space-between;">
+      <a href="index.html" class="brand" id="brand">Jack Hannon</a>
+      <div class="header-controls" id="header-controls" style="margin-left: auto; display: flex; align-items: center;">
+        <button class="mobile-nav-toggle" aria-controls="header-controls" aria-expanded="false" aria-label="Open navigation menu">
+          <span class="hamburger-icon"></span>
+        </button>
+        <ul class="menu" role="menubar" id="main-menu">
           <li><a href="index.html" role="menuitem" tabindex="0">About</a></li>
           <li><a href="projects.html" class="active" role="menuitem" tabindex="0">Projects</a></li>
           <li><a href="resume.html" role="menuitem" tabindex="0">Resume</a></li>
@@ -40,18 +43,22 @@
         <div id="accessibility-menu" class="accessibility-menu" style="display:none;" role="menu" aria-label="Accessibility options">
           <div class="access-section">
             <div class="access-label">Theme</div>
-            <label class="access-radio"><input type="radio" name="theme-mode" value="system" /> System</label>
-            <label class="access-radio"><input type="radio" name="theme-mode" value="light" /> Light</label>
-            <label class="access-radio"><input type="radio" name="theme-mode" value="dark" /> Dark</label>
+            <div class="access-theme-btns">
+              <label class="access-radio"><input type="radio" name="theme-mode" value="system" /> System</label>
+              <label class="access-radio"><input type="radio" name="theme-mode" value="light" /> Light</label>
+              <label class="access-radio"><input type="radio" name="theme-mode" value="dark" /> Dark</label>
+            </div>
           </div>
           <div class="access-section">
             <label class="access-toggle"><input type="checkbox" id="high-contrast-toggle" /> High Contrast</label>
           </div>
           <div class="access-section access-textsize">
             <div class="access-label">Text Size</div>
-            <button type="button" id="text-decrease" class="textsize-round" aria-label="Decrease text size">–</button>
-            <span id="text-reset" class="textsize-reset" tabindex="0" role="button" aria-label="Reset text size">Reset</span>
-            <button type="button" id="text-increase" class="textsize-round" aria-label="Increase text size">+</button>
+            <div class="access-textsize-btns">
+              <button type="button" id="text-decrease" class="textsize-round" aria-label="Decrease text size">–</button>
+              <span id="text-reset" class="textsize-reset" tabindex="0" role="button" aria-label="Reset text size">Reset</span>
+              <button type="button" id="text-increase" class="textsize-round" aria-label="Increase text size">+</button>
+            </div>
           </div>
         </div>
       </div>
@@ -91,6 +98,49 @@
       </div>
     </section>
   </main>
+  <script>
+    // Mobile nav toggle functionality (brand/menu swap)
+    document.addEventListener('DOMContentLoaded', function() {
+      const navToggle = document.querySelector('.mobile-nav-toggle');
+      const brand = document.getElementById('brand');
+      const menu = document.getElementById('main-menu');
+      const headerControls = document.getElementById('header-controls');
+      function isMobile() {
+        return window.innerWidth <= 600;
+      }
+      function showMenuInBar(show) {
+        if (isMobile()) {
+          if (show) {
+            brand.style.display = 'none';
+            menu.style.display = 'flex';
+            menu.classList.add('menu-in-bar');
+          } else {
+            brand.style.display = '';
+            menu.style.display = '';
+            menu.classList.remove('menu-in-bar');
+          }
+        } else {
+          brand.style.display = '';
+          menu.style.display = '';
+          menu.classList.remove('menu-in-bar');
+        }
+      }
+      if (navToggle && brand && menu) {
+        navToggle.addEventListener('click', function() {
+          const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+          navToggle.setAttribute('aria-expanded', !expanded);
+          showMenuInBar(!expanded);
+        });
+        window.addEventListener('resize', function() {
+          // Reset on resize
+          if (!isMobile()) {
+            showMenuInBar(false);
+            navToggle.setAttribute('aria-expanded', false);
+          }
+        });
+      }
+    });
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
