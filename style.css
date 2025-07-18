@@ -916,6 +916,20 @@ html, body {
   align-items: center;
   justify-content: center;
 }
+.access-radio:hover:not(.selected):not(:active):not(:focus) {
+  background: var(--nav-active-bg);
+  color: var(--link-hover-color);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  outline: none;
+}
+.dark-theme .access-radio:hover:not(.selected):not(:active):not(:focus) {
+  background: var(--nav-active-bg);
+  color: #fff;
+}
+.high-contrast .access-radio:hover:not(.selected):not(:active):not(:focus) {
+  background: #222 !important;
+  color: #00ffff !important;
+}
 .access-radio.selected, .access-radio:active, .access-radio:focus {
   background: var(--nav-active-bg);
   color: var(--link-hover-color);
