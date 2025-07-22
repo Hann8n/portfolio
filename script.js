@@ -285,4 +285,92 @@ function initializeMobileNav() {
       navContent.classList.toggle('mobile-nav-open');
     });
   }
-} 
+}
+
+// VT Gym Tracker Carousel Logic
+(function() {
+  const carousel = document.getElementById('app-screenshots');
+  if (!carousel) return;
+  const items = carousel.querySelectorAll('.screenshot-item');
+  const prevBtn = document.getElementById('carousel-prev');
+  const nextBtn = document.getElementById('carousel-next');
+  const dotsContainer = document.getElementById('carousel-dots');
+  let current = 0;
+  let touchStartX = null;
+
+  function showSlide(idx) {
+    items.forEach((item, i) => {
+      item.style.display = (i === idx) ? 'block' : 'none';
+      item.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
+    });
+    // Update dots
+    if (dotsContainer) {
+      Array.from(dotsContainer.children).forEach((dot, i) => {
+        dot.classList.toggle('active', i === idx);
+        dot.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+        dot.setAttribute('tabindex', i === idx ? '0' : '-1');
+      });
+    }
+    current = idx;
+  }
+
+  function goToSlide(idx) {
+    if (idx < 0) idx = items.length - 1;
+    if (idx >= items.length) idx = 0;
+    showSlide(idx);
+  }
+
+  // Dots
+  if (dotsContainer) {
+    dotsContainer.innerHTML = '';
+    items.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot';
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-label', `Go to screenshot ${i+1}`);
+      dot.setAttribute('tabindex', i === 0 ? '0' : '-1');
+      dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      dot.addEventListener('click', () => goToSlide(i));
+      dot.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goToSlide(i);
+        }
+      });
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  // Button events
+  prevBtn && prevBtn.addEventListener('click', () => goToSlide(current - 1));
+  nextBtn && nextBtn.addEventListener('click', () => goToSlide(current + 1));
+
+  // Keyboard navigation
+  carousel.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      goToSlide(current - 1);
+    } else if (e.key === 'ArrowRight') {
+      goToSlide(current + 1);
+    }
+  });
+
+  // Touch swipe support
+  carousel.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+    }
+  });
+  carousel.addEventListener('touchend', (e) => {
+    if (touchStartX !== null && e.changedTouches.length === 1) {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) {
+        if (dx > 0) goToSlide(current - 1);
+        else goToSlide(current + 1);
+      }
+      touchStartX = null;
+    }
+  });
+
+  // Initialize
+  showSlide(0);
+})(); 
