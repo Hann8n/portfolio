@@ -18,6 +18,19 @@
   --btn-active-bg: #111;
   --btn-active-text: #fff;
   --btn-active-underline: #232b36;
+  /* VT Brand Colors */
+  --vt-maroon: #861F41;
+  --vt-burntOrange: #E5751F;
+  --vt-hokieStone: #75787b;
+  --vt-white: #FFFFFF;
+  --vt-purple: #642667;
+  --vt-pink: #CE0058;
+  --vt-yellow: #F7EA48;
+  --vt-teal: #508590;
+  --vt-turquoise: #2CD5C4;
+  --vt-grey: #D7D2CB;
+  --vt-smoke: #E5E1E6;
+  --vt-impactOrange: #CA4F00;
 }
 
 /* Dark theme overrides */
@@ -88,6 +101,66 @@
 /* Global resets/base styles */
 * {
   box-sizing: border-box;
+}
+
+/* Name and social links container */
+.name-and-social {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+/* Social links styling */
+.social-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.social-links a:hover,
+.social-links a:focus {
+  background: transparent;
+  color: var(--link-hover-color);
+  transform: translateY(-2px);
+}
+
+.social-links i {
+  font-size: 1.2rem;
+}
+
+.social-links .bluesky-icon,
+.social-links .github-icon,
+.social-links .linkedin-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+}
+
+.dark-theme .social-links a {
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+}
+
+.dark-theme .social-links a:hover,
+.dark-theme .social-links a:focus {
+  background: transparent;
+  color: var(--link-hover-color);
 }
 html, body {
   margin: 0;
@@ -177,7 +250,7 @@ html, body {
 
 /* Header navigation */
 header {
-  margin-top: 2.5rem;
+  margin-top: 1rem;
 }
 header nav {
   display: flex;
@@ -188,7 +261,7 @@ header nav {
   box-shadow: var(--nav-shadow);
   border: var(--nav-border); /* Add border */
   padding: 0.5rem 2.2rem 0.5rem 1.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
   gap: 1.2rem;
   height: 3.6rem;
 }
@@ -610,6 +683,47 @@ textarea { resize: vertical; }
   img, .headshot {
     max-width: 100%;
     height: auto;
+  }
+  
+  /* Name and social links mobile styling */
+  .name-and-social {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  /* Social links mobile styling */
+  .social-links {
+    gap: 0.75rem;
+    justify-content: flex-start;
+  }
+  
+  .social-links a {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+  
+  .social-links i {
+    font-size: 1rem;
+  }
+  
+  /* Resume header mobile styling - keep button on same line */
+  .resume-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  
+  .resume-header h1 {
+    margin: 0;
+    flex-shrink: 0;
+  }
+  
+  .pdf-btn {
+    font-size: 0.9em;
+    padding: 0.4em 1.2em;
+    flex-shrink: 0;
   }
 }
 
@@ -1079,39 +1193,7 @@ html, body {
 }
 
 /* Project media carousel styles */
-.project-media {
-  margin: 2rem 0;
-}
-
-.project-media .carousel {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 0.5rem; /* space for scrollbar */
-}
-
-.project-media .carousel img {
-  flex: 0 0 auto;
-  width: 250px;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
-  scroll-snap-align: start;
-}
-
-/* Optional: custom scrollbar styling */
-.project-media .carousel::-webkit-scrollbar {
-  height: 6px;
-}
-.project-media .carousel::-webkit-scrollbar-track {
-  background: transparent;
-}
-.project-media .carousel::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
+/* Removed carousel styles */
 
 /* Screenshots grid styling */
 .screenshots-grid {
@@ -1128,6 +1210,24 @@ html, body {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Screenshots container for mobile carousel */
+/* Removed carousel styles */
+
+/* Carousel navigation */
+/* Removed carousel navigation styles */
+
+/* Mobile carousel styles for screenshots */
+/* Removed mobile carousel styles */
+
+/* Custom scrollbar for mobile carousel */
+/* Removed custom scrollbar styles */
+
+/* Show carousel navigation on mobile */
+/* Removed mobile carousel navigation styles */
+
+/* App Screenshots Carousel */
+/* Removed app screenshots carousel styles */
 
 /* App Store link styling */
 .app-store-link {
@@ -1157,13 +1257,10 @@ html, body {
     width: 70vw;
   }
   
-  .screenshots-grid {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
+  /* Screenshots grid is now handled by carousel styles above */
   
-  .app-store-link img {
-    width: 140px;
+  .app-store-badge img {
+    height: 40px;
   }
 }
 
@@ -1310,4 +1407,710 @@ header nav.container {
 
 :root:not(.light-theme):not(.dark-theme) .brand, :root:not(.light-theme):not(.dark-theme) .profile-name {
   color: #fff !important;
+}
+
+/* Modern iOS App Showcase Styles */
+.ios-app-showcase {
+  background: linear-gradient(135deg, #1f1f1f 0%, #2f2f2f 50%, #3f3f3f 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.ios-app-showcase::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+}
+
+.ios-app-showcase .showcase-content {
+  position: relative;
+  z-index: 2;
+}
+
+.ios-app-showcase h3 {
+  color: white;
+  font-size: 1.8rem;
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}
+
+.ios-app-showcase .app-description {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Device Mockup Container */
+.device-showcase {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+/* iPhone Mockup */
+.iphone-mockup {
+  position: relative;
+  width: 240px;
+  height: 521px;
+  background: #1a1a1a;
+  border-radius: 40px;
+  padding: 8px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+  transition: transform 0.3s ease;
+}
+
+.iphone-mockup:hover {
+  transform: perspective(1000px) rotateY(-10deg) rotateX(2deg) scale(1.02);
+}
+
+.iphone-mockup .screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+.iphone-mockup .screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 32px;
+}
+
+/* App Screenshots Carousel */
+/* Removed app screenshots carousel styles */
+
+/* App Store Badge */
+.app-store-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.app-store-badge {
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.app-store-badge:hover {
+  transform: translateY(-2px);
+}
+
+.app-store-badge img {
+  height: 50px;
+  width: auto;
+}
+
+/* Feature Highlights */
+.app-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+.feature-card h4 {
+  color: white;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.feature-card p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Stats Section */
+.app-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 2rem 0;
+  flex-wrap: nowrap;
+  gap: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  color: white;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Dark theme adjustments */
+.dark-theme .ios-app-showcase {
+  background: linear-gradient(135deg, #151515 0%, #1f1f1f 50%, #2f2f2f 100%);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .ios-app-showcase {
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+  
+  .device-showcase {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .iphone-mockup {
+    width: 200px;
+    height: 434px;
+    transform: none;
+  }
+  
+  .iphone-mockup:hover {
+    transform: scale(1.02);
+  }
+  
+  .app-screenshots {
+    gap: 1rem;
+    justify-content: flex-start;
+    margin-left: calc(-1 * (100vw - 100%) / 2);
+    margin-right: calc(-1 * (100vw - 100%) / 2);
+    padding-left: calc((100vw - 100%) / 2);
+    padding-right: calc((100vw - 100%) / 2);
+  }
+  
+  .app-screenshots .screenshot-item img {
+    width: 180px;
+    height: 391px;
+  }
+  
+  .app-features {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-stats {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .ios-app-showcase h3 {
+    font-size: 1.5rem;
+  }
+  
+  .iphone-mockup {
+    width: 160px;
+    height: 347px;
+  }
+  
+  .app-screenshots {
+    justify-content: flex-start;
+    margin-left: calc(-1 * (100vw - 100%) / 2);
+    margin-right: calc(-1 * (100vw - 100%) / 2);
+    padding-left: calc((100vw - 100%) / 2);
+    padding-right: calc((100vw - 100%) / 2);
+  }
+  
+  .app-screenshots .screenshot-item img {
+    width: 160px;
+    height: 347px;
+  }
+}
+
+/* Animation for showcase entrance */
+@keyframes showcaseFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ios-app-showcase {
+  animation: showcaseFadeIn 0.6s ease-out;
+}
+
+/* Hover effects for interactive elements */
+.ios-app-showcase .screenshot-item {
+  cursor: pointer;
+}
+
+.ios-app-showcase .screenshot-item:active img {
+  transform: scale(0.98);
+}
+
+/* Loading state for images */
+.ios-app-showcase img {
+  transition: opacity 0.3s ease;
+}
+
+.ios-app-showcase img[loading] {
+  opacity: 0.7;
+}
+
+/* Accessibility improvements */
+.ios-app-showcase .app-store-badge:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+.high-contrast .ios-app-showcase {
+  background: #000;
+  border: 2px solid #fff;
+}
+
+.high-contrast .ios-app-showcase .feature-card {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+}
+
+.high-contrast .ios-app-showcase .feature-card h4 {
+  color: #000;
+}
+
+.high-contrast .ios-app-showcase .feature-card p {
+  color: #333;
+}
+
+/* Yik Yak Project Specific Styles */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-picture {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.profile-picture:hover {
+  transform: scale(1.05);
+}
+
+.title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.title-section h3 {
+  margin: 0;
+  font-size: 1.8em;
+  color: var(--text-color);
+}
+
+.title-section .subtitle {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--link-color);
+  opacity: 0.8;
+}
+
+.content-section {
+  margin: 2rem 0;
+}
+
+.content-section h4 {
+  font-size: 1.3em;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.section-title-left {
+  text-align: left !important;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    gap: 1rem;
+  }
+  
+  .profile-picture {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .title-section h3 {
+    font-size: 1.5em;
+  }
+  
+  .title-section .subtitle {
+    font-size: 1em;
+  }
+  
+  .content-section h4 {
+    font-size: 1.1em;
+  }
+}
+
+/* VT Yik Yak Showcase Styles */
+.vt-yikyak-showcase {
+  background: linear-gradient(135deg, var(--vt-maroon) 0%, var(--vt-impactOrange) 100%);
+  border-radius: 22px;
+  padding: 2.2rem 2rem;
+  margin: 2.5rem 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 32px rgba(134,31,65,0.18);
+}
+.vt-yikyak-showcase .showcase-content {
+  position: relative;
+  z-index: 2;
+}
+.vt-yikyak-showcase h3 {
+  color: var(--vt-burntOrange);
+  font-size: 2rem;
+  margin: 0 0 1.1rem 0;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.vt-yikyak-showcase .app-description {
+  color: var(--vt-white);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+  font-size: 1.08em;
+}
+.vt-yikyak-showcase .profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.7rem;
+  margin-bottom: 1.7rem;
+}
+.vt-yikyak-showcase .profile-picture {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--vt-burntOrange);
+  background: var(--vt-white);
+  box-shadow: 0 2px 12px rgba(229,117,31,0.13);
+  transition: transform 0.3s;
+}
+.vt-yikyak-showcase .profile-picture:hover {
+  transform: scale(1.06);
+}
+.vt-yikyak-showcase .title-section h3 {
+  color: var(--vt-burntOrange);
+  font-size: 2em;
+  margin: 0;
+}
+.vt-yikyak-showcase .title-section .subtitle {
+  color: var(--vt-yellow);
+  font-size: 1.1em;
+  opacity: 0.95;
+  margin: 0;
+}
+.vt-yikyak-showcase .content-section h4 {
+  color: var(--vt-impactOrange);
+  font-size: 1.25em;
+  margin-bottom: 1rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.vt-yikyak-showcase .app-screenshots .screenshot-item img {
+  border-radius: 18px;
+  border: none;
+  box-shadow: none;
+}
+.vt-yikyak-showcase .feature-card {
+  background: none;
+  border: none;
+  border-radius: 15px;
+  padding: 1.3rem;
+  color: var(--vt-white);
+  box-shadow: 0 2px 10px rgba(134,31,65,0.10);
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
+.vt-yikyak-showcase .feature-card:hover {
+  background: rgba(134,31,65,0.12);
+  color: var(--vt-white);
+  border: none;
+}
+.vt-yikyak-showcase .feature-card h4 {
+  color: var(--vt-yellow);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.15rem;
+}
+.vt-yikyak-showcase .feature-card p {
+  color: var(--vt-white);
+  font-size: 0.97rem;
+  margin: 0;
+}
+.vt-yikyak-showcase .feature-card:hover {
+  background: linear-gradient(120deg, var(--vt-maroon) 0%, var(--vt-burntOrange) 100%);
+  color: var(--vt-yellow);
+  border-color: var(--vt-impactOrange);
+}
+.vt-yikyak-showcase .app-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 2rem 0 0.5rem 0;
+  flex-wrap: nowrap;
+  gap: 1.2rem;
+}
+.vt-yikyak-showcase .stat-item {
+  text-align: center;
+  color: var(--vt-yellow);
+}
+.vt-yikyak-showcase .stat-number {
+  font-size: 2.1rem;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--vt-burntOrange);
+}
+.vt-yikyak-showcase .stat-label {
+  font-size: 1rem;
+  opacity: 0.9;
+  color: var(--vt-yellow);
+}
+.vt-yikyak-showcase .content-section {
+  margin: 2rem 0;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
+@media (max-width: 768px) {
+  .vt-yikyak-showcase {
+    padding: 1.2rem 0.5rem;
+  }
+  .vt-yikyak-showcase .profile-header {
+    gap: 1rem;
+  }
+  .vt-yikyak-showcase .profile-picture {
+    width: 80px;
+    height: 80px;
+  }
+  .vt-yikyak-showcase .title-section h3 {
+    font-size: 1.3em;
+  }
+  .vt-yikyak-showcase .title-section .subtitle {
+    font-size: 1em;
+  }
+  .vt-yikyak-showcase .content-section h4 {
+    font-size: 1.1em;
+  }
+}
+.vt-yikyak-showcase,
+.vt-yikyak-showcase h3,
+.vt-yikyak-showcase .app-description,
+.vt-yikyak-showcase .profile-header,
+.vt-yikyak-showcase .title-section h3,
+.vt-yikyak-showcase .title-section .subtitle,
+.vt-yikyak-showcase .content-section h4,
+.vt-yikyak-showcase .feature-card,
+.vt-yikyak-showcase .feature-card h4,
+.vt-yikyak-showcase .feature-card p,
+.vt-yikyak-showcase .stat-item,
+.vt-yikyak-showcase .stat-number,
+.vt-yikyak-showcase .stat-label {
+  color: var(--vt-white) !important;
+}
+.rounded-image {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* VT Gym Tracker Carousel Controls */
+.app-screenshots {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 420px;
+}
+.app-screenshots .screenshot-item {
+  flex: 1 1 auto;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.app-screenshots .screenshot-item img {
+  max-width: 220px;
+  max-height: 420px;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  background: #fff;
+}
+.carousel-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1.5px solid #bbb;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border 0.15s;
+  z-index: 2;
+  margin: 0 0.5rem;
+}
+.carousel-btn:hover, .carousel-btn:focus {
+  background: var(--btn-bg-hover);
+  color: var(--btn-active-text);
+  border-color: #888;
+  outline: none;
+}
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+}
+.carousel-dot {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: #bbb;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  outline: none;
+  margin: 0 0.1rem;
+  padding: 0;
+}
+.carousel-dot.active, .carousel-dot:focus {
+  background: var(--btn-active-bg);
+  box-shadow: 0 0 0 2px var(--btn-active-underline);
+}
+@media (max-width: 650px) {
+  .app-screenshots {
+    min-height: 260px;
+  }
+  .app-screenshots .screenshot-item img {
+    max-width: 120px;
+    max-height: 260px;
+  }
+}
+
+/* VT Gym Tracker Horizontal Screenshot List */
+.app-screenshots {
+  display: flex;
+  flex-direction: row;
+  gap: 1.2rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  min-height: unset;
+  position: relative;
+}
+.app-screenshots .screenshot-item {
+  flex: 0 0 auto;
+  display: block !important;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.app-screenshots .screenshot-item img {
+  max-width: 220px;
+  max-height: 420px;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  background: #fff;
+  margin: 0;
+}
+@media (max-width: 650px) {
+  .app-screenshots {
+    gap: 0.7rem;
+    padding-bottom: 0.3rem;
+  }
+  .app-screenshots .screenshot-item img {
+    max-width: 120px;
+    max-height: 260px;
+  }
+}
+
+/* Old Burying Ground image sizing */
+.allentown-media .carousel img {
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+@media (max-width: 650px) {
+  .allentown-media .carousel img {
+    max-width: 95vw;
+  }
+}
+
+/* Yik Yak panel image sizing */
+.vt-yikyak-showcase .content-section img {
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: block;
+}
+@media (max-width: 650px) {
+  .vt-yikyak-showcase .content-section img {
+    max-width: 90vw;
+  }
 }
