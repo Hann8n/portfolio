@@ -1712,6 +1712,70 @@ header nav.container {
   color: #333;
 }
 
+/* High contrast mode support for Yik Yak Virginia Tech panel */
+.high-contrast .vt-yikyak-showcase {
+  background: #000;
+  border: 2px solid #fff;
+}
+
+.high-contrast .vt-yikyak-showcase h3 {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .app-description {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .profile-picture {
+  border: 2px solid #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .title-section h3 {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .title-section .subtitle {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .content-section h4 {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .content-section p {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .feature-card {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+}
+
+.high-contrast .vt-yikyak-showcase .feature-card h4 {
+  color: #000;
+}
+
+.high-contrast .vt-yikyak-showcase .feature-card p {
+  color: #333;
+}
+
+.high-contrast .vt-yikyak-showcase .stat-item {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .stat-number {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .stat-label {
+  color: #fff;
+}
+
+.high-contrast .vt-yikyak-showcase .content-section img {
+  border: 2px solid #fff;
+}
+
 /* Yik Yak Project Specific Styles */
 .profile-header {
   display: flex;
@@ -2112,5 +2176,28 @@ header nav.container {
 @media (max-width: 650px) {
   .vt-yikyak-showcase .content-section img {
     max-width: 90vw;
+  }
+}
+
+/* Safari fix: prevent flex children from shrinking in horizontal scroll */
+.app-screenshots .screenshot-item {
+  flex-shrink: 0;
+}
+
+/* Safari/iOS fix: smooth horizontal scrolling */
+.app-screenshots {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure social icons are visible and not collapsed */
+.social-links a, .social-links svg {
+  color: #333;
+  min-width: 1.2rem;
+  min-height: 1.2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .social-links a, .social-links svg {
+    color: #fff;
   }
 }
