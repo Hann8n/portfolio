@@ -578,6 +578,57 @@ ul {
 }
 ul li { margin-bottom: 0.5rem; }
 
+/* Remove bullet points from resume lists */
+.resume-main ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Simple Resume Styles */
+.resume-main {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.contact-info {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.contact-info h2 {
+  margin: 0 0 0.5rem 0;
+}
+
+.contact-info p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.resume-main section {
+  margin-bottom: 2rem;
+}
+
+.resume-main h2 {
+  margin: 0 0 1rem 0;
+}
+
+.resume-main h3 {
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.resume-main h3:first-of-type {
+  margin-top: 0;
+}
+
+.resume-main ul {
+  margin: 0.5rem 0 1rem 0;
+}
+
+.resume-main li {
+  margin-bottom: 0.3rem;
+}
+
 /* General link styles */
 a {
   color: var(--text-color);
