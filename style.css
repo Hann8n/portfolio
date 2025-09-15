@@ -2511,6 +2511,48 @@ header nav.container {
   }
 }
 
+/* Social Icons Styles (outside footer) */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding: 1rem 0;
+}
+
+.social-icons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  /* Ensure minimum touch target size for accessibility */
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.social-icons a:hover,
+.social-icons a:focus {
+  background: transparent;
+  color: var(--link-hover-color);
+  transform: translateY(-2px);
+}
+
+.social-icons .bluesky-icon,
+.social-icons .github-icon,
+.social-icons .linkedin-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: currentColor;
+}
+
 /* Privacy Policy Footer Styles */
 .privacy-footer {
   background: var(--nav-bg);
@@ -2562,6 +2604,30 @@ header nav.container {
   fill: currentColor;
 }
 
+
+/* Mobile responsive social icons */
+@media (max-width: 650px) {
+  .social-icons {
+    margin: 1.5rem 0;
+    padding: 0.5rem 0;
+    gap: 1rem;
+  }
+  
+  .social-icons a {
+    width: 3.5rem;
+    height: 3.5rem;
+    /* Ensure minimum touch target size on mobile */
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  .social-icons .bluesky-icon,
+  .social-icons .github-icon,
+  .social-icons .linkedin-icon {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
 
 /* Mobile responsive footer */
 @media (max-width: 650px) {
