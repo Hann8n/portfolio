@@ -2252,3 +2252,162 @@ header nav.container {
     color: #fff;
   }
 }
+
+/* Privacy Policy Page Styles */
+.privacy-policy {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.privacy-policy h1 {
+  font-size: 2.2em;
+  margin: 0 0 1rem 0;
+  color: var(--text-color);
+  text-align: center;
+  border-bottom: 2px solid var(--link-color);
+  padding-bottom: 0.5rem;
+}
+
+.privacy-policy h2 {
+  font-size: 1.6em;
+  margin: 2rem 0 1rem 0;
+  color: var(--text-color);
+  border-left: 4px solid var(--vt-maroon);
+  padding-left: 1rem;
+}
+
+.privacy-policy h3 {
+  font-size: 1.3em;
+  margin: 1.5rem 0 0.8rem 0;
+  color: var(--link-color);
+}
+
+.privacy-policy p {
+  margin: 0.8rem 0 1.2rem 0;
+  color: var(--text-color);
+}
+
+.privacy-policy ul {
+  margin: 0.8rem 0 1.2rem 0;
+  padding-left: 1.5rem;
+}
+
+.privacy-policy li {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.privacy-policy strong {
+  color: var(--link-hover-color);
+  font-weight: 600;
+}
+
+.privacy-policy a {
+  color: var(--vt-maroon);
+  text-decoration: underline;
+  transition: color 0.15s;
+}
+
+.privacy-policy a:hover,
+.privacy-policy a:focus {
+  color: var(--vt-burntOrange);
+  text-decoration: underline;
+}
+
+.privacy-policy em {
+  font-style: italic;
+  color: var(--link-color);
+  opacity: 0.9;
+}
+
+/* Mobile responsive adjustments for privacy policy */
+@media (max-width: 650px) {
+  .privacy-policy h1 {
+    font-size: 1.8em;
+  }
+  
+  .privacy-policy h2 {
+    font-size: 1.4em;
+    margin: 1.5rem 0 0.8rem 0;
+    padding-left: 0.8rem;
+  }
+  
+  .privacy-policy h3 {
+    font-size: 1.2em;
+    margin: 1.2rem 0 0.6rem 0;
+  }
+  
+  .privacy-policy ul {
+    padding-left: 1.2rem;
+  }
+}
+
+/* Privacy Policy Footer Styles */
+.privacy-footer {
+  background: var(--nav-bg);
+  border-top: var(--nav-border);
+  margin-top: 3rem;
+  padding: 2rem 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-social {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.footer-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.footer-social a:hover,
+.footer-social a:focus {
+  background: transparent;
+  color: var(--link-hover-color);
+  transform: translateY(-2px);
+}
+
+.footer-social .bluesky-icon,
+.footer-social .github-icon,
+.footer-social .linkedin-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+}
+
+
+/* Mobile responsive footer */
+@media (max-width: 650px) {
+  .privacy-footer {
+    padding: 1.5rem 0;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .footer-social {
+    justify-content: center;
+  }
+}
