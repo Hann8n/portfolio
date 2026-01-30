@@ -1,197 +1,108 @@
-/* Reset and Base Styles - Matching wongmjane.com exactly */
-*,
-*::before,
-*::after {
+/* Reset */
+*, *::before, *::after {
   box-sizing: border-box;
-  border: 0 solid;
   margin: 0;
   padding: 0;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  tab-size: 4;
-  -webkit-tap-highlight-color: transparent;
-  line-height: 1.5;
-}
-
-img, svg, video {
-  vertical-align: middle;
+img, svg {
   display: block;
-}
-
-img, video {
-  max-width: 100%;
-  height: auto;
 }
 
 a {
   color: inherit;
-  text-decoration: inherit;
+  text-decoration: none;
 }
 
-ul, ol {
+ul {
   list-style: none;
 }
 
-/* CSS Custom Properties - Matching wongmjane.com */
+/* Custom Properties */
 :root {
   --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  
-  /* Light mode colors */
   --color-bg: oklch(100% 0.003 250);
-  --color-bg-secondary: oklch(99% 0.003 250);
-  --color-bg-tertiary: oklch(97% 0.005 250);
   --color-border: oklch(93% 0.007 250);
   --color-text: oklch(30% 0.028 250);
   --color-text-muted: oklch(50% 0.022 250);
-  --color-accent: oklch(60% 0.26 235);
-  --color-accent-hover: oklch(74% 0.25 235);
+  --color-vt-maroon: #581b34;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --color-bg: oklch(10% 0.034 250);
-    --color-bg-secondary: oklch(20% 0.031 250);
-    --color-bg-tertiary: oklch(30% 0.028 250);
     --color-border: oklch(40% 0.025 250);
     --color-text: oklch(97% 0.005 250);
     --color-text-muted: oklch(87% 0.01 250);
-    --color-accent: oklch(74% 0.25 235);
-    --color-accent-hover: oklch(81% 0.2 235);
+    --color-vt-maroon: #a64d6b;
   }
 }
 
-/* Font smoothing */
-@media screen {
-  html {
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-  }
-}
-
-/* Body */
-body {
-  background-color: var(--color-bg);
+/* Base */
+html {
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
-  font-feature-settings: "kern" on, "liga" on, "dlig" on, "case" on;
-  font-style: normal;
-  font-synthesis: none;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-  display: contents;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Main */
+/* Layout */
 main {
   display: flex;
-  flex-grow: 1;
-  background-color: var(--color-bg);
+  justify-content: center;
+  align-items: center;
   min-height: 100dvh;
-  justify-content: center;
-  align-items: center;
-}
-
-
-/* Content wrapper */
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 2rem 1rem;
-  width: 100%;
 }
 
-/* Profile container */
-.profile-container {
+/* Profile Card */
+.profile {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: 0.75rem;
+  max-width: 25rem;
 }
 
-/* Profile section */
-.profile-section {
-  padding: 1rem;
-  border-radius: 1rem;
-  gap: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  z-index: 10;
-}
-
-/* Profile figure */
-.profile-figure {
-  gap: 0.75rem;
+.profile-header {
   display: flex;
   flex-wrap: wrap;
+  gap: 0.75rem;
   font-weight: 500;
   letter-spacing: -0.0125em;
 }
 
-/* Avatar wrapper */
-.avatar-wrapper {
-  border-radius: 2rem;
-  overflow: clip;
-  aspect-ratio: 1;
-  color: var(--color-text);
-  width: 4.75rem;
-  position: relative;
-  user-select: none;
-}
-
-/* Avatar image */
+/* Avatar */
 .avatar {
-  max-width: 100%;
-  position: absolute;
-  inset-block: 0;
-  height: auto;
+  width: 4.75rem;
+  height: 4.75rem;
+  border-radius: 2rem;
+  object-fit: cover;
 }
 
-/* Profile caption */
-.profile-caption {
+/* Profile Info */
+.profile-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-/* Profile name */
-.profile-name {
-  color: var(--color-text);
-  display: inline-block;
+.name {
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.05ch;
-  width: fit-content;
-  view-transition-name: author-name;
 }
 
-/* Location wrapper */
-.profile-location-wrapper {
-  color: var(--color-text-muted);
-}
-
-/* Location */
-.profile-location {
-  gap: 0.25rem;
-  align-items: center;
+.school {
   display: flex;
-  font-size: 1rem;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-vt-maroon);
 }
 
-/* Location icon */
-.location-icon {
-  height: 1rem;
-  display: inline-block;
-  width: auto;
-}
-
-/* VT logo specific sizing */
+/* VT Logo */
 .vt-logo {
   height: 0.9rem;
   width: auto;
@@ -203,73 +114,38 @@ main {
   stroke-width: 8;
 }
 
-/* Social links */
+/* Social Links */
 .social-links {
-  gap: 0.5ch;
   display: flex;
   flex-wrap: wrap;
+  gap: 0.5ch;
   font-size: 0.94em;
-  max-width: 25rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
-/* Social link */
 .social-link {
-  border-color: var(--color-border);
-  border-radius: 9999px;
-  border-style: solid;
-  border-width: 0.9px;
-  gap: 0.6ch;
-  padding-block: 0.5ch;
-  padding-inline: 1ch;
-  text-decoration: none;
-  align-items: center;
-  color: var(--color-text);
   display: inline-flex;
-  justify-content: center;
+  align-items: center;
+  gap: 0.6ch;
+  padding: 0.5ch 1ch;
+  border: 0.9px solid var(--color-border);
+  border-radius: 9999px;
   letter-spacing: -0.01ch;
-  transition: color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.3), transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.3);
-}
-
-.social-link:hover {
-  color: var(--color-text);
+  transition: transform 0.2s ease-out;
 }
 
 .social-link:active {
-  color: var(--color-text);
   transform: scale(0.9);
 }
 
-/* Social icon wrapper */
-.social-icon-wrapper {
-  align-items: center;
-  height: 1rem;
-  display: flex;
+/* Icons */
+.icon {
   width: 1rem;
-  justify-content: center;
-}
-
-/* Social icon */
-.social-icon {
+  height: 1rem;
   fill: currentColor;
-  height: 1.618cap;
   flex-shrink: 0;
-  width: auto;
 }
 
-.social-icon-stroke {
-  fill: none;
-  stroke: currentColor;
-}
-
-/* Social label */
-.social-label {
-  user-select: none;
-}
-
-/* Orbyt icon - white PNG needs color adjustment */
+/* Orbyt icon color adjustment */
 .orbyt-icon {
   filter: invert(1);
 }
@@ -278,22 +154,4 @@ main {
   .orbyt-icon {
     filter: none;
   }
-}
-
-
-/* View transition */
-@view-transition {
-  navigation: auto;
-}
-
-::view-transition-group(*) {
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-::view-transition-old(*) {
-  animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
-}
-
-::view-transition-new(*) {
-  animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
