@@ -80,7 +80,7 @@ main {
   justify-content: center;
   align-items: center;
   min-height: 100dvh;
-  padding: 2rem 1rem;
+  padding: 2rem;
 }
 
 /* Profile Card */
@@ -125,6 +125,7 @@ main {
   align-items: center;
   gap: 0.25rem;
   color: var(--color-vt-maroon);
+  font-weight: 600;
 }
 
 /* VT Logo */
