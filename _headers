@@ -1,0 +1,20 @@
+# Cloudflare Pages headers
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+# Enable Early Hints for the homepage
+/
+  Link: </fonts/mozilla-text-400.woff2>; rel=preload; as=font; type="font/woff2"; crossorigin
+  Link: </fonts/mozilla-text-500.woff2>; rel=preload; as=font; type="font/woff2"; crossorigin
+  Link: </fonts/mozilla-text-600.woff2>; rel=preload; as=font; type="font/woff2"; crossorigin
+  Link: </style.css>; rel=preload; as=style
+
+# Cache fonts aggressively (1 year, immutable)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache static assets
+/*.css
+  Cache-Control: public, max-age=86400
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable

@@ -18,9 +18,34 @@ ul {
   list-style: none;
 }
 
+/* Fonts */
+@font-face {
+  font-family: "Mozilla Text";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/mozilla-text-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Mozilla Text";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/mozilla-text-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Mozilla Text";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/mozilla-text-600.woff2") format("woff2");
+}
+
 /* Custom Properties */
 :root {
-  --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "Mozilla Text", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-bg: oklch(100% 0.003 250);
   --color-border: oklch(93% 0.007 250);
   --color-text: oklch(30% 0.028 250);
