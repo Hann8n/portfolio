@@ -87,7 +87,7 @@ main {
 .profile {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.25rem;
   max-width: 25rem;
 }
 
@@ -115,29 +115,31 @@ main {
 }
 
 .name {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.05ch;
 }
 
-.school {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: var(--color-vt-maroon);
-  font-weight: 600;
+.pronouns {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
 }
 
-/* VT Logo */
-.vt-logo {
-  height: 0.9rem;
-  width: auto;
+.subtitle {
+  color: var(--color-text-muted);
+  font-weight: 500;
 }
 
-.vt-path {
-  fill: var(--color-bg);
-  stroke: currentColor;
-  stroke-width: 8;
+.subtitle a {
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 0.15em;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.subtitle a:hover {
+  text-decoration-color: currentColor;
 }
 
 /* Social Links */
