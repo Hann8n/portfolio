@@ -17,14 +17,6 @@
  *   GET /admin — serve admin page (Access protected)
  */
 
-interface Env {
-  AD_CONFIG: KVNamespace;
-  ADMIN_API_KEY?: string;
-  POSTHOG_PERSONAL_API_KEY?: string;
-  POSTHOG_PROJECT_ID?: string;
-  POSTHOG_HOST?: string;
-}
-
 interface AdConfig {
   id: string;
   active: boolean;
