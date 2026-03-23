@@ -1,5 +1,13 @@
 {
+  // Gym Tracker Ads API — schedule sponsor ads for VT Gym Tracker
   "name": "gymtracker-ads-api",
+  "vars": {
+    "POSTHOG_PROJECT_ID": "352692",
+    "POSTHOG_HOST": "https://us.posthog.com"
+  },
+  "dev": {
+    "host": "localhost"
+  },
   "main": "src/index.ts",
   "compatibility_date": "2025-03-07",
   "compatibility_flags": ["nodejs_compat"],
@@ -17,6 +25,10 @@
   "routes": [
     {
       "pattern": "gymtracker.jackhannon.net/api/*",
+      "zone_name": "jackhannon.net"
+    },
+    {
+      "pattern": "gymtracker.jackhannon.net/admin*",
       "zone_name": "jackhannon.net"
     }
   ]
