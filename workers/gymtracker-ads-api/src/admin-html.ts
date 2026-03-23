@@ -15,27 +15,19 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     <span class="topbar-title">Gym Tracker</span>
     <span class="topbar-sep">/</span>
     <span class="topbar-sub">ads admin</span>
-    <div class="status">
-      <div class="dot" id="statusDot"></div>
-      <span class="status-text" id="fetchStatus">—</span>
+    <div class="topbar-right">
+      <button type="button" id="refreshBtn" class="topbar-refresh" title="Refresh">↻</button>
+      <div class="status">
+        <div class="dot" id="statusDot"></div>
+        <span class="status-text" id="fetchStatus">—</span>
+      </div>
     </div>
-  </div>
-  <div class="sidebar">
-    <div class="group">
-      <div class="group-label">status</div>
-      <div class="kv"><span class="kv-k">total</span><span class="kv-v" id="sidebarTotal">0</span></div>
-      <div class="kv"><span class="kv-k">live</span><span class="kv-v" id="sidebarLive">0</span></div>
-      <div class="kv"><span class="kv-k">scheduled</span><span class="kv-v" id="sidebarScheduled">0</span></div>
-      <div class="kv"><span class="kv-k">ended</span><span class="kv-v" id="sidebarEnded">0</span></div>
-    </div>
-    <button type="button" id="refreshBtn" class="primary">Refresh</button>
-    <button type="button" id="newAdBtn" class="primary">New ad</button>
   </div>
   <div class="main">
     <div class="schedule-page">
       <div class="schedule-grid">
         <div class="schedule-ads">
-          <div class="main-toolbar" id="mainToolbar" hidden>
+          <div class="main-toolbar" id="mainToolbar">
             <input type="text" id="adsSearch" placeholder="Search sponsor or ID" class="toolbar-search">
             <div class="toolbar-filters">
               <button type="button" class="status-filter active" data-filter="all">All</button>
@@ -50,7 +42,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         </div>
         <div class="schedule-calendar">
           <div id="calendarEmpty" class="calendar-empty" hidden>
-            <p class="calendar-empty-text">Use the sidebar to create one</p>
+            <p class="calendar-empty-text">Use New ad to create one</p>
           </div>
           <div id="calendarWrap" class="calendar-wrap" hidden>
             <div class="calendar-header">
@@ -364,16 +356,18 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function renderOverview() {
-      const c = countByStatus();
-      const totalEl = document.getElementById('sidebarTotal');
-      const liveEl = document.getElementById('sidebarLive');
-      const scheduledEl = document.getElementById('sidebarScheduled');
-      const endedEl = document.getElementById('sidebarEnded');
-      if (totalEl) totalEl.textContent = String(c.total);
-      if (liveEl) liveEl.textContent = String(c.live);
-      if (scheduledEl) scheduledEl.textContent = String(c.scheduled);
-      if (endedEl) endedEl.textContent = String(c.ended);
+      updateFilterChips(countByStatus());
       clearErrorBanner();
+    }
+
+    function updateFilterChips(c) {
+      const labels = { all: 'All', live: 'Live', scheduled: 'Scheduled', paused: 'Paused', ended: 'Ended' };
+      const counts = { all: c.total, live: c.live, scheduled: c.scheduled, paused: c.paused, ended: c.ended };
+      document.querySelectorAll('.status-filter').forEach(btn => {
+        const key = btn.dataset.filter || 'all';
+        const n = counts[key] || 0;
+        btn.textContent = n > 1 ? labels[key] + ' ' + n : labels[key];
+      });
     }
 
     function formatCompact(n) {
@@ -493,10 +487,25 @@ export const ADMIN_HTML = `<!DOCTYPE html>
 
     function renderAdCards() {
       const adsHeader = document.getElementById('adsHeader');
-      const mainToolbar = document.getElementById('mainToolbar');
       if (adsHeader) adsHeader.hidden = scheduledAds.length === 0;
-      if (mainToolbar) mainToolbar.hidden = scheduledAds.length === 0;
       adCards.innerHTML = '';
+
+      const newAdGroup = document.createElement('div');
+      newAdGroup.className = 'ad-cards-group ad-cards-group-new';
+      const newAdWrap = document.createElement('div');
+      newAdWrap.className = 'ad-cards';
+      const newAdCardWrap = document.createElement('div');
+      newAdCardWrap.className = 'ad-card-wrap';
+      const newAdBtn = document.createElement('button');
+      newAdBtn.type = 'button';
+      newAdBtn.id = 'newAdBtn';
+      newAdBtn.className = 'ad-card new-ad-card';
+      newAdBtn.innerHTML = '<span class="new-ad-plus">+</span><span class="new-ad-label">New ad</span>';
+      newAdBtn.addEventListener('click', goToNewAd);
+      newAdCardWrap.appendChild(newAdBtn);
+      newAdWrap.appendChild(newAdCardWrap);
+      newAdGroup.appendChild(newAdWrap);
+      adCards.appendChild(newAdGroup);
 
       const filtered = filterAdsForDisplay();
       const groups = { live: [], scheduled: [], paused: [], ended: [] };
@@ -524,21 +533,30 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           const card = document.createElement('div');
           card.className = 'ad-card-wrap';
           const canToggle = s === 'live' || s === 'paused';
-          const toggleLabel = s === 'paused' ? 'Resume' : 'Pause';
-          card.innerHTML = '<button type="button" class="ad-card' + (selectedIndex === i ? ' selected' : '') + '" data-ad-idx="' + i + '">' +
+          const stateLabel = s === 'paused' ? 'Paused' : 'Live';
+          const stateIcon = s === 'paused' ? '⏸' : '▶';
+          const actionIcon = s === 'paused' ? '▶' : '⏸';
+          const actionHtml = canToggle ? '<button type="button" class="ad-card-action ad-card-action-' + s + '" data-ad-idx="' + i + '" data-action="toggle" title="' + stateLabel + ' — click to ' + (s === 'paused' ? 'resume' : 'pause') + '" aria-label="' + stateLabel + '"><span class="ad-card-action-icon-wrap"><span class="ad-card-action-icon ad-card-action-icon-state">' + stateIcon + '</span><span class="ad-card-action-icon ad-card-action-icon-action">' + actionIcon + '</span></span></button>' : '';
+          const chipHtml = (s === 'live' || s === 'paused') ? '' : '<span class="chip ' + statusClass(s) + '">' + s + '</span>';
+          card.innerHTML = '<div role="button" tabindex="0" class="ad-card' + (selectedIndex === i ? ' selected' : '') + '" data-ad-idx="' + i + '">' +
+            actionHtml +
             '<span class="ad-card-head">' + escapeHtml(ad.sponsor) + ' — ' + escapeHtml(ad.id) + '</span>' +
-            '<span class="chip ' + statusClass(s) + '">' + s + '</span>' +
+            chipHtml +
             '<span class="ad-card-dates">' + formatDateRange(ad) + '</span>' +
             (statsLine ? statsLine : '') +
             '<span class="ad-card-tier">' + (ad.tier || 'banner') + '</span>' +
-            '</button>' +
-            (canToggle ? '<button type="button" class="ad-card-action" data-ad-idx="' + i + '" data-action="toggle" title="' + toggleLabel + '">' + (s === 'paused' ? '▶' : '⏸') + '</button>' : '');
-          card.querySelector('.ad-card').addEventListener('click', () => {
+            '</div>';
+          const cardEl = card.querySelector('.ad-card');
+          cardEl.addEventListener('click', (e) => {
+            if (e.target.closest('.ad-card-action')) return;
             selectAd(i);
             openFormOverlay('Edit: ' + (ad.sponsor || ad.id));
           });
+          cardEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cardEl.click(); }
+          });
           const actionBtn = card.querySelector('.ad-card-action');
-          if (actionBtn) actionBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleAdActive(parseInt(actionBtn.dataset.adIdx, 10)); });
+          if (actionBtn) actionBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleAdActive(parseInt(actionBtn.dataset.adIdx, 10)); });
           cardWrap.appendChild(card);
         });
         section.appendChild(cardWrap);
@@ -1014,7 +1032,6 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     document.querySelector('.form-overlay-backdrop').addEventListener('click', closeFormOverlay);
 
     refreshBtn.addEventListener('click', loadSchedule);
-    document.getElementById('newAdBtn').addEventListener('click', goToNewAd);
 
     document.getElementById('adsSearch').addEventListener('input', (e) => {
       adsSearchQuery = (e.target.value || '').trim();
@@ -1151,6 +1168,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       }
     });
 
+    updateFilterChips(countByStatus());
     loadSchedule();
   </script>
 
@@ -1176,7 +1194,6 @@ export const ADMIN_HTML = `<!DOCTYPE html>
 
     .dashboard-wrap {
       display: grid;
-      grid-template-columns: minmax(0, 240px) 1fr;
       grid-template-rows: 40px 1fr;
       height: 100vh;
       min-height: 0;
@@ -1196,26 +1213,21 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .topbar-title { font-size: 13px; font-weight: 500; white-space: nowrap; }
     .topbar-sep { color: var(--border); flex-shrink: 0; }
     .topbar-sub { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .status { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-shrink: 0; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
+    .topbar-refresh {
+      padding: 4px 8px; font-size: 14px; line-height: 1;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer;
+    }
+    .topbar-refresh:hover { color: var(--accent); border-color: var(--accent); }
+    .status { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .dot { width: 6px; height: 6px; background: var(--border); flex-shrink: 0; }
     .dot.on { background: var(--green); }
     .dot.err { background: var(--red); }
     .status-text { color: var(--muted); font-size: 11px; }
     .status-text.status-ok { color: var(--green); }
     .status-text.status-err { color: var(--red); }
 
-    .sidebar {
-      border-right: 1px solid var(--border);
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 12px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background: var(--surface);
-      min-width: 0;
-    }
-    .sidebar button { width: 100%; min-height: 36px; }
     .kv { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
     .kv-k { color: var(--muted); white-space: nowrap; }
     .kv-v { color: var(--accent); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
@@ -1238,7 +1250,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .overview-status-banner.operational { border-left: 4px solid var(--green); }
     .overview-status-banner.loading { border-left: 4px solid var(--muted); }
     .overview-status-banner.error { border-left: 4px solid var(--red); }
-    .status-banner-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-banner-dot { width: 8px; height: 8px; flex-shrink: 0; }
     .status-banner-dot.ok { background: var(--green); }
     .status-banner-dot.pending { background: var(--muted); }
     .status-banner-dot.err { background: var(--red); }
@@ -1248,7 +1260,6 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       padding: 7px 12px;
       font-size: 12px;
       font-family: var(--font);
-      border-radius: 4px;
       border: 1px solid var(--accent);
       color: var(--accent);
       background: transparent;
@@ -1414,27 +1425,57 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .save-status.status-err { color: var(--red); }
 
     #adCards { display: flex; flex-direction: column; gap: 4px; }
-    .ad-cards { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .ad-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+      min-width: 0;
+    }
     .ad-cards-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
     .main-toolbar {
       display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
       margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
     }
-    .toolbar-search { width: 180px; max-width: 100%; margin: 0; }
+    .toolbar-search { flex: 1; min-width: 180px; max-width: 360px; margin: 0; }
     .toolbar-filters { display: flex; flex-wrap: wrap; gap: 4px; }
+    .ad-cards-group-new .ad-card-wrap { max-width: 160px; }
+    .new-ad-card { justify-content: center; align-items: center; text-align: center; color: var(--muted); min-height: 80px; padding-right: 12px; }
+    .new-ad-card:hover { border-color: var(--accent); color: var(--accent); background: rgba(20,184,166,0.08); }
+    .new-ad-plus { font-size: 20px; line-height: 1; }
+    .new-ad-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
     .ads-status-filters { display: flex; flex-wrap: wrap; gap: 4px; }
     .status-filter { padding: 4px 8px; font-size: 10px; }
     .status-filter.active { border-color: var(--accent); color: var(--accent); }
     .ad-cards-group:last-child { margin-bottom: 0; }
     .ad-cards-group-label { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; }
-    .ad-card-wrap { display: flex; align-items: flex-start; gap: 4px; width: 100%; }
-    .ad-card-wrap .ad-card { flex: 1; min-width: 0; }
-    .ad-card-action { flex-shrink: 0; width: 28px; height: 28px; min-width: 28px; padding: 0; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+    .ad-card-wrap { position: relative; min-width: 0; height: 100%; }
+    .ad-card-wrap .ad-card { position: relative; min-width: 0; min-height: 80px; width: 100%; height: 100%; }
+    .ad-card-action {
+      position: absolute; top: 8px; right: 8px;
+      padding: 6px 10px; font-size: 12px;
+      display: flex; align-items: center; gap: 6px;
+ z-index: 1; flex-shrink: 0;
+    }
+    .ad-card-action-icon-wrap { position: relative; display: inline-flex; width: 14px; height: 14px; align-items: center; justify-content: center; }
+    .ad-card-action-icon { font-size: 14px; line-height: 1; transition: opacity 0.15s; }
+    .ad-card-action-icon-action { position: absolute; opacity: 0; }
+    .ad-card-action:hover .ad-card-action-icon-state { opacity: 0; }
+    .ad-card-action:hover .ad-card-action-icon-action { opacity: 1; }
+    .ad-card-action-live { color: var(--green); background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); }
+    .ad-card-action-paused { color: var(--yellow); background: rgba(234,179,8,0.15); border-color: rgba(234,179,8,0.4); }
+    .ad-card-action-live:hover,
+    .ad-card-action-live:focus-visible {
+      background: rgba(234,179,8,0.2) !important; border-color: var(--yellow) !important; color: var(--yellow) !important;
+    }
+    .ad-card-action-paused:hover,
+    .ad-card-action-paused:focus-visible {
+      background: rgba(34,197,94,0.2) !important; border-color: var(--green) !important; color: var(--green) !important;
+    }
     .ad-card {
       display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
-      padding: 10px 12px; border: 1px solid var(--border); background: var(--surface);
+      padding: 10px 12px; padding-right: 56px; border: 1px solid var(--border); background: var(--surface);
       color: var(--text); font: inherit; text-align: left; cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.15s, background 0.15s; box-sizing: border-box;
     }
     .ad-card:hover { border-color: var(--text); }
     .ad-card.selected { border-color: var(--accent); background: rgba(20,184,166,0.08); }
@@ -1442,13 +1483,13 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .ad-card-dates { font-size: 10px; color: var(--muted); }
     .ad-card-stats { font-size: 10px; color: var(--green); display: block; margin-top: 2px; }
     .ad-card-tier { font-size: 9px; color: var(--muted); text-transform: uppercase; }
-    .ad-kpi-box { margin-bottom: 16px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+    .ad-kpi-box { margin-bottom: 16px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); }
     .ad-kpi-box .group-label { margin-bottom: 8px; }
     .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; }
     .kpi-item { display: flex; flex-direction: column; gap: 2px; }
     .kpi-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
     .kpi-value { font-size: 13px; font-weight: 500; color: var(--green); }
-    .chip { font-size: 10px; font-weight: 500; padding: 2px 6px; border: 1px solid transparent; border-radius: 3px; line-height: 1.5; }
+    .chip { font-size: 10px; font-weight: 500; padding: 2px 6px; border: 1px solid transparent; line-height: 1.5; }
     .chip-live { color: var(--green); background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3); }
     .chip-scheduled { color: var(--accent); background: rgba(20,184,166,0.15); border-color: rgba(20,184,166,0.3); }
     .chip-ended { color: var(--muted); background: rgba(115,115,115,0.1); opacity: 0.9; }
@@ -1475,7 +1516,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .cal-cell.has-conflict { outline: 1px dashed var(--yellow); outline-offset: -1px; }
     .cal-cell-num { font-size: 12px; color: var(--text); margin-bottom: 4px; }
     .cal-cell-ads { display: flex; flex-wrap: wrap; gap: 2px; align-content: flex-start; overflow: hidden; }
-    .cal-ad-pill { font-size: 10px; padding: 5px 8px; min-height: 28px; border: none; border-radius: 3px; cursor: pointer; font-family: var(--font); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .cal-ad-pill { font-size: 10px; padding: 5px 8px; min-height: 28px; border: none; cursor: pointer; font-family: var(--font); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .cal-ad-pill.chip-live { background: rgba(34,197,94,0.2); color: var(--green); }
     .cal-ad-pill.chip-scheduled { background: rgba(20,184,166,0.2); color: var(--accent); }
     .cal-ad-pill.chip-ended { background: rgba(102,102,102,0.2); color: var(--muted); }
@@ -1483,7 +1524,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .cal-ad-pill:hover { opacity: 0.9; }
     .cal-ad-pill.selected { outline: 1px solid var(--text); outline-offset: 1px; }
     .cal-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); }
-    .cal-legend-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+    .cal-legend-dot { display: inline-block; width: 6px; height: 6px; margin-right: 4px; vertical-align: middle; }
     .cal-legend-dot.live { background: var(--green); }
     .cal-legend-dot.scheduled { background: var(--accent); }
     .cal-legend-dot.ended { background: var(--muted); }
@@ -1504,7 +1545,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .preview.preview-feature .preview-copy-block { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; width: 100%; }
     .preview-sponsor-line { display: flex; align-items: center; gap: 8px; }
     .preview-sponsor { font-size: 13px; color: var(--muted); }
-    .preview-logo { width: 24px; height: 24px; object-fit: contain; border-radius: 6px; flex-shrink: 0; }
+    .preview-logo { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
     .preview-copy { display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .preview-headline { font-size: 17px; font-weight: 600; line-height: 1.3; }
     .preview-subline { font-size: 14px; color: var(--muted); line-height: 1.4; }
@@ -1512,7 +1553,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       display: flex; align-items: center; justify-content: center; gap: 6px;
       width: 100%; padding: 10px 0;
       color: var(--cta-orange); background: rgba(232, 119, 34, 0.12);
-      border-radius: 8px; font-size: 14px; font-weight: 500; cursor: default; border: none;
+      font-size: 14px; font-weight: 500; cursor: default; border: none;
     }
     .preview-cta-arrow { font-size: 12px; opacity: 0.9; }
     .preview-img-wrap { width: 100%; overflow: hidden; position: relative; background: var(--border); }
@@ -1534,11 +1575,9 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     #start_at[readonly], #end_at[readonly] { cursor: pointer; }
 
     @media (min-width: 900px) {
-      .dashboard-wrap { grid-template-columns: 260px 1fr; }
       .schedule-grid { grid-template-columns: 1fr 420px; }
     }
     @media (min-width: 1200px) {
-      .dashboard-wrap { grid-template-columns: 280px 1fr; }
       .schedule-grid { grid-template-columns: 1fr 480px; }
       .cal-cell { height: 80px; min-height: 80px; }
       .cal-ad-pill { font-size: 11px; min-height: 30px; }
@@ -1553,17 +1592,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       .cal-ad-pill { font-size: 8px; padding: 0 3px; }
     }
     @media (max-width: 640px) {
-      .dashboard-wrap { grid-template-columns: 1fr; grid-template-rows: 40px auto 1fr; }
-      .sidebar {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px 12px;
-      }
-      .sidebar .group { min-width: 0; }
-      .sidebar .kv { font-size: 11px; }
-      .sidebar button { width: 100%; }
+      .dashboard-wrap { grid-template-rows: 40px 1fr; }
       .main { padding: 12px 16px; }
       .overview-status-banner { padding: 10px 12px; margin-bottom: 12px; }
       .status-banner-text { font-size: 12px; }
