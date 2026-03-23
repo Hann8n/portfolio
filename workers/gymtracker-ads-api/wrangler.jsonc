@@ -1,0 +1,23 @@
+{
+  "name": "gymtracker-ads-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "kv_namespaces": [
+    {
+      "binding": "AD_CONFIG",
+      "id": "bd8619902c0f4b2c87e4d99b71167dbc",
+      "preview_id": "2cc6fba1dfe249c7876ee0b2e49600a2"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "gymtracker.jackhannon.net/api/*",
+      "zone_name": "jackhannon.net"
+    }
+  ]
+}

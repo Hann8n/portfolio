@@ -1,0 +1,12 @@
+{
+  "id": "placeholder_001",
+  "tier": "text",
+  "sponsor": "Placeholder",
+  "headline": "Configure your first sponsor ad in the admin.",
+  "subline": "Visit jackhannon.net/gymtracker-ads-admin.html",
+  "cta": "Get started",
+  "destination_url": "https://gymtracker.jackhannon.net/docs/privacy-policy.html",
+  "active": false,
+  "placement": "home_feed",
+  "creative_version": ""
+}
