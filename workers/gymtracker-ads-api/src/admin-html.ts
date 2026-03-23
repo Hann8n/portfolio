@@ -12,9 +12,12 @@ export const ADMIN_HTML = `<!DOCTYPE html>
 <body>
   <div class="dashboard-wrap">
   <div class="topbar">
-    <span class="topbar-title">Gym Tracker</span>
-    <span class="topbar-sep">/</span>
-    <span class="topbar-sub">ads admin</span>
+    <a href="https://jackhannon.net/" class="topbar-home" title="Back to jackhannon.net">← jackhannon.net</a>
+    <div class="topbar-center">
+      <span class="topbar-title">Gym Tracker</span>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-sub">ads admin</span>
+    </div>
     <div class="topbar-right">
       <button type="button" id="refreshBtn" class="topbar-refresh" title="Refresh">↻</button>
       <div class="status">
@@ -67,7 +70,6 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         </div>
       </div>
     </div>
-    <p class="footer"><a href="https://jackhannon.net/">Back to jackhannon.net</a></p>
   </div>
   </div>
 
@@ -1214,7 +1216,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       grid-column: 1 / -1;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       padding: 0 12px;
       min-height: 40px;
       height: 40px;
@@ -1222,10 +1224,15 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       background: var(--surface);
       min-width: 0;
     }
+    .topbar-home {
+      font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap;
+    }
+    .topbar-home:hover { color: var(--accent); }
+    .topbar-center { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; min-width: 0; }
     .topbar-title { font-size: 13px; font-weight: 500; white-space: nowrap; }
-    .topbar-sep { color: var(--border); flex-shrink: 0; }
+    .topbar-sep { color: var(--border); flex-shrink: 0; opacity: 0.7; }
     .topbar-sub { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .topbar-refresh {
       padding: 4px 8px; font-size: 14px; line-height: 1;
       border: 1px solid var(--border); background: transparent; color: var(--muted);
@@ -1510,7 +1517,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     #adCards.loading, #calendarWrap.loading { opacity: 0.6; pointer-events: none; }
     .calendar-empty { margin-top: 16px; padding: 24px; border: 1px dashed var(--border); background: var(--surface); text-align: center; max-width: 240px; }
     .calendar-empty-text { color: var(--muted); font-size: 13px; margin: 0; }
-    .calendar-wrap { margin-top: 16px; border: 1px solid var(--border); background: var(--surface); padding: 16px 20px; width: 100%; max-width: 100%; }
+    .calendar-wrap { margin-top: 16px; border: 1px solid var(--border); background: var(--surface); padding: 18px 22px; width: 100%; min-width: 340px; max-width: 100%; }
     .calendar-header { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 14px; }
     .cal-month-label { font-size: 15px; font-weight: 500; color: var(--text); margin: 0; }
     .cal-nav { padding: 4px 10px; font-size: 11px; background: transparent; border: 1px solid var(--border); color: var(--muted); cursor: pointer; }
@@ -1519,8 +1526,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .calendar-grid { display: flex; flex-direction: column; gap: 0; }
     .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     .cal-weekdays span { text-align: center; }
-    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); }
-    .cal-cell { height: 72px; min-height: 72px; padding: 8px; background: var(--surface); display: flex; flex-direction: column; font-size: 11px; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); width: 100%; }
+    .cal-cell { min-height: 80px; height: auto; padding: 10px; background: var(--surface); display: flex; flex-direction: column; font-size: 11px; }
     .cal-cell.other-month { background: var(--bg); }
     .cal-cell.other-month .cal-cell-num { color: var(--muted); opacity: 0.6; }
     .cal-cell.today { outline: 1px solid var(--accent); outline-offset: -1px; z-index: 1; }
@@ -1574,10 +1581,6 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .preview-img-wrap.preview-img-error .preview-img { display: none; }
     .preview-img-placeholder { width: 100%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); }
 
-    .footer { margin-top: 20px; font-size: 11px; color: var(--muted); }
-    .footer a { color: var(--accent); text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
-
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: var(--border); }
 
@@ -1587,19 +1590,19 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     #start_at[readonly], #end_at[readonly] { cursor: pointer; }
 
     @media (min-width: 900px) {
-      .schedule-grid { grid-template-columns: 1fr 420px; }
+      .schedule-grid { grid-template-columns: 1fr minmax(420px, 560px); }
     }
     @media (min-width: 1200px) {
-      .schedule-grid { grid-template-columns: 1fr 480px; }
-      .cal-cell { height: 80px; min-height: 80px; }
+      .schedule-grid { grid-template-columns: 1fr minmax(480px, 640px); }
+      .cal-cell { min-height: 88px; }
       .cal-ad-pill { font-size: 11px; min-height: 30px; }
     }
 
     @media (max-width: 768px) {
       .admin-editor-grid { grid-template-columns: 1fr; }
       .preview-pane { position: static; }
-      .calendar-wrap { max-width: 100%; padding: 10px 12px; }
-      .cal-cell { height: 48px; min-height: 48px; padding: 3px; }
+      .calendar-wrap { max-width: 100%; padding: 10px 12px; min-width: 300px; }
+      .cal-cell { min-height: 56px; padding: 6px; }
       .cal-cell-num { font-size: 10px; }
       .cal-ad-pill { font-size: 8px; padding: 0 3px; }
     }
@@ -1609,8 +1612,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       .overview-status-banner { padding: 10px 12px; margin-bottom: 12px; }
       .status-banner-text { font-size: 12px; }
       .status-banner-sub { font-size: 10px; }
-      .calendar-wrap { margin-top: 12px; }
-      .cal-cell { height: 44px; min-height: 44px; padding: 2px; font-size: 9px; }
+      .calendar-wrap { margin-top: 12px; min-width: 260px; }
+      .cal-cell { min-height: 50px; padding: 5px; font-size: 9px; }
       .cal-legend { margin-top: 10px; padding-top: 10px; gap: 8px; font-size: 9px; }
       .ad-card { padding: 8px 10px; min-width: 0; }
       .ad-card-head { font-size: 10px; }
