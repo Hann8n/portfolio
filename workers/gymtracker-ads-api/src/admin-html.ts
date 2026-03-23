@@ -173,10 +173,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         <div class="form-actions">
           <button type="button" id="deleteBtn" class="delete-btn" disabled>Delete</button>
           <span id="unsavedIndicator" class="unsaved-indicator" hidden>Unsaved changes</span>
+          <span id="saveStatus" class="save-status"></span>
           <div class="form-actions-right">
             <button type="button" id="cloneBtn">Clone</button>
             <button type="submit" id="saveBtn" class="primary" form="adForm">Save</button>
-            <span id="saveStatus" class="save-status"></span>
           </div>
         </div>
       </footer>
@@ -295,6 +295,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     let scheduledAds = [];
     let selectedIndex = -1;
     let formDirty = false;
+    let suppressDirty = false;
     let previewDebounce = null;
     let perAdStats = [];
     let adsFilterStatus = 'all';
@@ -657,12 +658,12 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       if (formDirty && !confirm('Discard unsaved changes?')) return;
       formDirty = false;
       selectedIndex = index;
+      setStatus(saveStatus, '', undefined);
       renderAdCards();
       renderCalendar();
       if (index === -1) {
         clearForm();
         clearFieldErrors();
-        setStatus(saveStatus, '', undefined);
         const ind = document.getElementById('unsavedIndicator');
         if (ind) ind.hidden = true;
       } else {
@@ -678,6 +679,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function markDirty() {
+      if (suppressDirty) return;
       formDirty = true;
       const ind = document.getElementById('unsavedIndicator');
       if (ind) ind.hidden = false;
@@ -732,21 +734,26 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function clearForm() {
-      document.getElementById('id').value = '';
-      document.getElementById('tier').value = 'banner';
-      updateTierButtons();
-      document.getElementById('active').value = 'true';
-      updateActiveInactiveButtons();
-      document.getElementById('sponsor').value = '';
-      document.getElementById('headline').value = '';
-      document.getElementById('subline').value = '';
-      document.getElementById('cta').value = '';
-      document.getElementById('destination_url').value = '';
-      document.getElementById('image_url').value = '';
-      document.getElementById('logo_url').value = '';
-      document.getElementById('placement').value = 'home_feed';
-      document.getElementById('creative_version').value = '';
-      if (fpRange) fpRange.clear();
+      suppressDirty = true;
+      try {
+        document.getElementById('id').value = '';
+        document.getElementById('tier').value = 'banner';
+        updateTierButtons();
+        document.getElementById('active').value = 'true';
+        updateActiveInactiveButtons();
+        document.getElementById('sponsor').value = '';
+        document.getElementById('headline').value = '';
+        document.getElementById('subline').value = '';
+        document.getElementById('cta').value = '';
+        document.getElementById('destination_url').value = '';
+        document.getElementById('image_url').value = '';
+        document.getElementById('logo_url').value = '';
+        document.getElementById('placement').value = 'home_feed';
+        document.getElementById('creative_version').value = '';
+        if (fpRange) fpRange.clear();
+      } finally {
+        suppressDirty = false;
+      }
     }
 
     function isoToDatetimeLocal(iso) {
@@ -764,24 +771,29 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function populateForm(data) {
-      document.getElementById('id').value = data.id || '';
-      document.getElementById('tier').value = (data.tier || 'banner').toLowerCase();
-      updateTierButtons();
-      document.getElementById('active').value = data.active ? 'true' : 'false';
-      updateActiveInactiveButtons();
-      document.getElementById('sponsor').value = data.sponsor || '';
-      document.getElementById('headline').value = data.headline || '';
-      document.getElementById('subline').value = data.subline || '';
-      document.getElementById('cta').value = data.cta || '';
-      document.getElementById('destination_url').value = data.destination_url || '';
-      document.getElementById('image_url').value = data.image_url || '';
-      document.getElementById('logo_url').value = data.logo_url || '';
-      document.getElementById('placement').value = data.placement || 'home_feed';
-      document.getElementById('creative_version').value = data.creative_version || '';
-      if (fpRange) {
-        const start = data.start_at ? new Date(data.start_at) : null;
-        const end = data.end_at ? new Date(data.end_at) : null;
-        fpRange.setDate(start && end ? [start, end] : start ? [start] : []);
+      suppressDirty = true;
+      try {
+        document.getElementById('id').value = data.id || '';
+        document.getElementById('tier').value = (data.tier || 'banner').toLowerCase();
+        updateTierButtons();
+        document.getElementById('active').value = data.active ? 'true' : 'false';
+        updateActiveInactiveButtons();
+        document.getElementById('sponsor').value = data.sponsor || '';
+        document.getElementById('headline').value = data.headline || '';
+        document.getElementById('subline').value = data.subline || '';
+        document.getElementById('cta').value = data.cta || '';
+        document.getElementById('destination_url').value = data.destination_url || '';
+        document.getElementById('image_url').value = data.image_url || '';
+        document.getElementById('logo_url').value = data.logo_url || '';
+        document.getElementById('placement').value = data.placement || 'home_feed';
+        document.getElementById('creative_version').value = data.creative_version || '';
+        if (fpRange) {
+          const start = data.start_at ? new Date(data.start_at) : null;
+          const end = data.end_at ? new Date(data.end_at) : null;
+          fpRange.setDate(start && end ? [start, end] : start ? [start] : []);
+        }
+      } finally {
+        suppressDirty = false;
       }
     }
 
@@ -1154,7 +1166,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           setStatus(saveStatus, data.error || res.statusText, false);
           return;
         }
-        setStatus(saveStatus, 'Saved', true);
+        setStatus(saveStatus, '', undefined);
         formDirty = false;
         const ind = document.getElementById('unsavedIndicator');
         if (ind) ind.hidden = true;
@@ -1420,7 +1432,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .tier-btn:hover { color: var(--text); }
     .tier-btn.active { background: rgba(20,184,166,0.12); color: var(--accent); }
     .unsaved-indicator { font-size: 11px; color: var(--yellow); position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; }
-    .save-status { font-size: 11px; color: var(--muted); }
+    .save-status { font-size: 11px; color: var(--muted); position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; }
     .save-status.status-ok { color: var(--green); }
     .save-status.status-err { color: var(--red); }
 
