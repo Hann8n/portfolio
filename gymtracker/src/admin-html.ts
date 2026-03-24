@@ -889,9 +889,18 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function formatCompact(n) {
-      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
-      return String(n);
+      const x = Number(n);
+      if (!Number.isFinite(x)) return '0';
+      if (x >= 1000000) return (x / 1000000).toFixed(1) + 'M';
+      if (x >= 1000) return (x / 1000).toFixed(1) + 'k';
+      return String(Math.trunc(x));
+    }
+
+    /** PostHog rows may omit or stringify ctr_percent; never throw from card render. */
+    function formatCtrPct(stats) {
+      if (!stats || typeof stats !== 'object') return '0.0';
+      const x = Number(stats.ctr_percent);
+      return Number.isFinite(x) ? x.toFixed(1) : '0.0';
     }
 
     function getAdStats(adId) {
@@ -915,7 +924,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       box.hidden = false;
       grid.innerHTML = '<div class="kpi-item"><span class="kpi-label">Impressions</span><span class="kpi-value">' + formatCompact(stats.impressions) + '</span></div>' +
         '<div class="kpi-item"><span class="kpi-label">Clicks</span><span class="kpi-value">' + formatCompact(stats.clicks) + '</span></div>' +
-        '<div class="kpi-item"><span class="kpi-label">CTR</span><span class="kpi-value">' + stats.ctr_percent.toFixed(1) + '%</span></div>';
+        '<div class="kpi-item"><span class="kpi-label">CTR</span><span class="kpi-value">' + formatCtrPct(stats) + '%</span></div>';
     }
 
     async function loadPostHogStats() {
@@ -1046,7 +1055,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           const s = adStatus(ad);
           const stats = getAdStats(ad.id);
           const statsLine = stats
-            ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' imp · ' + formatCompact(stats.clicks) + ' clk · ' + stats.ctr_percent.toFixed(1) + '% CTR</span>'
+            ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' imp · ' + formatCompact(stats.clicks) + ' clk · ' + formatCtrPct(stats) + '% CTR</span>'
             : '';
           const card = document.createElement('div');
           card.className = 'ad-card-wrap';
@@ -1065,6 +1074,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
             '<span class="ad-card-tier">' + (ad.tier || 'banner') + '</span>' +
             '</div>';
           const cardEl = card.querySelector('.ad-card');
+          if (!cardEl) {
+            console.warn('Admin: could not build card DOM for ad', ad.id);
+            return;
+          }
           cardEl.addEventListener('click', (e) => {
             if (e.target.closest('.ad-card-action')) return;
             selectAd(i);
