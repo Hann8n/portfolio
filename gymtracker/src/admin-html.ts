@@ -6,14 +6,14 @@ export const ADMIN_HTML = `<!DOCTYPE html>
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- admin-build: 20260324d-append-fragment -->
+  <!-- admin-build: 20260324e-vendor-flatpickr -->
   <title>Gym Tracker Ads Admin</title>
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16">
   <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" sizes="180x180">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css">
+  <link rel="stylesheet" href="/vendor/flatpickr/flatpickr.min.css">
+  <link rel="stylesheet" href="/vendor/flatpickr/dark.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -697,8 +697,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/plugins/rangePlugin.js"></script>
+  <script src="/vendor/flatpickr/flatpickr.min.js"></script>
+  <script src="/vendor/flatpickr/plugins/rangePlugin.js"></script>
   <script>
     const API_URL = '/api/admin/ads';
 

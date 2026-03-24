@@ -96,6 +96,9 @@ If you use a single application with multiple paths, ensure both are included. I
 
 ## Troubleshooting
 
+- **Browser console: “Failed to load resource: You do not have permission to access the requested resource”** (Safari/WebKit especially):
+  - Often a **subresource** blocked by **Cloudflare Access** because the Access application path is too broad (e.g. whole subdomain or `/*`). Narrow the app to only **`/admin`** and **`/api/admin`**, or add a **Bypass** for static paths such as **`/favicon/*`** and **`/vendor/*`** used by the admin page.
+  - Less often: a **third‑party CDN** blocked by network or extensions. The admin now loads **Flatpickr from** `https://gymtracker.jackhannon.net/vendor/flatpickr/...` (same origin) so date pickers work without jsDelivr.
 - **401 Unauthorized** on `/admin`: Access may not be protecting that path yet, or the JWT isn’t being sent. Confirm the Access application path matches `/admin` and `/api/admin`.
 - **Admin loads but ad list is empty, status shows Connected**:
   - In DevTools → **Network**, open the request to `/api/admin/ads`. You should see **200** and a JSON body like `{ "ads": [ ... ] }`. If the response is HTML or a login page, `/api/admin` is not covered by Access or the request is going to the wrong host (open admin only at `https://gymtracker.jackhannon.net/admin`).
