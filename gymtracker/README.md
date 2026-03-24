@@ -62,9 +62,11 @@ Also see [ad-config-schema.md](https://github.com/Hann8n/VTGymTracker/blob/main/
 
 ## Seed First Config
 
-After deploy, add your first ad via Admin UI or `curl`:
+After deploy, add your first ad via Admin UI or `curl`. Run from the `gymtracker/` directory:
 
 ```bash
+# Replace YOUR_ADMIN_API_KEY with the secret from step 2
+
 # Placeholder (inactive) — GET returns 404 until you activate
 curl -X PUT https://gymtracker.jackhannon.net/api/ads \
   -H "Content-Type: application/json" \
@@ -77,6 +79,8 @@ curl -X PUT https://gymtracker.jackhannon.net/api/ads \
   -H "X-API-Key: YOUR_ADMIN_API_KEY" \
   -d @seed-ad-active.json
 ```
+
+For local dev (with `npx wrangler dev` running), use `http://localhost:8787` instead of the production URL.
 
 **Admin UI:** Visit [https://gymtracker.jackhannon.net/admin](https://gymtracker.jackhannon.net/admin) — sign in with Cloudflare Access (Google or your configured provider). See [ACCESS_SETUP.md](ACCESS_SETUP.md) to configure.
 
