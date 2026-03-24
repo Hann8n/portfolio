@@ -52,6 +52,14 @@ const NO_CACHE_HEADERS: Record<string, string> = {
   Pragma: "no-cache",
 };
 
+/** Admin HTML must not be cached at browser or Cloudflare edge (stale inline JS breaks the dashboard). */
+const ADMIN_HTML_CACHE_HEADERS: Record<string, string> = {
+  "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+  "CDN-Cache-Control": "no-store",
+};
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allow =
     origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -446,7 +454,7 @@ export default {
       return new Response(getAdminHtml(), {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
-          "Cache-Control": "no-store",
+          ...ADMIN_HTML_CACHE_HEADERS,
         },
       });
     }

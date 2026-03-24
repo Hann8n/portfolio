@@ -3,7 +3,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- admin-build: 20260324c-atomic-render -->
   <title>Gym Tracker Ads Admin</title>
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
@@ -300,8 +303,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .status-filter.active { border-color: var(--accent); color: var(--accent); }
     .ad-cards-group:last-child { margin-bottom: 0; }
     .ad-cards-group-label { font-size: var(--text-xs); color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; }
-    .ad-card-wrap { position: relative; min-width: 0; height: 100%; }
-    .ad-card-wrap .ad-card { position: relative; min-width: 0; min-height: 80px; width: 100%; height: 100%; }
+    .ad-card-wrap { position: relative; min-width: 0; }
+    .ad-card-wrap .ad-card { position: relative; min-width: 0; min-height: 80px; width: 100%; }
     .ad-card-action {
       position: absolute; top: 8px; right: 8px;
       padding: 8px; display: flex; align-items: center; justify-content: center;
@@ -1015,84 +1018,89 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     function renderAdCards() {
       const adsHeader = document.getElementById('adsHeader');
       if (adsHeader) adsHeader.hidden = scheduledAds.length === 0;
-      adCards.innerHTML = '';
+      const root = document.createDocumentFragment();
+      try {
+        const newAdGroup = document.createElement('div');
+        newAdGroup.className = 'ad-cards-group ad-cards-group-new';
+        const newAdWrap = document.createElement('div');
+        newAdWrap.className = 'ad-cards';
+        const newAdCardWrap = document.createElement('div');
+        newAdCardWrap.className = 'ad-card-wrap';
+        const newAdBtn = document.createElement('button');
+        newAdBtn.type = 'button';
+        newAdBtn.id = 'newAdBtn';
+        newAdBtn.className = 'ad-card new-ad-card';
+        newAdBtn.innerHTML = '<span class="new-ad-plus">+</span><span class="new-ad-label">New ad</span>';
+        newAdBtn.addEventListener('click', goToNewAd);
+        newAdCardWrap.appendChild(newAdBtn);
+        newAdWrap.appendChild(newAdCardWrap);
+        newAdGroup.appendChild(newAdWrap);
+        root.appendChild(newAdGroup);
 
-      const newAdGroup = document.createElement('div');
-      newAdGroup.className = 'ad-cards-group ad-cards-group-new';
-      const newAdWrap = document.createElement('div');
-      newAdWrap.className = 'ad-cards';
-      const newAdCardWrap = document.createElement('div');
-      newAdCardWrap.className = 'ad-card-wrap';
-      const newAdBtn = document.createElement('button');
-      newAdBtn.type = 'button';
-      newAdBtn.id = 'newAdBtn';
-      newAdBtn.className = 'ad-card new-ad-card';
-      newAdBtn.innerHTML = '<span class="new-ad-plus">+</span><span class="new-ad-label">New ad</span>';
-      newAdBtn.addEventListener('click', goToNewAd);
-      newAdCardWrap.appendChild(newAdBtn);
-      newAdWrap.appendChild(newAdCardWrap);
-      newAdGroup.appendChild(newAdWrap);
-      adCards.appendChild(newAdGroup);
-
-      const filtered = filterAdsForDisplay();
-      const groups = { live: [], scheduled: [], paused: [], ended: [] };
-      filtered.forEach(({ ad, i }) => {
-        const status = adStatus(ad);
-        if (groups[status]) groups[status].push({ ad, i });
-      });
-
-      const order = ['live', 'scheduled', 'paused', 'ended'];
-      order.forEach((status) => {
-        const list = groups[status];
-        if (list.length === 0) return;
-        list.sort((a, b) => sortKeyForGroup(a.ad, status) - sortKeyForGroup(b.ad, status));
-        const section = document.createElement('div');
-        section.className = 'ad-cards-group';
-        section.innerHTML = '<div class="ad-cards-group-label">' + status + '</div>';
-        const cardWrap = document.createElement('div');
-        cardWrap.className = 'ad-cards';
-        list.forEach(({ ad, i }) => {
-          const s = adStatus(ad);
-          const stats = getAdStats(ad.id);
-          const statsLine = stats
-            ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' imp · ' + formatCompact(stats.clicks) + ' clk · ' + formatCtrPct(stats) + '% CTR</span>'
-            : '';
-          const card = document.createElement('div');
-          card.className = 'ad-card-wrap';
-          const canToggle = s === 'live' || s === 'paused';
-          const stateLabel = s === 'paused' ? 'Paused' : 'Live';
-          const stateIcon = s === 'paused' ? '⏸' : '▶';
-          const actionIcon = s === 'paused' ? '▶' : '⏸';
-          const actionHtml = canToggle ? '<button type="button" class="ad-card-action ad-card-action-' + s + '" data-ad-idx="' + i + '" data-action="toggle" title="' + stateLabel + ' — click to ' + (s === 'paused' ? 'resume' : 'pause') + '" aria-label="' + stateLabel + '"><span class="ad-card-action-icon-wrap"><span class="ad-card-action-icon ad-card-action-icon-state">' + stateIcon + '</span><span class="ad-card-action-icon ad-card-action-icon-action">' + actionIcon + '</span></span></button>' : '';
-          const chipHtml = (s === 'live' || s === 'paused') ? '' : '<span class="chip ' + statusClass(s) + '">' + s + '</span>';
-          card.innerHTML = '<div role="button" tabindex="0" class="ad-card' + (selectedIndex === i ? ' selected' : '') + '" data-ad-idx="' + i + '">' +
-            actionHtml +
-            '<span class="ad-card-head">' + escapeHtml(ad.sponsor) + ' — ' + escapeHtml(ad.id) + '</span>' +
-            chipHtml +
-            '<span class="ad-card-dates">' + formatDateRange(ad) + '</span>' +
-            (statsLine ? statsLine : '') +
-            '<span class="ad-card-tier">' + (ad.tier || 'banner') + '</span>' +
-            '</div>';
-          const cardEl = card.querySelector('.ad-card');
-          if (!cardEl) {
-            console.warn('Admin: could not build card DOM for ad', ad.id);
-            return;
-          }
-          cardEl.addEventListener('click', (e) => {
-            if (e.target.closest('.ad-card-action')) return;
-            selectAd(i);
-            openFormOverlay('Edit: ' + (ad.sponsor || ad.id));
-          });
-          cardEl.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cardEl.click(); }
-          });
-          const actionBtn = card.querySelector('.ad-card-action');
-          if (actionBtn) actionBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleAdActive(parseInt(actionBtn.dataset.adIdx, 10)); });
-          cardWrap.appendChild(card);
+        const filtered = filterAdsForDisplay();
+        const groups = { live: [], scheduled: [], paused: [], ended: [] };
+        filtered.forEach(({ ad, i }) => {
+          const status = adStatus(ad);
+          if (groups[status]) groups[status].push({ ad, i });
         });
-        section.appendChild(cardWrap);
-        adCards.appendChild(section);
-      });
+
+        const order = ['live', 'scheduled', 'paused', 'ended'];
+        order.forEach((status) => {
+          const list = groups[status];
+          if (list.length === 0) return;
+          list.sort((a, b) => sortKeyForGroup(a.ad, status) - sortKeyForGroup(b.ad, status));
+          const section = document.createElement('div');
+          section.className = 'ad-cards-group';
+          section.innerHTML = '<div class="ad-cards-group-label">' + status + '</div>';
+          const cardWrap = document.createElement('div');
+          cardWrap.className = 'ad-cards';
+          list.forEach(({ ad, i }) => {
+            const s = adStatus(ad);
+            const stats = getAdStats(ad.id);
+            const statsLine = stats
+              ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' imp · ' + formatCompact(stats.clicks) + ' clk · ' + formatCtrPct(stats) + '% CTR</span>'
+              : '';
+            const card = document.createElement('div');
+            card.className = 'ad-card-wrap';
+            const canToggle = s === 'live' || s === 'paused';
+            const stateLabel = s === 'paused' ? 'Paused' : 'Live';
+            const stateIcon = s === 'paused' ? '⏸' : '▶';
+            const actionIcon = s === 'paused' ? '▶' : '⏸';
+            const actionHtml = canToggle ? '<button type="button" class="ad-card-action ad-card-action-' + s + '" data-ad-idx="' + i + '" data-action="toggle" title="' + stateLabel + ' — click to ' + (s === 'paused' ? 'resume' : 'pause') + '" aria-label="' + stateLabel + '"><span class="ad-card-action-icon-wrap"><span class="ad-card-action-icon ad-card-action-icon-state">' + stateIcon + '</span><span class="ad-card-action-icon ad-card-action-icon-action">' + actionIcon + '</span></span></button>' : '';
+            const chipHtml = (s === 'live' || s === 'paused') ? '' : '<span class="chip ' + statusClass(s) + '">' + s + '</span>';
+            card.innerHTML = '<div role="button" tabindex="0" class="ad-card' + (selectedIndex === i ? ' selected' : '') + '" data-ad-idx="' + i + '">' +
+              actionHtml +
+              '<span class="ad-card-head">' + escapeHtml(ad.sponsor) + ' — ' + escapeHtml(ad.id) + '</span>' +
+              chipHtml +
+              '<span class="ad-card-dates">' + formatDateRange(ad) + '</span>' +
+              (statsLine ? statsLine : '') +
+              '<span class="ad-card-tier">' + (ad.tier || 'banner') + '</span>' +
+              '</div>';
+            const cardEl = card.querySelector('.ad-card');
+            if (!cardEl) {
+              console.warn('Admin: could not build card DOM for ad', ad.id);
+              return;
+            }
+            cardEl.addEventListener('click', (e) => {
+              if (e.target.closest('.ad-card-action')) return;
+              selectAd(i);
+              openFormOverlay('Edit: ' + (ad.sponsor || ad.id));
+            });
+            cardEl.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cardEl.click(); }
+            });
+            const actionBtn = card.querySelector('.ad-card-action');
+            if (actionBtn) actionBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleAdActive(parseInt(actionBtn.dataset.adIdx, 10)); });
+            cardWrap.appendChild(card);
+          });
+          section.appendChild(cardWrap);
+          root.appendChild(section);
+        });
+        adCards.replaceChildren(root);
+      } catch (err) {
+        console.error('Admin: renderAdCards failed', err);
+        showErrorBanner('Could not render ad list', (err && err.message ? String(err.message) : 'Unknown error') + ' — try Refresh or hard-reload the page.');
+      }
     }
 
     function escapeHtml(s) {
