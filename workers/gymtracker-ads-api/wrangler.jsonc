@@ -29,7 +29,11 @@
   ],
   "routes": [
     {
-      "pattern": "gymtracker.jackhannon.net/",
+      "pattern": "gymtracker.jackhannon.net/*",
+      "zone_name": "jackhannon.net"
+    },
+    {
+      "pattern": "gymtracker.jackhannon.net",
       "zone_name": "jackhannon.net"
     },
     {

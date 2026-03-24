@@ -506,6 +506,10 @@ export default {
     }
 
     if (url.pathname !== "/api/ads") {
+      const assetResponse = await env.ASSETS.fetch(request);
+      if (assetResponse.status !== 404) {
+        return assetResponse;
+      }
       return jsonResponse({ error: "Not found" }, 404, request);
     }
 
