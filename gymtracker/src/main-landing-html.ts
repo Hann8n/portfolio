@@ -114,7 +114,7 @@ export function getMainLandingHtml(): string {
       <a href="/ads">Advertise</a>
       <a href="https://tangled.org/jack.orbyt.video/VTGymTracker" target="_blank" rel="noopener noreferrer">Tangled</a>
       <a href="https://github.com/Hann8n/VTGymTracker" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="/docs/privacy-policy.html">Privacy</a>
+      <a href="/privacy">Privacy</a>
       <a href="https://jackhannon.net" target="_blank" rel="noopener noreferrer">jackhannon.net</a>
   </footer>
 </body>

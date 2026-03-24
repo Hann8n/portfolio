@@ -494,6 +494,26 @@ export default {
       });
     }
 
+    if (url.pathname === "/privacy" || url.pathname === "/privacy/") {
+      const assetRequest = new Request(
+        new URL("/docs/privacy-policy.html", url.origin).href,
+        request
+      );
+      const res = await env.ASSETS.fetch(assetRequest);
+      if (res.status === 404) {
+        return jsonResponse({ error: "Not found" }, 404, request);
+      }
+      return new Response(res.body, {
+        status: res.status,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": isLocalRequest(request)
+            ? "no-store, no-cache, must-revalidate"
+            : "public, max-age=3600",
+        },
+      });
+    }
+
     if (url.pathname === "/ads" || url.pathname === "/ads/") {
       return new Response(getAdsLandingHtml(), {
         headers: {

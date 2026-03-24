@@ -1373,7 +1373,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     <div class="container footer-inner">
       <span class="footer-copy">&copy; Jack Hannon</span>
       <div class="footer-links">
-        <a href="https://gymtracker.jackhannon.net/docs/privacy-policy.html">Privacy</a>
+        <a href="/privacy">Privacy</a>
         <a href="https://jackhannon.net/">jackhannon.net</a>
       </div>
     </div>
