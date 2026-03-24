@@ -6,7 +6,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- admin-build: 20260324c-atomic-render -->
+  <!-- admin-build: 20260324d-append-fragment -->
   <title>Gym Tracker Ads Admin</title>
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
@@ -1016,6 +1016,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function renderAdCards() {
+      if (!adCards) {
+        console.error('Admin: #adCards missing from DOM');
+        return;
+      }
       const adsHeader = document.getElementById('adsHeader');
       if (adsHeader) adsHeader.hidden = scheduledAds.length === 0;
       const root = document.createDocumentFragment();
@@ -1096,7 +1100,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           section.appendChild(cardWrap);
           root.appendChild(section);
         });
-        adCards.replaceChildren(root);
+        adCards.innerHTML = '';
+        adCards.appendChild(root);
       } catch (err) {
         console.error('Admin: renderAdCards failed', err);
         showErrorBanner('Could not render ad list', (err && err.message ? String(err.message) : 'Unknown error') + ' — try Refresh or hard-reload the page.');

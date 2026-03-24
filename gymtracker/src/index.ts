@@ -233,7 +233,7 @@ function isAdActive(config: AdConfig, now: Date): boolean {
   return true;
 }
 
-/** Normalize KV payload: stored as `AdConfig[]` or `{ ads: AdConfig[] }` (legacy / mistaken shape). */
+/** Normalize KV payload: array, `{ ads: [...] }`, or a single ad object under the `ads` key. */
 function adsArrayFromKvJson(parsed: unknown): AdConfig[] {
   if (Array.isArray(parsed)) {
     return parsed as AdConfig[];
@@ -246,7 +246,22 @@ function adsArrayFromKvJson(parsed: unknown): AdConfig[] {
   ) {
     return (parsed as { ads: AdConfig[] }).ads;
   }
+  if (
+    parsed &&
+    typeof parsed === "object" &&
+    !Array.isArray(parsed) &&
+    typeof (parsed as { id?: unknown }).id === "string" &&
+    (parsed as { id: string }).id.trim() !== ""
+  ) {
+    return [parsed as AdConfig];
+  }
   return [];
+}
+
+/** `/admin`, `/admin/`, `/api/admin/ads/` → stable paths for routing. */
+function normalizedPathname(pathname: string): string {
+  const trimmed = pathname.replace(/\/+$/, "");
+  return trimmed === "" ? "/" : trimmed;
 }
 
 async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
@@ -438,8 +453,9 @@ export default {
     _ctx: ExecutionContext
   ): Promise<Response> {
     const url = new URL(request.url);
+    const path = normalizedPathname(url.pathname);
 
-    if (url.pathname === "/admin" || url.pathname === "/admin/") {
+    if (path === "/admin") {
       if (!hasAccessAuth(request)) {
         const helpHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sign in required</title></head><body style="font-family:system-ui;max-width:32rem;margin:4rem auto;padding:2rem;">
           <h1>Sign in required</h1>
@@ -459,7 +475,7 @@ export default {
       });
     }
 
-    if (url.pathname === "/api/admin/stats") {
+    if (path === "/api/admin/stats") {
       if (!hasAccessAuth(request)) {
         return jsonResponse({ error: "Unauthorized" }, 401, request);
       }
@@ -470,7 +486,7 @@ export default {
       return jsonResponse(stats, 200, request);
     }
 
-    if (url.pathname === "/api/admin/ads") {
+    if (path === "/api/admin/ads") {
       if (request.method === "OPTIONS") {
         const origin = request.headers.get("Origin");
         return new Response(null, {
@@ -522,7 +538,7 @@ export default {
       return jsonResponse({ error: "Method not allowed" }, 405, request);
     }
 
-    if (url.pathname === "/" || url.pathname === "/index.html") {
+    if (path === "/" || path === "/index.html") {
       return new Response(getMainLandingHtml(), {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
@@ -533,7 +549,7 @@ export default {
       });
     }
 
-    if (url.pathname === "/ads" || url.pathname === "/ads/") {
+    if (path === "/ads") {
       return new Response(getAdsLandingHtml(), {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
@@ -544,7 +560,7 @@ export default {
       });
     }
 
-    if (url.pathname !== "/api/ads") {
+    if (path !== "/api/ads") {
       const assetResponse = await env.ASSETS.fetch(request);
       if (assetResponse.status !== 404) {
         return assetResponse;
