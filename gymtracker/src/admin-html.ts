@@ -1597,8 +1597,18 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       document.getElementById('calendarWrap').classList.add('loading');
       try {
         const res = await fetchWithRetry(API_URL, { credentials: 'include' });
-        let data;
-        try { data = await res.json(); } catch (_) { data = {}; }
+        const contentType = (res.headers.get('content-type') || '').toLowerCase();
+        const bodyText = await res.text();
+        let data = {};
+        let jsonParseOk = true;
+        if (bodyText) {
+          try {
+            data = JSON.parse(bodyText);
+          } catch (_) {
+            jsonParseOk = false;
+            data = {};
+          }
+        }
         if (res.status === 401) {
           document.getElementById('adCards').classList.remove('loading');
           document.getElementById('calendarWrap').classList.remove('loading');
@@ -1610,6 +1620,20 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           document.getElementById('calendarWrap').classList.remove('loading');
           setStatus(fetchStatus, 'Not connected', false);
           showErrorBanner('Failed to load', (data.error || res.statusText || 'Unknown error'));
+          return;
+        }
+        const expectJson = contentType.includes('application/json');
+        const looksLikeAdsApi =
+          data && typeof data === 'object' &&
+          (Array.isArray(data.ads) || data.id != null || data.error !== undefined);
+        if (!jsonParseOk || (bodyText && !expectJson && !looksLikeAdsApi)) {
+          document.getElementById('adCards').classList.remove('loading');
+          document.getElementById('calendarWrap').classList.remove('loading');
+          setStatus(fetchStatus, 'Not connected', false);
+          showErrorBanner(
+            'Ads API did not return JSON',
+            'Open this page at <strong>https://gymtracker.jackhannon.net/admin</strong> (not another domain). In Zero Trust, include path <code>/api/admin</code> on the same Access app as <code>/admin</code>. Then hard-refresh.'
+          );
           return;
         }
         scheduledAds = parseAdsResponse(data);

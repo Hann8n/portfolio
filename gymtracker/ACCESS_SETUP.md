@@ -97,6 +97,9 @@ If you use a single application with multiple paths, ensure both are included. I
 ## Troubleshooting
 
 - **401 Unauthorized** on `/admin`: Access may not be protecting that path yet, or the JWT isn’t being sent. Confirm the Access application path matches `/admin` and `/api/admin`.
+- **Admin loads but ad list is empty, status shows Connected**:
+  - In DevTools → **Network**, open the request to `/api/admin/ads`. You should see **200** and a JSON body like `{ "ads": [ ... ] }`. If the response is HTML or a login page, `/api/admin` is not covered by Access or the request is going to the wrong host (open admin only at `https://gymtracker.jackhannon.net/admin`).
+  - **Production KV is separate from preview**: ads you create in `wrangler dev` use the **preview** KV namespace. Production uses the namespace id in `wrangler.jsonc` (`kv_namespaces.id`). To backfill production data, use `wrangler kv key put` against the **production** namespace or create ads again after signing in on prod.
 - **CORS errors**: The Worker allows `gymtracker.jackhannon.net`. If you use another origin, add it to `ALLOWED_ORIGINS` in the Worker.
 - **Public API blocked**: Ensure `/api/ads` is not covered by a “Require” policy, or add a Bypass policy for it.
 
@@ -108,4 +111,4 @@ After configuring Access:
 npm run deploy
 ```
 
-The Worker serves `/admin` and `/api/admin/ads` and checks for the `Cf-Access-Jwt-Assertion` header. Cloudflare adds this header when the request has passed Access, so no API key is required.
+The Worker serves `/admin` and `/api/admin/ads` and treats a request as authenticated when Cloudflare adds **`Cf-Access-Jwt-Assertion`** or **`Cf-Access-Authenticated-User-Email`** (after a successful Access login). No API key is required for the admin UI when Access is configured correctly.

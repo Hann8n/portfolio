@@ -4,7 +4,7 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/admin*", "/ads*", "/api/*"]
+    "run_worker_first": ["/api/*", "/", "/admin*", "/ads*"]
   },
   "vars": {
     "POSTHOG_PROJECT_ID": "352692",

@@ -225,11 +225,34 @@ function isAdActive(config: AdConfig, now: Date): boolean {
   return true;
 }
 
+/** Normalize KV payload: stored as `AdConfig[]` or `{ ads: AdConfig[] }` (legacy / mistaken shape). */
+function adsArrayFromKvJson(parsed: unknown): AdConfig[] {
+  if (Array.isArray(parsed)) {
+    return parsed as AdConfig[];
+  }
+  if (
+    parsed &&
+    typeof parsed === "object" &&
+    "ads" in parsed &&
+    Array.isArray((parsed as { ads: unknown }).ads)
+  ) {
+    return (parsed as { ads: AdConfig[] }).ads;
+  }
+  return [];
+}
+
 async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
   const legacy = await kv.get(KV_KEY_LEGACY);
   if (legacy) {
     try {
-      const migrated = [JSON.parse(legacy) as AdConfig];
+      const raw = JSON.parse(legacy) as unknown;
+      let migrated = adsArrayFromKvJson(raw);
+      if (migrated.length === 0 && raw && typeof raw === "object" && !Array.isArray(raw)) {
+        migrated = [raw as AdConfig];
+      }
+      if (migrated.length === 0) {
+        return [];
+      }
       await kv.put(KV_KEY_ADS, JSON.stringify(migrated));
       await kv.delete(KV_KEY_LEGACY);
       return migrated;
@@ -241,7 +264,7 @@ async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
   const value = await kv.get(KV_KEY_ADS);
   if (!value) return [];
   try {
-    return JSON.parse(value) as AdConfig[];
+    return adsArrayFromKvJson(JSON.parse(value) as unknown);
   } catch (err) {
     console.error("Failed to parse ads:", err);
     return [];
@@ -387,9 +410,17 @@ function isLocalRequest(request: Request): boolean {
   }
 }
 
-/** True if request passed Cloudflare Access (JWT header present) or is localhost. */
+/**
+ * True if request passed Cloudflare Access or is local dev.
+ * Cloudflare adds Cf-Access-Jwt-Assertion after a successful Access login; the user email
+ * header is also present for authenticated requests (see Cloudflare Access docs).
+ */
 function hasAccessAuth(request: Request): boolean {
-  return isLocalRequest(request) || !!request.headers.get("Cf-Access-Jwt-Assertion");
+  if (isLocalRequest(request)) return true;
+  return !!(
+    request.headers.get("Cf-Access-Jwt-Assertion") ||
+    request.headers.get("Cf-Access-Authenticated-User-Email")
+  );
 }
 
 export default {
