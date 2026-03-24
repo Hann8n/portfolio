@@ -7,6 +7,10 @@ export function getMainLandingHtml(): string {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Gym Tracker | Check McComas and War Memorial before you go</title>
   <meta name="description" content="Gym Tracker lets Virginia Tech students check McComas and War Memorial gym occupancy before they go.">
+  <link rel="icon" href="/favicon/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" sizes="180x180">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">

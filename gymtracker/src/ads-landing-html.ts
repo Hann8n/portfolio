@@ -8,6 +8,10 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
   <meta http-equiv="Pragma" content="no-cache">
   <title>Advertise on Gym Tracker | A small app. A specific audience. One ad slot.</title>
   <meta name="description" content="A few hundred Virginia Tech students use Gym Tracker to check McComas and War Memorial before they go. One ad slot in the main feed. If VT students are who you're trying to reach, it's a direct line.">
+  <link rel="icon" href="/favicon/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" sizes="180x180">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {

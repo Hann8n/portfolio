@@ -405,7 +405,7 @@ export default {
         const helpHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sign in required</title></head><body style="font-family:system-ui;max-width:32rem;margin:4rem auto;padding:2rem;">
           <h1>Sign in required</h1>
           <p>This admin is protected by <a href="https://developers.cloudflare.com/cloudflare-one/">Cloudflare Access</a>. Configure Access to protect <code>gymtracker.jackhannon.net/admin</code> and <code>/api/admin</code>.</p>
-          <p>See <code>workers/gymtracker-ads-api/ACCESS_SETUP.md</code> for setup.</p>
+          <p>See <code>gymtracker/ACCESS_SETUP.md</code> for setup.</p>
           </body></html>`;
         return new Response(helpHtml, {
           status: 401,

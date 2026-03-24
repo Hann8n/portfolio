@@ -4,10 +4,16 @@ my website :)
 
 [Live site](https://jackhannon.net)
 
+## Structure
+
+- **/** — Main site (Cloudflare Pages)
+- **[gymtracker/](gymtracker/)** — Gym Tracker subdomain (`gymtracker.jackhannon.net`): landing page, ads API, admin UI
+
 ## Deployment
 
 - **Platform:** Cloudflare Pages
 - **Config:** [wrangler.jsonc](wrangler.jsonc)
+- **Gym Tracker:** `cd gymtracker && npx wrangler deploy`
 
 ## Attributions
 
