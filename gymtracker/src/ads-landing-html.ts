@@ -27,6 +27,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       --text: #1a1614;
       --text-mid: #4a4240;
       --muted: #7a7270;
+      --ad-cta-fill: rgba(134, 31, 65, 0.072);
       --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-display: var(--font);
       --font-body: var(--font);
@@ -742,77 +743,86 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     .tier-btn:hover { color: var(--text); }
     .tier-btn.active { background: rgba(134,31,65,0.12); color: var(--maroon); font-weight: 600; }
 
-    /* ── Preview Pane (matches admin) ─────────────────────── */
+    /* ── Preview Pane (matches in-app AdView) ─────────────────────── */
     .preview-pane { position: sticky; top: 84px; min-width: 0; }
-    .ad-preview { padding: 0; background: transparent; min-height: 8rem; overflow: hidden; }
+    .ad-preview { padding: 0; background: transparent; min-height: 8rem; overflow: visible; }
     .preview {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       text-align: left;
       width: 100%;
       max-width: 100%;
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.82);
       border: 1px solid var(--border);
       border-radius: 0;
       overflow: hidden;
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
-    .preview-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      padding: 0 16px 8px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 0;
-    }
-    .preview.preview-text { padding: 16px; gap: 12px; }
-    .preview.preview-text .preview-header { padding: 0 0 8px; margin-bottom: 4px; }
-    .preview.preview-banner .preview-header,
-    .preview.preview-feature .preview-header { padding: 12px 16px 8px; }
-    .preview.preview-banner .preview-copy-block,
-    .preview.preview-feature .preview-copy-block {
-      padding: 14px 16px;
+    .preview-text-inner {
       display: flex;
       flex-direction: column;
       gap: 12px;
+      padding: 18px 16px;
       width: 100%;
     }
-    .preview-header-logo {
-      width: 20px;
-      height: 20px;
-      border-radius: 0;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-    .preview-header-sponsor {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text);
-      flex: 1;
-    }
-    .preview-header-sponsored {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-    .preview-copy {
+    .preview-body {
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      padding: 12px 16px 18px;
+      width: 100%;
+    }
+    .preview-copy-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+    .preview-sponsor-row {
+      display: flex;
+      align-items: center;
       gap: 10px;
       width: 100%;
     }
-    .preview-headline {
-      font-size: 1rem;
+    .preview-sponsor-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 0;
+      flex-shrink: 0;
+    }
+    .preview-sponsor-name {
+      font-size: 0.875rem;
       font-weight: 600;
-      color: var(--text);
+      letter-spacing: 0.065em;
+      text-transform: uppercase;
+      color: var(--muted);
       line-height: 1.3;
-      margin: 0;
+      flex: 1;
+      min-width: 0;
+    }
+    .preview-headline {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+      margin-top: 8px;
     }
     .preview-subline {
       font-size: 0.875rem;
+      font-weight: 500;
       color: var(--muted);
       line-height: 1.4;
-      margin: 0;
+      margin-top: 6px;
+    }
+    .preview-img-divider {
+      height: 1px;
+      width: 100%;
+      background: var(--border);
+      flex-shrink: 0;
     }
     .preview-img-wrap {
       width: 100%;
@@ -844,14 +854,14 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       gap: 6px;
       width: 100%;
       padding: 10px;
-      color: var(--orange);
-      background: rgba(232, 119, 34, 0.12);
+      color: var(--maroon);
+      background: var(--ad-cta-fill);
       font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: 8px;
+      font-weight: 600;
+      border-radius: 0;
       box-sizing: border-box;
     }
-    .preview-cta-arrow { font-size: 12px; opacity: 0.9; }
+    .preview-cta-arrow { font-size: 12px; opacity: 0.95; line-height: 1; }
     .preview-label {
       font-size: 0.75rem;
       color: var(--muted);
@@ -1359,10 +1369,14 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
 
         <aside class="preview-pane">
           <div id="adPreview" class="ad-preview"><div class="preview preview-banner">
-            <div class="preview-header"><span class="preview-header-sponsor">Benny&rsquo;s Coffee</span><span class="preview-header-sponsored">Sponsored</span></div>
             <div class="preview-img-placeholder" style="height:140px">Image</div>
-            <div class="preview-copy-block">
-              <div class="preview-copy"><strong class="preview-headline">Fuel your workout</strong><span class="preview-subline">310 N Main St &middot; Open 7am&ndash;9pm</span></div>
+            <div class="preview-img-divider"></div>
+            <div class="preview-body">
+              <div class="preview-copy-stack">
+                <div class="preview-sponsor-row"><span class="preview-sponsor-name">BENNY&rsquo;S COFFEE</span></div>
+                <strong class="preview-headline">Fuel your workout</strong>
+                <span class="preview-subline">310 N Main St &middot; Open 7am&ndash;9pm</span>
+              </div>
               <div class="preview-cta-wrap"><span class="preview-cta-text">View menu</span><span class="preview-cta-arrow">↗</span></div>
             </div>
           </div></div>
@@ -1489,25 +1503,25 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       function updatePreview() {
         var d = getFormData();
         var tier = d.tier || 'banner';
-        var sponsor = d.sponsor || getPlaceholder('sponsor');
+        var sponsor = (d.sponsor || getPlaceholder('sponsor')).toUpperCase();
         var headline = d.headline || getPlaceholder('headline');
         var subline = d.subline || getPlaceholder('subline');
         var cta = d.cta || getPlaceholder('cta');
         var image_src = d.image_src || null;
         var logo_src = d.logo_src || null;
         var usesImageLayout = tier !== 'text';
-        var sponsorHeader = '<div class="preview-header">' +
-          (logo_src ? '<img src="' + escapeHtml(logo_src) + '" alt="" class="preview-header-logo" onerror="this.style.display=\\'none\\'">' : '') +
-          '<span class="preview-header-sponsor">' + escapeHtml(sponsor) + '</span>' +
-          '<span class="preview-header-sponsored">Sponsored</span></div>';
-        var copyContent = '<div class="preview-copy">' +
+        var sponsorRow = '<div class="preview-sponsor-row">' +
+          (logo_src ? '<img src="' + escapeHtml(logo_src) + '" alt="" class="preview-sponsor-logo" onerror="this.style.display=\\'none\\'">' : '') +
+          '<span class="preview-sponsor-name">' + escapeHtml(sponsor) + '</span></div>';
+        var copyStack = '<div class="preview-copy-stack">' + sponsorRow +
           '<strong class="preview-headline">' + escapeHtml(headline) + '</strong>' +
           (subline ? '<span class="preview-subline">' + escapeHtml(subline) + '</span>' : '') +
           '</div>';
         var ctaBtn = '<div class="preview-cta-wrap"><span class="preview-cta-text">' + escapeHtml(cta) + '</span><span class="preview-cta-arrow">↗</span></div>';
-        var html = '<div class="preview preview-' + tier + '">' + sponsorHeader;
+        var html;
         if (usesImageLayout) {
           var imgHeight = tier === 'feature' ? 220 : 140;
+          html = '<div class="preview preview-' + tier + '">';
           if (image_src) {
             html += '<div class="preview-img-wrap" style="height:' + imgHeight + 'px">';
             html += '<img src="' + escapeHtml(image_src) + '" alt="" class="preview-img" onerror="this.parentElement.classList.add(\\'preview-img-error\\')">';
@@ -1515,11 +1529,11 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
           } else {
             html += '<div class="preview-img-placeholder" style="height:' + imgHeight + 'px">Image</div>';
           }
-          html += '<div class="preview-copy-block">' + copyContent + ctaBtn + '</div>';
+          html += '<div class="preview-img-divider"></div>';
+          html += '<div class="preview-body">' + copyStack + ctaBtn + '</div></div>';
         } else {
-          html += copyContent + ctaBtn;
+          html = '<div class="preview preview-text"><div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
         }
-        html += '</div>';
         adPreview.innerHTML = html;
       }
 

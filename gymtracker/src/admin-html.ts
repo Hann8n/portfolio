@@ -30,6 +30,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
       --cta-orange: #E87722;
+      --ad-maroon: #861F41;
+      --ad-cta-fill: rgba(134, 31, 65, 0.18);
       --text-xs: 11px;
       --text-sm: 12px;
       --text-base: 14px;
@@ -401,38 +403,64 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .id-version-row .version-input { width: 64px; min-width: 64px; flex-shrink: 0; }
     .id-version-header { min-width: 0; max-width: 320px; justify-self: center; }
     .id-version-header input { min-height: 36px; padding: 6px 10px; font-size: var(--text-sm); }
-    .ad-preview { border: 1px solid var(--border); padding: 0; background: var(--surface); min-height: 8rem; overflow: hidden; }
-    /* Matches Swift AdView + SponsorSectionHeader layout */
-    .preview { display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: 100%; max-width: 100%; }
-    .preview-header {
-      display: flex; align-items: center; gap: 8px; width: 100%;
-      padding: 0 16px 8px; border-bottom: 1px solid var(--border); margin-bottom: 0;
+    .ad-preview { border: none; padding: 0; background: transparent; min-height: 8rem; overflow: visible; }
+    /* Matches in-app AdView: frosted card, image → divider → sponsor row + copy + maroon CTA */
+    .preview {
+      display: flex; flex-direction: column; align-items: stretch; text-align: left;
+      width: 100%; max-width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      overflow: hidden;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
-    .preview-header-logo { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; flex-shrink: 0; }
-    .preview-header-sponsor { font-size: var(--text-sm); font-weight: 500; color: var(--text); flex: 1; }
-    .preview-header-sponsored { font-size: var(--text-xs); color: var(--muted); }
-    .preview.preview-text { padding: 16px; gap: 12px; }
-    .preview.preview-text .preview-header { padding: 0 0 8px; margin-bottom: 4px; }
-    .preview.preview-banner .preview-copy-block,
-    .preview.preview-feature .preview-copy-block { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    .preview.preview-banner .preview-header,
-    .preview.preview-feature .preview-header { padding: 12px 16px 8px; }
-    .preview-copy { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-    .preview-headline { font-size: var(--text-lg); font-weight: 600; line-height: 1.3; color: var(--text); }
-    .preview-subline { font-size: var(--text-sm); color: var(--muted); line-height: 1.4; }
+    .preview-text-inner {
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 18px 16px; width: 100%;
+    }
+    .preview-body {
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 12px 16px 18px; width: 100%;
+    }
+    .preview-copy-stack {
+      display: flex; flex-direction: column; align-items: flex-start; width: 100%;
+    }
+    .preview-sponsor-row {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+    }
+    .preview-sponsor-logo {
+      width: 32px; height: 32px; object-fit: contain; border-radius: 0; flex-shrink: 0;
+    }
+    .preview-sponsor-name {
+      font-size: var(--text-sm); font-weight: 600; letter-spacing: 0.065em; text-transform: uppercase;
+      color: var(--muted); line-height: 1.3; flex: 1; min-width: 0;
+    }
+    .preview-headline {
+      font-size: var(--text-xl); font-weight: 700; line-height: 1.25; color: var(--text);
+      margin-top: 8px;
+    }
+    .preview-subline {
+      font-size: var(--text-sm); font-weight: 500; color: var(--muted); line-height: 1.4; margin-top: 6px;
+    }
     .preview-cta-wrap {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       width: 100%; padding: 10px;
-      color: var(--cta-orange); background: rgba(232, 119, 34, 0.12);
-      font-size: var(--text-sm); font-weight: 500; cursor: default; border: none;
-      border-radius: 8px; box-sizing: border-box;
+      color: var(--ad-maroon); background: var(--ad-cta-fill);
+      font-size: var(--text-sm); font-weight: 600; cursor: default;
+      border-radius: 0; box-sizing: border-box;
     }
-    .preview-cta-arrow { font-size: 12px; opacity: 0.9; }
+    .preview-cta-arrow { font-size: 12px; opacity: 0.95; line-height: 1; }
+    .preview-img-divider { height: 1px; width: 100%; background: var(--border); flex-shrink: 0; }
     .preview-img-wrap { width: 100%; overflow: hidden; position: relative; background: var(--border); }
     .preview-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .preview-img-wrap.preview-img-error { background: var(--border); }
     .preview-img-wrap.preview-img-error .preview-img { display: none; }
-    .preview-img-placeholder { width: 100%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: var(--text-sm); color: var(--muted); }
+    .preview-img-placeholder {
+      width: 100%; background: var(--border); display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-sm); color: var(--muted);
+    }
 
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: var(--border); }
@@ -1351,26 +1379,26 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     function updatePreview() {
       const d = getFormData();
       const tier = d.tier || 'banner';
-      const sponsor = d.sponsor || getPlaceholder('sponsor');
+      const sponsorRaw = d.sponsor || getPlaceholder('sponsor');
+      const sponsor = sponsorRaw.toUpperCase();
       const headline = d.headline || getPlaceholder('headline');
       const subline = d.subline || getPlaceholder('subline');
       const cta = d.cta || getPlaceholder('cta');
       const image_url = d.image_url || null;
       const logo_url = d.logo_url || null;
       const usesImageLayout = tier !== 'text';
-      const sponsorHeader = '<div class="preview-header">' +
-        (logo_url ? '<img src="' + escapeHtml(logo_url) + '" alt="" class="preview-header-logo" onerror="this.style.display=\\'none\\'">' : '') +
-        '<span class="preview-header-sponsor">' + escapeHtml(sponsor) + '</span>' +
-        '<span class="preview-header-sponsored">Sponsored</span></div>';
-      const copyContent = '<div class="preview-copy">' +
+      const sponsorRow = '<div class="preview-sponsor-row">' +
+        (logo_url ? '<img src="' + escapeHtml(logo_url) + '" alt="" class="preview-sponsor-logo" onerror="this.style.display=\\'none\\'">' : '') +
+        '<span class="preview-sponsor-name">' + escapeHtml(sponsor) + '</span></div>';
+      const copyStack = '<div class="preview-copy-stack">' + sponsorRow +
         '<strong class="preview-headline">' + escapeHtml(headline) + '</strong>' +
         (subline ? '<span class="preview-subline">' + escapeHtml(subline) + '</span>' : '') +
         '</div>';
       const ctaBtn = '<div class="preview-cta-wrap"><span class="preview-cta-text">' + escapeHtml(cta) + '</span><span class="preview-cta-arrow">↗</span></div>';
-      let html = '<div class="preview preview-' + tier + '">';
-      html += sponsorHeader;
+      let html;
       if (usesImageLayout) {
         const imgHeight = tier === 'feature' ? 220 : 140;
+        html = '<div class="preview preview-' + tier + '">';
         if (image_url) {
           html += '<div class="preview-img-wrap" style="height:' + imgHeight + 'px">';
           html += '<img src="' + escapeHtml(image_url) + '" alt="" class="preview-img" onerror="this.parentElement.classList.add(\\'preview-img-error\\')">';
@@ -1378,11 +1406,11 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         } else {
           html += '<div class="preview-img-placeholder" style="height:' + imgHeight + 'px">Image</div>';
         }
-        html += '<div class="preview-copy-block">' + copyContent + ctaBtn + '</div>';
+        html += '<div class="preview-img-divider"></div>';
+        html += '<div class="preview-body">' + copyStack + ctaBtn + '</div></div>';
       } else {
-        html += copyContent + ctaBtn;
+        html = '<div class="preview preview-text"><div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
       }
-      html += '</div>';
       adPreview.innerHTML = html;
     }
 
