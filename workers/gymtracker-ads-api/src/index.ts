@@ -249,6 +249,8 @@ async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
 }
 
 import { getAdminHtml } from "./admin-html";
+import { getAdsLandingHtml } from "./ads-landing-html";
+import { getMainLandingHtml } from "./main-landing-html";
 
 interface PerAdStats {
   ad_id: string;
@@ -479,6 +481,28 @@ export default {
         return jsonResponse({ deleted: id.trim() }, 200, request);
       }
       return jsonResponse({ error: "Method not allowed" }, 405, request);
+    }
+
+    if (url.pathname === "/" || url.pathname === "/index.html") {
+      return new Response(getMainLandingHtml(), {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": isLocalRequest(request)
+            ? "no-store, no-cache, must-revalidate"
+            : "public, max-age=3600",
+        },
+      });
+    }
+
+    if (url.pathname === "/ads" || url.pathname === "/ads/") {
+      return new Response(getAdsLandingHtml(), {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": isLocalRequest(request)
+            ? "no-store, no-cache, must-revalidate"
+            : "public, max-age=3600",
+        },
+      });
     }
 
     if (url.pathname !== "/api/ads") {

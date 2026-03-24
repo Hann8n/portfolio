@@ -58,7 +58,7 @@ The API filters ads by `start_at` and `end_at` on the server. Multiple ads can b
 
 **Active logic:** An ad is active only if `active` is true, `now >= start_at` (if set), and `now <= end_at` (if set). If multiple ads are active, the one with the latest `start_at` is returned.
 
-Also see [ad-config-schema.md](https://github.com/Hann8n/VTGymTracker/blob/main/docs/ad-config-schema.md) in the VT Gym Tracker repo.
+Also see [ad-config-schema.md](https://github.com/Hann8n/VTGymTracker/blob/main/docs/ad-config-schema.md) in the Gym Tracker repo.
 
 ## Seed First Config
 
@@ -79,3 +79,5 @@ curl -X PUT https://gymtracker.jackhannon.net/api/ads \
 ```
 
 **Admin UI:** Visit [https://gymtracker.jackhannon.net/admin](https://gymtracker.jackhannon.net/admin) — sign in with Cloudflare Access (Google or your configured provider). See [ACCESS_SETUP.md](ACCESS_SETUP.md) to configure.
+
+**Ads landing page:** Public sales page with mockup wizard at [/ads](https://gymtracker.jackhannon.net/ads). Local dev: run `npx wrangler dev` from this directory, then open http://localhost:8787/ads (port may vary — check wrangler output).

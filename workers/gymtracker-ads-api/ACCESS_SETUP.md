@@ -61,7 +61,7 @@ Edit the application you created. Change the **Path** to include both:
 
 ## Step 4: Ensure Public API Stays Open
 
-The public endpoint `GET https://gymtracker.jackhannon.net/api/ads` must **not** require Access. The VT Gym Tracker app fetches ads without auth.
+The public endpoint `GET https://gymtracker.jackhannon.net/api/ads` must **not** require Access. The Gym Tracker app fetches ads without auth.
 
 - If you only protect `/admin` and `/api/admin`, `/api/ads` stays public.
 - If you protect `/api/*`, add a **Bypass** policy that runs first:
