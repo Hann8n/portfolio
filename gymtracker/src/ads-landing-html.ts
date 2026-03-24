@@ -352,6 +352,21 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       margin-bottom: 4px;
     }
     .format-card-desc { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+    .format-specs {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8125rem;
+      color: var(--text-mid);
+      line-height: 1.65;
+    }
+    .format-specs dt {
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 8px;
+    }
+    .format-specs dt:first-child { margin-top: 0; }
+    .format-specs dd { margin: 2px 0 0; }
 
     /* ── Exclusive callout ─────────────────────────────────── */
     .exclusive-callout {
@@ -1239,6 +1254,12 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
           <div class="format-card-info">
             <div class="format-card-name">Text</div>
             <div class="format-card-desc">Sponsor name, headline, subline, and a CTA. No image needed.</div>
+            <dl class="format-specs">
+              <dt>Assets</dt>
+              <dd>Sponsor name, headline, subline (optional), CTA. Optional logo (20×20px).</dd>
+              <dt>Image</dt>
+              <dd>None required.</dd>
+            </dl>
           </div>
         </div>
         <div class="format-card">
@@ -1255,6 +1276,12 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
           <div class="format-card-info">
             <div class="format-card-name">Banner</div>
             <div class="format-card-desc">An image plus a short block of copy. Standard placement in the feed.</div>
+            <dl class="format-specs">
+              <dt>Banner image</dt>
+              <dd>1200×628px (landscape). JPG or PNG, max 2MB.</dd>
+              <dt>Copy</dt>
+              <dd>Headline, subline (optional), CTA. Optional logo (20×20px).</dd>
+            </dl>
           </div>
         </div>
         <div class="format-card">
@@ -1271,6 +1298,12 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
           <div class="format-card-info">
             <div class="format-card-name">Feature</div>
             <div class="format-card-desc">Taller image and more room for copy. The largest format available.</div>
+            <dl class="format-specs">
+              <dt>Feature image</dt>
+              <dd>1080×1350px (4:5 portrait). JPG or PNG, max 2MB.</dd>
+              <dt>Copy</dt>
+              <dd>Headline, subline (optional), CTA. Optional logo (20×20px). More room for subline.</dd>
+            </dl>
           </div>
         </div>
       </div>

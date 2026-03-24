@@ -751,11 +751,16 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         if (!item || typeof item !== 'object') { console.warn('Admin: skipping malformed ad at index', i); return; }
         const id = item.id;
         if (!id || typeof id !== 'string') { console.warn('Admin: skipping ad without valid id at index', i); return; }
-        if (typeof item.sponsor !== 'string' || typeof item.headline !== 'string' || typeof item.cta !== 'string') {
-          console.warn('Admin: skipping ad with missing required fields at index', i);
-          return;
-        }
-        result.push(item);
+        const normalized = {
+          ...item,
+          id: id.trim(),
+          sponsor: typeof item.sponsor === 'string' && item.sponsor.trim() ? item.sponsor : '(no sponsor)',
+          headline: typeof item.headline === 'string' && item.headline.trim() ? item.headline : '(no headline)',
+          cta: typeof item.cta === 'string' && item.cta.trim() ? item.cta : 'Learn more',
+          active: typeof item.active === 'boolean' ? item.active : false,
+          tier: typeof item.tier === 'string' && item.tier.trim() ? item.tier.toLowerCase() : 'banner',
+        };
+        result.push(normalized);
       });
       return result;
     }
