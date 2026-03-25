@@ -6,8 +6,8 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
-  <title>Advertise on Gym Tracker | A small app. A specific audience. One ad slot.</title>
-  <meta name="description" content="A few hundred Virginia Tech students use Gym Tracker to check McComas and War Memorial before they go. One ad slot in the main feed. If VT students are who you're trying to reach, it's a direct line.">
+  <title>Advertise on Gym Tracker | Reach VT gym-goers in one placement</title>
+  <meta name="description" content="Gym Tracker is used by Virginia Tech students checking McComas and War Memorial. There is one sponsored placement in the main feed.">
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16">
@@ -313,18 +313,17 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       width: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       gap: 0;
       padding: 0;
       border-radius: 0;
       border: 1px solid var(--border);
-      background: var(--bg);
+      background: rgba(255, 255, 255, 0.82);
     }
-    .format-preview-text-lines {
+    .format-preview-copy {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      padding: 12px;
+      padding: 10px 12px 8px;
     }
     .format-preview-banner {
       width: 100%;
@@ -334,7 +333,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       border-radius: 0;
       border: 1px solid var(--border);
       overflow: hidden;
-      background: var(--bg);
+      background: rgba(255, 255, 255, 0.82);
     }
     .format-preview-img {
       height: 70px;
@@ -348,7 +347,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 10px 5px;
+      padding: 8px 10px 7px;
       border-bottom: 1px solid var(--border);
     }
     .format-preview-section-logo {
@@ -363,21 +362,31 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       min-width: 0;
       height: 5px;
       max-width: 58%;
-      background: var(--text);
-      opacity: 0.88;
+      background: #aaa19b;
       border-radius: 0;
     }
     .format-preview-section-sponsored {
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 500;
       color: var(--muted);
       flex-shrink: 0;
+      margin-left: auto;
       letter-spacing: 0.02em;
+      text-align: right;
     }
-    .format-preview-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
-    .fph { width: 60%; height: 8px; background: var(--border-strong); border-radius: 0; }
-    .fps { width: 45%; height: 6px; background: var(--border); border-radius: 0; }
-    .fpc { width: 32%; height: 6px; background: var(--orange); border-radius: 0; opacity: 0.6; margin-top: 4px; }
+    .format-preview-body { padding: 0; display: flex; flex-direction: column; gap: 0; }
+    .format-preview-img-divider { height: 1px; background: var(--border); }
+    .fph { width: 72%; height: 8px; background: #bdb4ae; border-radius: 0; }
+    .fps { width: 54%; height: 6px; background: #d9d2cc; border-radius: 0; }
+    .format-preview-cta {
+      margin: 0 12px 12px;
+      height: 18px;
+      background: var(--ad-cta-fill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fpc { width: 40%; height: 5px; background: var(--maroon); opacity: 0.75; border-radius: 0; }
     .format-preview-feature .format-preview-img { height: 110px; }
     .format-card-info { padding: 18px 20px; }
     .format-card-name {
@@ -1079,10 +1088,10 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
   <section class="hero">
     <div class="container hero-content">
       <p class="hero-eyebrow">Advertise on Gym Tracker</p>
-      <h1>A small app.<br><em>A specific audience.</em><br>One ad slot.</h1>
-      <p class="hero-sub">VT students check McComas and War Memorial before they go. Six times a week, on average. One ad slot in the feed. If Hokies are your audience, this is it.</p>
+      <h1>Reach Hokies<br><em>Where they are</em></h1>
+      <p class="hero-sub">Be part of their routine.</p>
       <div class="hero-actions">
-        <a href="#wizard" class="btn-primary">Build a mockup &rarr;</a>
+        <a href="#wizard" class="btn-primary">Preview your ad &rarr;</a>
         <a href="https://apps.apple.com/us/app/vt-gym-tracker/id6736409867?itscg=30200&itsct=apps_box_badge&mttnsubad=6736409867" class="btn-ghost" target="_blank" rel="noopener noreferrer">View on the App Store</a>
       </div>
       <div class="hero-stats">
@@ -1106,26 +1115,26 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     <div class="container">
       <div class="section-header">
         <p class="section-label">How it works</p>
-        <h2 class="section-title">It's part of their routine</h2>
-        <p class="section-sub">Students check occupancy before they go, sometimes more than once a day. The ad is in that same view&mdash;not a separate tab or a notification they opted out of.</p>
+        <h2 class="section-title">How placement works</h2>
+        <p class="section-sub">Students open Gym Tracker to check occupancy before going to the gym. The sponsored placement appears in that same feed view.</p>
       </div>
 
       <div class="exclusive-callout">
         <div class="exclusive-left">
-          <span class="exclusive-tag">One sponsor at a time</span>
-          <p class="exclusive-headline">One ad in the app.<br>Every open. Every user.</p>
-          <p class="exclusive-desc">There&rsquo;s no rotation or bidding system. While you&rsquo;re running, every person who opens the app sees your ad.</p>
+          <span class="exclusive-tag">Single placement model</span>
+          <p class="exclusive-headline">One active sponsor slot</p>
+          <p class="exclusive-desc">There is no auction or rotating ad inventory. During your run window, your ad is the sponsored placement shown in the feed.</p>
         </div>
         <div class="exclusive-right">
           <div class="exclusive-stat-row">
             <div class="exclusive-stat">
               <span class="exclusive-stat-num">100%</span>
-              <span class="exclusive-stat-label">Share of voice</span>
+              <span class="exclusive-stat-label">Placement share</span>
             </div>
             <div class="exclusive-stat-divider"></div>
             <div class="exclusive-stat">
               <span class="exclusive-stat-num">0</span>
-              <span class="exclusive-stat-label">Competing ads</span>
+              <span class="exclusive-stat-label">Other in-feed sponsors</span>
             </div>
           </div>
         </div>
@@ -1140,27 +1149,27 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
 
         <div class="feature-card">
           <span class="feature-card-tag">Audience</span>
-          <div class="feature-title">That&rsquo;s the whole audience</div>
-          <div class="feature-desc">Everyone who has this app goes to Virginia Tech and uses the campus gyms. There&rsquo;s no broader regional audience to filter out.</div>
+          <div class="feature-title">Built around Hokies</div>
+          <div class="feature-desc">The app is specifically for Virginia Tech students. Campaigns are naturally limited to that use case.</div>
         </div>
 
         <div class="feature-card">
           <span class="feature-card-tag">Scheduling</span>
-          <div class="feature-title">Pick your dates</div>
-          <div class="feature-desc">Set a start and end date. Works for a single event, a semester push, or just a specific week. No long-term commitment.</div>
+          <div class="feature-title">Flexible campaign windows</div>
+          <div class="feature-desc">Choose start and end dates based on your timeline, whether that is a short event push or a longer semester campaign.</div>
         </div>
 
         <div class="feature-card">
           <span class="feature-card-tag">Reporting</span>
-          <div class="feature-title">Impressions and clicks, tracked directly</div>
-          <div class="feature-desc">No third-party tools or estimates. You&rsquo;ll see exactly how many times the ad was shown and how many people tapped it.</div>
+          <div class="feature-title">Simple campaign reporting</div>
+          <div class="feature-desc">Reporting includes delivered impressions and clicks for your campaign period.</div>
         </div>
       </div>
 
       <div class="peaks-card">
         <div class="peaks-header">
-          <span class="peaks-title">When students are most active</span>
-          <span class="peaks-note">Follows the semester schedule</span>
+          <span class="peaks-title">Typical seasonal traffic pattern</span>
+          <span class="peaks-note">Higher during active semesters</span>
         </div>
         <div class="peaks-track-wrap">
         <div class="peaks-track">
@@ -1231,31 +1240,25 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       </div>
 
       <div class="social-proof">
-        <p class="social-proof-label">A few things students have said</p>
+        <p class="social-proof-label">What Hokies are saying</p>
         <div class="social-quotes">
           <div class="social-quote">
             <span class="social-quote-text">I be using this all the time ngl. It helped me make an actual good schedule with the gym.</span>
-            <span class="social-quote-source">VT student</span>
           </div>
           <div class="social-quote">
             <span class="social-quote-text">I got this first semester it's so good!</span>
-            <span class="social-quote-source">VT student</span>
           </div>
           <div class="social-quote">
             <span class="social-quote-text">use this app daily bro keep up the good work</span>
-            <span class="social-quote-source">VT student</span>
           </div>
           <div class="social-quote">
             <span class="social-quote-text">wait this is actually so cool, just downloaded</span>
-            <span class="social-quote-source">VT student</span>
           </div>
           <div class="social-quote">
             <span class="social-quote-text">Peak app</span>
-            <span class="social-quote-source">VT student</span>
           </div>
           <div class="social-quote">
             <span class="social-quote-text">this is rad actually</span>
-            <span class="social-quote-source">VT student</span>
           </div>
         </div>
       </div>
@@ -1268,8 +1271,8 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
               <path d="M5 7.5l2 2 3.5-3.5"/>
             </svg>
           </div>
-          <div class="proof-title">It&rsquo;s a real app, live on the App Store</div>
-          <div class="proof-desc">iPhone, iPad, Apple Watch, and home screen widget. It&rsquo;s been in the App Store since 2022.</div>
+          <div class="proof-title">Production app with active users</div>
+          <div class="proof-desc">Available on iPhone, iPad, Apple Watch, and as a home screen widget.</div>
         </div>
         <div class="proof-item">
           <div class="proof-icon">
@@ -1278,8 +1281,8 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
               <path d="M4 6.5h7M4 9h4"/>
             </svg>
           </div>
-          <div class="proof-title">Ads are labeled as sponsored</div>
-          <div class="proof-desc">Clearly marked. No tricks.</div>
+          <div class="proof-title">Sponsored content is clearly labeled</div>
+          <div class="proof-desc">Ad units are marked as sponsored in the feed.</div>
         </div>
         <div class="proof-item">
           <div class="proof-icon">
@@ -1288,8 +1291,8 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
               <path d="M2 13h11"/>
             </svg>
           </div>
-          <div class="proof-title">Simple to get started</div>
-          <div class="proof-desc">Send your dates and what you&rsquo;d like to say. I handle setup and scheduling.</div>
+          <div class="proof-title">Straightforward setup process</div>
+          <div class="proof-desc">Share dates and ad assets, then setup and scheduling are handled for you.</div>
         </div>
       </div>
     </div>
@@ -1311,9 +1314,11 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
                 <span class="format-preview-section-title" aria-hidden="true"></span>
                 <span class="format-preview-section-sponsored">Sponsored</span>
               </div>
-              <div class="format-preview-text-lines">
+              <div class="format-preview-copy">
                 <div class="fph"></div>
                 <div class="fps"></div>
+              </div>
+              <div class="format-preview-cta">
                 <div class="fpc"></div>
               </div>
             </div>
@@ -1338,10 +1343,15 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
                 <span class="format-preview-section-sponsored">Sponsored</span>
               </div>
               <div class="format-preview-img"><span>Banner image</span></div>
+              <div class="format-preview-img-divider"></div>
               <div class="format-preview-body">
-                <div class="fph"></div>
-                <div class="fps"></div>
-                <div class="fpc"></div>
+                <div class="format-preview-copy">
+                  <div class="fph"></div>
+                  <div class="fps"></div>
+                </div>
+                <div class="format-preview-cta">
+                  <div class="fpc"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1350,7 +1360,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
             <div class="format-card-desc">An image plus a short block of copy. Standard placement in the feed.</div>
             <dl class="format-specs">
               <dt>Banner image</dt>
-              <dd>1200×628px (landscape). JPG or PNG, max 2MB.</dd>
+              <dd>1200×628px (landscape). JPG or PNG.</dd>
               <dt>Copy</dt>
               <dd>Headline, subline (optional), CTA. Optional logo in the section header.</dd>
             </dl>
@@ -1365,10 +1375,15 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
                 <span class="format-preview-section-sponsored">Sponsored</span>
               </div>
               <div class="format-preview-img"><span>Feature image</span></div>
+              <div class="format-preview-img-divider"></div>
               <div class="format-preview-body">
-                <div class="fph"></div>
-                <div class="fps"></div>
-                <div class="fpc"></div>
+                <div class="format-preview-copy">
+                  <div class="fph"></div>
+                  <div class="fps"></div>
+                </div>
+                <div class="format-preview-cta">
+                  <div class="fpc"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1377,7 +1392,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
             <div class="format-card-desc">Taller image and more room for copy. The largest format available.</div>
             <dl class="format-specs">
               <dt>Feature image</dt>
-              <dd>1080×1350px (4:5 portrait). JPG or PNG, max 2MB.</dd>
+              <dd>1080×1350px (4:5 portrait). JPG or PNG.</dd>
               <dt>Copy</dt>
               <dd>Headline, subline (optional), CTA. Optional logo in the section header. More room for subline.</dd>
             </dl>
@@ -1391,8 +1406,8 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     <div class="container">
       <div class="section-header">
         <p class="section-label">Ad Preview</p>
-        <h2 class="section-title">See what it looks like</h2>
-        <p class="section-sub">Fill in your details and switch between formats. Good for getting a concrete idea before you reach out.</p>
+        <h2 class="section-title">Preview the placement</h2>
+        <p class="section-sub">Enter sample details and switch formats to see how each option appears in-feed.</p>
       </div>
       <div class="wizard-grid">
         <form id="mockupForm" class="admin-form">
@@ -1429,7 +1444,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
           </div>
           <input type="hidden" id="tier" name="tier" value="banner">
           <div class="wizard-cta-box">
-            <p>Ready to move forward? Send your target dates and what you want to say. I&rsquo;ll handle the rest.</p>
+            <p>If this looks like a fit, send dates and your draft copy. You can start with rough content.</p>
             <a href="#contact" class="btn-contact">Get in touch &rarr;</a>
           </div>
         </form>
@@ -1464,23 +1479,23 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
   <section id="contact" class="section section-dark">
     <div class="container">
       <div class="contact-inner">
-        <h2 class="section-title on-dark">Get in touch</h2>
-        <p class="section-sub">Send a few details and I&rsquo;ll follow up with format suggestions and next steps.</p>
+        <h2 class="section-title on-dark">Contact</h2>
+        <p class="section-sub">Share your goals and timing, and you&rsquo;ll get a follow-up with format recommendations and availability.</p>
         <div class="contact-card">
           <div>
             <h3 class="contact-col-title">What to include</h3>
-            <p class="contact-col-sub">Enough to give you a quick turnaround.</p>
+            <p class="contact-col-sub">A short brief is enough to get started.</p>
             <ul class="contact-points">
               <li>Your business name and website</li>
               <li>Target dates or general campaign window</li>
-              <li>What you&rsquo;re trying to accomplish (awareness, event, foot traffic)</li>
+              <li>Campaign goal (awareness, event turnout, foot traffic, etc.)</li>
               <li>Format preference, if you have one&mdash;or just ask</li>
             </ul>
           </div>
           <div class="contact-cta-col">
             <p class="contact-cta-label">Direct line</p>
             <a href="mailto:hello@jackhannon.net?subject=Gym%20Tracker%20Advertising%20Inquiry" class="btn-email">Email me &rarr;</a>
-            <p class="contact-note">I typically reply within a day. Highest traffic windows are January&ndash;May and August&ndash;December.</p>
+            <p class="contact-note">Typical response time is within one business day. Traffic is usually highest January&ndash;May and August&ndash;December.</p>
           </div>
         </div>
       </div>
