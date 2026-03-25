@@ -314,11 +314,17 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 6px;
-      padding: 12px;
+      gap: 0;
+      padding: 0;
       border-radius: 0;
       border: 1px solid var(--border);
       background: var(--bg);
+    }
+    .format-preview-text-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px;
     }
     .format-preview-banner {
       width: 100%;
@@ -338,6 +344,36 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       justify-content: center;
     }
     .format-preview-img span { font-size: 11px; color: var(--muted); font-weight: 500; }
+    .format-preview-section-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px 5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .format-preview-section-logo {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: var(--border-strong);
+      flex-shrink: 0;
+    }
+    .format-preview-section-title {
+      flex: 1;
+      min-width: 0;
+      height: 5px;
+      max-width: 58%;
+      background: var(--text);
+      opacity: 0.88;
+      border-radius: 0;
+    }
+    .format-preview-section-sponsored {
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--muted);
+      flex-shrink: 0;
+      letter-spacing: 0.02em;
+    }
     .format-preview-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
     .fph { width: 60%; height: 8px; background: var(--border-strong); border-radius: 0; }
     .fps { width: 45%; height: 6px; background: var(--border); border-radius: 0; }
@@ -743,9 +779,43 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     .tier-btn:hover { color: var(--text); }
     .tier-btn.active { background: rgba(134,31,65,0.12); color: var(--maroon); font-weight: 600; }
 
-    /* ── Preview Pane (matches in-app AdView) ─────────────────────── */
+    /* ── Preview Pane (section header + Ad copy inside one frosted card) ─ */
     .preview-pane { position: sticky; top: 84px; min-width: 0; }
     .ad-preview { padding: 0; background: transparent; min-height: 8rem; overflow: visible; }
+    .preview-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px 10px;
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .preview-section-header-logo {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .preview-section-header-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.2;
+      flex: 1;
+      min-width: 0;
+    }
+    .preview-section-sponsored {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
     .preview {
       display: flex;
       flex-direction: column;
@@ -768,6 +838,9 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       padding: 18px 16px;
       width: 100%;
     }
+    .preview-section-header + .preview-text-inner {
+      padding-top: 14px;
+    }
     .preview-body {
       display: flex;
       flex-direction: column;
@@ -781,35 +854,12 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       align-items: flex-start;
       width: 100%;
     }
-    .preview-sponsor-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-    }
-    .preview-sponsor-logo {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      border-radius: 0;
-      flex-shrink: 0;
-    }
-    .preview-sponsor-name {
-      font-size: 0.875rem;
-      font-weight: 600;
-      letter-spacing: 0.065em;
-      text-transform: uppercase;
-      color: var(--muted);
-      line-height: 1.3;
-      flex: 1;
-      min-width: 0;
-    }
     .preview-headline {
       font-size: 1.0625rem;
       font-weight: 700;
       color: var(--text);
       line-height: 1.25;
-      margin-top: 8px;
+      margin-top: 0;
     }
     .preview-subline {
       font-size: 0.875rem;
@@ -1256,9 +1306,16 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
         <div class="format-card">
           <div class="format-card-preview">
             <div class="format-preview-text">
-              <div class="fph"></div>
-              <div class="fps"></div>
-              <div class="fpc"></div>
+              <div class="format-preview-section-row">
+                <span class="format-preview-section-logo" aria-hidden="true"></span>
+                <span class="format-preview-section-title" aria-hidden="true"></span>
+                <span class="format-preview-section-sponsored">Sponsored</span>
+              </div>
+              <div class="format-preview-text-lines">
+                <div class="fph"></div>
+                <div class="fps"></div>
+                <div class="fpc"></div>
+              </div>
             </div>
           </div>
           <div class="format-card-info">
@@ -1266,7 +1323,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
             <div class="format-card-desc">Sponsor name, headline, subline, and a CTA. No image needed.</div>
             <dl class="format-specs">
               <dt>Assets</dt>
-              <dd>Sponsor name, headline, subline (optional), CTA. Optional logo (20×20px).</dd>
+              <dd>Sponsor name, headline, subline (optional), CTA. Optional logo in the section header.</dd>
               <dt>Image</dt>
               <dd>None required.</dd>
             </dl>
@@ -1275,6 +1332,11 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
         <div class="format-card">
           <div class="format-card-preview">
             <div class="format-preview-banner">
+              <div class="format-preview-section-row">
+                <span class="format-preview-section-logo" aria-hidden="true"></span>
+                <span class="format-preview-section-title" aria-hidden="true"></span>
+                <span class="format-preview-section-sponsored">Sponsored</span>
+              </div>
               <div class="format-preview-img"><span>Banner image</span></div>
               <div class="format-preview-body">
                 <div class="fph"></div>
@@ -1290,13 +1352,18 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
               <dt>Banner image</dt>
               <dd>1200×628px (landscape). JPG or PNG, max 2MB.</dd>
               <dt>Copy</dt>
-              <dd>Headline, subline (optional), CTA. Optional logo (20×20px).</dd>
+              <dd>Headline, subline (optional), CTA. Optional logo in the section header.</dd>
             </dl>
           </div>
         </div>
         <div class="format-card">
           <div class="format-card-preview">
             <div class="format-preview-banner format-preview-feature">
+              <div class="format-preview-section-row">
+                <span class="format-preview-section-logo" aria-hidden="true"></span>
+                <span class="format-preview-section-title" aria-hidden="true"></span>
+                <span class="format-preview-section-sponsored">Sponsored</span>
+              </div>
               <div class="format-preview-img"><span>Feature image</span></div>
               <div class="format-preview-body">
                 <div class="fph"></div>
@@ -1312,7 +1379,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
               <dt>Feature image</dt>
               <dd>1080×1350px (4:5 portrait). JPG or PNG, max 2MB.</dd>
               <dt>Copy</dt>
-              <dd>Headline, subline (optional), CTA. Optional logo (20×20px). More room for subline.</dd>
+              <dd>Headline, subline (optional), CTA. Optional logo in the section header. More room for subline.</dd>
             </dl>
           </div>
         </div>
@@ -1368,12 +1435,16 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
         </form>
 
         <aside class="preview-pane">
-          <div id="adPreview" class="ad-preview"><div class="preview preview-banner">
+          <div id="adPreview" class="ad-preview">
+            <div class="preview preview-banner">
+            <div class="preview-section-header">
+              <span class="preview-section-header-title">BENNY&rsquo;S COFFEE</span>
+              <span class="preview-section-sponsored">Sponsored</span>
+            </div>
             <div class="preview-img-placeholder" style="height:140px">Image</div>
             <div class="preview-img-divider"></div>
             <div class="preview-body">
               <div class="preview-copy-stack">
-                <div class="preview-sponsor-row"><span class="preview-sponsor-name">BENNY&rsquo;S COFFEE</span></div>
                 <strong class="preview-headline">Fuel your workout</strong>
                 <span class="preview-subline">310 N Main St &middot; Open 7am&ndash;9pm</span>
               </div>
@@ -1510,10 +1581,11 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
         var image_src = d.image_src || null;
         var logo_src = d.logo_src || null;
         var usesImageLayout = tier !== 'text';
-        var sponsorRow = '<div class="preview-sponsor-row">' +
-          (logo_src ? '<img src="' + escapeHtml(logo_src) + '" alt="" class="preview-sponsor-logo" onerror="this.style.display=\\'none\\'">' : '') +
-          '<span class="preview-sponsor-name">' + escapeHtml(sponsor) + '</span></div>';
-        var copyStack = '<div class="preview-copy-stack">' + sponsorRow +
+        var sectionHeader = '<div class="preview-section-header">' +
+          (logo_src ? '<img src="' + escapeHtml(logo_src) + '" alt="" class="preview-section-header-logo" onerror="this.style.display=\\'none\\'">' : '') +
+          '<span class="preview-section-header-title">' + escapeHtml(sponsor) + '</span>' +
+          '<span class="preview-section-sponsored">Sponsored</span></div>';
+        var copyStack = '<div class="preview-copy-stack">' +
           '<strong class="preview-headline">' + escapeHtml(headline) + '</strong>' +
           (subline ? '<span class="preview-subline">' + escapeHtml(subline) + '</span>' : '') +
           '</div>';
@@ -1521,7 +1593,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
         var html;
         if (usesImageLayout) {
           var imgHeight = tier === 'feature' ? 220 : 140;
-          html = '<div class="preview preview-' + tier + '">';
+          html = '<div class="preview preview-' + tier + '">' + sectionHeader;
           if (image_src) {
             html += '<div class="preview-img-wrap" style="height:' + imgHeight + 'px">';
             html += '<img src="' + escapeHtml(image_src) + '" alt="" class="preview-img" onerror="this.parentElement.classList.add(\\'preview-img-error\\')">';
@@ -1532,7 +1604,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
           html += '<div class="preview-img-divider"></div>';
           html += '<div class="preview-body">' + copyStack + ctaBtn + '</div></div>';
         } else {
-          html = '<div class="preview preview-text"><div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
+          html = '<div class="preview preview-text">' + sectionHeader + '<div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
         }
         adPreview.innerHTML = html;
       }

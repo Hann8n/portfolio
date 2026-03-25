@@ -404,7 +404,41 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .id-version-header { min-width: 0; max-width: 320px; justify-self: center; }
     .id-version-header input { min-height: 36px; padding: 6px 10px; font-size: var(--text-sm); }
     .ad-preview { border: none; padding: 0; background: transparent; min-height: 8rem; overflow: visible; }
-    /* Matches in-app AdView: frosted card, image → divider → sponsor row + copy + maroon CTA */
+    /* Section header inside frosted preview card (logo + sponsor | Sponsored) */
+    .preview-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px 10px;
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .preview-section-header-logo {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .preview-section-header-title {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.2;
+      flex: 1;
+      min-width: 0;
+    }
+    .preview-section-sponsored {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--muted);
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
     .preview {
       display: flex; flex-direction: column; align-items: stretch; text-align: left;
       width: 100%; max-width: 100%;
@@ -420,6 +454,9 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       display: flex; flex-direction: column; gap: 12px;
       padding: 18px 16px; width: 100%;
     }
+    .preview-section-header + .preview-text-inner {
+      padding-top: 14px;
+    }
     .preview-body {
       display: flex; flex-direction: column; gap: 12px;
       padding: 12px 16px 18px; width: 100%;
@@ -427,19 +464,9 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .preview-copy-stack {
       display: flex; flex-direction: column; align-items: flex-start; width: 100%;
     }
-    .preview-sponsor-row {
-      display: flex; align-items: center; gap: 10px; width: 100%;
-    }
-    .preview-sponsor-logo {
-      width: 32px; height: 32px; object-fit: contain; border-radius: 0; flex-shrink: 0;
-    }
-    .preview-sponsor-name {
-      font-size: var(--text-sm); font-weight: 600; letter-spacing: 0.065em; text-transform: uppercase;
-      color: var(--muted); line-height: 1.3; flex: 1; min-width: 0;
-    }
     .preview-headline {
       font-size: var(--text-xl); font-weight: 700; line-height: 1.25; color: var(--text);
-      margin-top: 8px;
+      margin-top: 0;
     }
     .preview-subline {
       font-size: var(--text-sm); font-weight: 500; color: var(--muted); line-height: 1.4; margin-top: 6px;
@@ -1387,10 +1414,11 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       const image_url = d.image_url || null;
       const logo_url = d.logo_url || null;
       const usesImageLayout = tier !== 'text';
-      const sponsorRow = '<div class="preview-sponsor-row">' +
-        (logo_url ? '<img src="' + escapeHtml(logo_url) + '" alt="" class="preview-sponsor-logo" onerror="this.style.display=\\'none\\'">' : '') +
-        '<span class="preview-sponsor-name">' + escapeHtml(sponsor) + '</span></div>';
-      const copyStack = '<div class="preview-copy-stack">' + sponsorRow +
+      const sectionHeader = '<div class="preview-section-header">' +
+        (logo_url ? '<img src="' + escapeHtml(logo_url) + '" alt="" class="preview-section-header-logo" onerror="this.style.display=\\'none\\'">' : '') +
+        '<span class="preview-section-header-title">' + escapeHtml(sponsor) + '</span>' +
+        '<span class="preview-section-sponsored">Sponsored</span></div>';
+      const copyStack = '<div class="preview-copy-stack">' +
         '<strong class="preview-headline">' + escapeHtml(headline) + '</strong>' +
         (subline ? '<span class="preview-subline">' + escapeHtml(subline) + '</span>' : '') +
         '</div>';
@@ -1398,7 +1426,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       let html;
       if (usesImageLayout) {
         const imgHeight = tier === 'feature' ? 220 : 140;
-        html = '<div class="preview preview-' + tier + '">';
+        html = '<div class="preview preview-' + tier + '">' + sectionHeader;
         if (image_url) {
           html += '<div class="preview-img-wrap" style="height:' + imgHeight + 'px">';
           html += '<img src="' + escapeHtml(image_url) + '" alt="" class="preview-img" onerror="this.parentElement.classList.add(\\'preview-img-error\\')">';
@@ -1409,7 +1437,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         html += '<div class="preview-img-divider"></div>';
         html += '<div class="preview-body">' + copyStack + ctaBtn + '</div></div>';
       } else {
-        html = '<div class="preview preview-text"><div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
+        html = '<div class="preview preview-text">' + sectionHeader + '<div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
       }
       adPreview.innerHTML = html;
     }
