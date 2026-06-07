@@ -12,6 +12,9 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
   <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16">
   <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" sizes="180x180">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -28,9 +31,8 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       --text-mid: #4a4240;
       --muted: #7a7270;
       --ad-cta-fill: rgba(134, 31, 65, 0.072);
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      --font-display: var(--font);
-      --font-body: var(--font);
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
       --bp-narrow: 480px;
       --bp-mobile: 640px;
       --bp-tablet: 900px;
@@ -145,14 +147,6 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       padding: clamp(40px, 8vw, 72px) 0 0;
       overflow: hidden;
       position: relative;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -80px; right: -120px;
-      width: 480px; height: 480px;
-      background: radial-gradient(circle, rgba(134,31,65,0.5) 0%, transparent 70%);
-      pointer-events: none;
     }
     .hero-content { position: relative; z-index: 1; }
     .hero-eyebrow {
@@ -273,7 +267,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     .section-title {
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 2.75rem;
+      font-size: clamp(2rem, 5vw, 2.75rem);
       letter-spacing: 0.03em;
       color: var(--text);
       line-height: 1;
@@ -414,126 +408,51 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     .format-specs dt:first-child { margin-top: 0; }
     .format-specs dd { margin: 2px 0 0; }
 
-    /* ── Exclusive callout ─────────────────────────────────── */
-    .exclusive-callout {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 24px;
-      align-items: center;
-      padding: 32px;
-      background: var(--maroon-deep);
-      border-radius: 0;
-      margin-bottom: 16px;
+    /* ── Placement statement ───────────────────────────────── */
+    .placement-statement {
+      padding: 0 0 clamp(28px, 5vw, 40px);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: clamp(28px, 5vw, 40px);
     }
-    @media (max-width: 640px) {
-      .exclusive-callout {
-        grid-template-columns: 1fr;
-        padding: 24px;
-        gap: 20px;
-      }
-    }
-    @media (max-width: 480px) {
-      .exclusive-callout { padding: 20px; gap: 16px; }
-    }
-    .exclusive-tag {
-      display: inline-block;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--orange);
-      margin-bottom: 12px;
-    }
-    .exclusive-headline {
+    .placement-statement-headline {
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 2.25rem;
-      letter-spacing: 0.03em;
-      color: #fff;
-      line-height: 1;
-      margin-bottom: 12px;
-      overflow-wrap: break-word;
-    }
-    .exclusive-desc {
-      font-size: 0.9375rem;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.65;
-      max-width: 420px;
-    }
-    .exclusive-right { flex-shrink: 0; }
-    .exclusive-stat-row {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 0;
-      overflow: hidden;
-    }
-    @media (max-width: 480px) {
-      .exclusive-stat-row { flex-direction: column; }
-      .exclusive-stat-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.1); }
-    }
-    .exclusive-stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 20px 28px;
-      background: rgba(255,255,255,0.04);
-    }
-    @media (max-width: 480px) {
-      .exclusive-stat { padding: 16px 20px; }
-      .exclusive-stat-num { font-size: 2rem; }
-    }
-    .exclusive-stat-divider {
-      width: 1px;
-      background: rgba(255,255,255,0.1);
-    }
-    .exclusive-stat-num {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 2.5rem;
-      color: #fff;
+      font-size: clamp(2rem, 5vw, 3rem);
       letter-spacing: 0.04em;
+      color: var(--text);
       line-height: 1;
+      margin-bottom: 10px;
     }
-    .exclusive-stat-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.45);
-      text-align: center;
-      white-space: nowrap;
+    .placement-statement-body {
+      font-size: 1rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+      max-width: 600px;
     }
+    .placement-statement-body strong { color: var(--maroon); font-weight: 700; }
 
     /* ── Feature cards ─────────────────────────────────────── */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 0;
+      margin-bottom: clamp(28px, 5vw, 40px);
     }
     @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
     .feature-card {
-      padding: 24px;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      padding: 20px 0;
+      background: transparent;
+      border: none;
+      border-top: 1px solid var(--border);
       border-radius: 0;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 6px;
     }
-    .feature-card-tag {
-      display: inline-block;
-      align-self: flex-start;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-mid);
-      background: rgba(74,66,64,0.08);
-      padding: 4px 10px;
-      border-radius: 0;
+    .feature-card:first-child { border-top: none; }
+    @media (min-width: 641px) {
+      .feature-card:nth-child(2) { border-top: none; }
+      .feature-card:nth-child(odd) { padding-right: 24px; }
+      .feature-card:nth-child(even) { padding-left: 24px; border-left: 1px solid var(--border); }
     }
     .feature-title {
       font-weight: 700;
@@ -550,15 +469,10 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
     }
 
     /* ── Peaks timeline ────────────────────────────────────── */
-    .peaks-card {
-      padding: 24px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 0;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 480px) {
-      .peaks-card { padding: 16px; }
+    .peaks-section {
+      padding-top: clamp(28px, 5vw, 40px);
+      border-top: 1px solid var(--border);
+      margin-top: clamp(28px, 5vw, 40px);
     }
     .peaks-header {
       display: flex;
@@ -627,85 +541,6 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       width: 10px;
       height: 10px;
       border-radius: 0;
-    }
-
-    /* ── Social proof ──────────────────────────────────────── */
-    .social-proof {
-      margin-bottom: 16px;
-    }
-    .social-proof-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-    .social-quotes {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    @media (max-width: 640px) { .social-quotes { grid-template-columns: 1fr; } }
-    .social-quote {
-      padding: 16px 18px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .social-quote-text {
-      font-size: 0.9375rem;
-      color: var(--text);
-      line-height: 1.5;
-      font-style: italic;
-      overflow-wrap: break-word;
-    }
-    .social-quote-text::before { content: '\\201C'; color: var(--maroon); font-style: normal; font-weight: 700; margin-right: 1px; }
-    .social-quote-text::after  { content: '\\201D'; color: var(--maroon); font-style: normal; font-weight: 700; margin-left: 1px; }
-    .social-quote-source {
-      font-size: 0.75rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    /* ── Proof strip ───────────────────────────────────────── */
-    .proof-strip {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    @media (max-width: 640px) { .proof-strip { grid-template-columns: 1fr; } }
-    .proof-item {
-      padding: 20px;
-      border: 1px solid var(--border);
-      border-radius: 0;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .proof-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 0;
-      background: rgba(134,31,65,0.07);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .proof-icon svg { width: 15px; height: 15px; }
-    .proof-title {
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .proof-desc {
-      font-size: 0.8125rem;
-      color: var(--muted);
-      line-height: 1.55;
     }
 
     /* ── Wizard (matches admin editor grid) ───────────────────────────── */
@@ -929,49 +764,29 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       font-weight: 500;
     }
 
-    .wizard-cta-box {
+    .wizard-cta-strip {
       margin-top: 32px;
-      padding: 22px;
-      background: rgba(134,31,65,0.05);
-      border: 1px solid rgba(134,31,65,0.15);
-      border-radius: 0;
-    }
-    .wizard-cta-box p { font-size: 0.9rem; color: var(--text-mid); margin-bottom: 14px; line-height: 1.65; }
-    .btn-contact {
-      display: inline-flex;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: var(--maroon);
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.9375rem;
-      border-radius: 0;
-      text-decoration: none;
-      transition: background 0.15s, transform 0.1s;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-    .btn-contact:hover { background: var(--maroon-dark); text-decoration: none; transform: translateY(-1px); }
+    .wizard-cta-strip p { flex: 1; min-width: 200px; font-size: 0.9rem; color: var(--text-mid); line-height: 1.65; margin: 0; }
 
     /* ── Contact ──────────────────────────── */
     .contact-inner { max-width: 860px; margin: 0 auto; }
     .contact-inner .section-title { color: #fff; text-align: center; }
-    .contact-inner .section-sub { color: rgba(255,255,255,0.55); margin: 0 auto 28px; text-align: center; max-width: 620px; }
-    .contact-card {
+    .contact-inner .section-sub { color: rgba(255,255,255,0.55); margin: 0 auto 36px; text-align: center; max-width: 620px; }
+    .contact-cols {
       display: grid;
       grid-template-columns: 1.15fr 1fr;
-      gap: 24px;
-      align-items: stretch;
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 0;
-      background: rgba(255,255,255,0.04);
+      gap: clamp(24px, 5vw, 48px);
+      align-items: start;
     }
     @media (max-width: 640px) {
-      .contact-card {
-        grid-template-columns: 1fr;
-        padding: 20px;
-        gap: 20px;
-      }
+      .contact-cols { grid-template-columns: 1fr; gap: 32px; }
     }
     .contact-col-title {
       font-family: var(--font-display);
@@ -1013,13 +828,15 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       top: 0.55em;
     }
     .contact-cta-col {
-      border-left: 4px solid var(--orange);
-      padding: 24px 24px 24px 28px;
-      background: rgba(255,255,255,0.03);
+      border-left: 3px solid var(--orange);
+      padding-left: 28px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .contact-cta-col { border-left: none; padding-left: 0; border-top: 3px solid var(--orange); padding-top: 24px; }
     }
     .contact-cta-label {
       font-size: 0.75rem;
@@ -1119,54 +936,34 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
         <p class="section-sub">Students open Gym Tracker to check occupancy before going to the gym. The sponsored placement appears in that same feed view.</p>
       </div>
 
-      <div class="exclusive-callout">
-        <div class="exclusive-left">
-          <span class="exclusive-tag">Single placement model</span>
-          <p class="exclusive-headline">One active sponsor slot</p>
-          <p class="exclusive-desc">There is no auction or rotating ad inventory. During your run window, your ad is the sponsored placement shown in the feed.</p>
-        </div>
-        <div class="exclusive-right">
-          <div class="exclusive-stat-row">
-            <div class="exclusive-stat">
-              <span class="exclusive-stat-num">100%</span>
-              <span class="exclusive-stat-label">Placement share</span>
-            </div>
-            <div class="exclusive-stat-divider"></div>
-            <div class="exclusive-stat">
-              <span class="exclusive-stat-num">0</span>
-              <span class="exclusive-stat-label">Other in-feed sponsors</span>
-            </div>
-          </div>
-        </div>
+      <div class="placement-statement">
+        <p class="placement-statement-headline">One active sponsor slot</p>
+        <p class="placement-statement-body">No auction, no rotating inventory. During your campaign window, your placement is the only sponsored unit in the feed&mdash;<strong>100% placement share</strong>, <strong>0 competing in-feed sponsors</strong>.</p>
       </div>
 
       <div class="features-grid">
         <div class="feature-card">
-          <span class="feature-card-tag">Placement</span>
           <div class="feature-title">Same view as the gym data</div>
           <div class="feature-desc">The ad sits in the feed where users check occupancy. It&rsquo;s not a banner in a corner&mdash;it&rsquo;s in the same place they&rsquo;re already looking.</div>
         </div>
 
         <div class="feature-card">
-          <span class="feature-card-tag">Audience</span>
           <div class="feature-title">Built around Hokies</div>
           <div class="feature-desc">The app is specifically for Virginia Tech students. Campaigns are naturally limited to that use case.</div>
         </div>
 
         <div class="feature-card">
-          <span class="feature-card-tag">Scheduling</span>
           <div class="feature-title">Flexible campaign windows</div>
           <div class="feature-desc">Choose start and end dates based on your timeline, whether that is a short event push or a longer semester campaign.</div>
         </div>
 
         <div class="feature-card">
-          <span class="feature-card-tag">Reporting</span>
           <div class="feature-title">Simple campaign reporting</div>
           <div class="feature-desc">Reporting includes delivered impressions and clicks for your campaign period.</div>
         </div>
       </div>
 
-      <div class="peaks-card">
+      <div class="peaks-section">
         <div class="peaks-header">
           <span class="peaks-title">Typical seasonal traffic pattern</span>
           <span class="peaks-note">Higher during active semesters</span>
@@ -1236,63 +1033,6 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
             <div class="peaks-legend-dot" style="background:var(--border)"></div>
             <span>Summer low</span>
           </div>
-        </div>
-      </div>
-
-      <div class="social-proof">
-        <p class="social-proof-label">What Hokies are saying</p>
-        <div class="social-quotes">
-          <div class="social-quote">
-            <span class="social-quote-text">I be using this all the time ngl. It helped me make an actual good schedule with the gym.</span>
-          </div>
-          <div class="social-quote">
-            <span class="social-quote-text">I got this first semester it's so good!</span>
-          </div>
-          <div class="social-quote">
-            <span class="social-quote-text">use this app daily bro keep up the good work</span>
-          </div>
-          <div class="social-quote">
-            <span class="social-quote-text">wait this is actually so cool, just downloaded</span>
-          </div>
-          <div class="social-quote">
-            <span class="social-quote-text">Peak app</span>
-          </div>
-          <div class="social-quote">
-            <span class="social-quote-text">this is rad actually</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="proof-strip" aria-label="Sponsor confidence points">
-        <div class="proof-item">
-          <div class="proof-icon">
-            <svg viewBox="0 0 15 15" fill="none" stroke="#861F41" stroke-width="1.5" stroke-linecap="round">
-              <path d="M7.5 1a6.5 6.5 0 1 0 0 13A6.5 6.5 0 0 0 7.5 1z"/>
-              <path d="M5 7.5l2 2 3.5-3.5"/>
-            </svg>
-          </div>
-          <div class="proof-title">Production app with active users</div>
-          <div class="proof-desc">Available on iPhone, iPad, Apple Watch, and as a home screen widget.</div>
-        </div>
-        <div class="proof-item">
-          <div class="proof-icon">
-            <svg viewBox="0 0 15 15" fill="none" stroke="#861F41" stroke-width="1.5" stroke-linecap="round">
-              <rect x="1" y="3" width="13" height="9" rx="1.5"/>
-              <path d="M4 6.5h7M4 9h4"/>
-            </svg>
-          </div>
-          <div class="proof-title">Sponsored content is clearly labeled</div>
-          <div class="proof-desc">Ad units are marked as sponsored in the feed.</div>
-        </div>
-        <div class="proof-item">
-          <div class="proof-icon">
-            <svg viewBox="0 0 15 15" fill="none" stroke="#861F41" stroke-width="1.5" stroke-linecap="round">
-              <path d="M2 11l3.5-4.5 2.5 2.5 2-2.5 3 4"/>
-              <path d="M2 13h11"/>
-            </svg>
-          </div>
-          <div class="proof-title">Straightforward setup process</div>
-          <div class="proof-desc">Share dates and ad assets, then setup and scheduling are handled for you.</div>
         </div>
       </div>
     </div>
@@ -1443,9 +1183,9 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
             </div>
           </div>
           <input type="hidden" id="tier" name="tier" value="banner">
-          <div class="wizard-cta-box">
-            <p>If this looks like a fit, send dates and your draft copy. You can start with rough content.</p>
-            <a href="#contact" class="btn-contact">Get in touch &rarr;</a>
+          <div class="wizard-cta-strip">
+            <p>If this looks like a fit, send dates and your draft copy. Rough content is fine to start.</p>
+            <a href="#contact" class="btn-primary">Get in touch &rarr;</a>
           </div>
         </form>
 
@@ -1481,7 +1221,7 @@ export const ADS_LANDING_HTML = `<!DOCTYPE html>
       <div class="contact-inner">
         <h2 class="section-title on-dark">Contact</h2>
         <p class="section-sub">Share your goals and timing, and you&rsquo;ll get a follow-up with format recommendations and availability.</p>
-        <div class="contact-card">
+        <div class="contact-cols">
           <div>
             <h3 class="contact-col-title">What to include</h3>
             <p class="contact-col-sub">A short brief is enough to get started.</p>
