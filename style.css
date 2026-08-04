@@ -89,6 +89,7 @@ main {
   flex-direction: column;
   gap: 1.25rem;
   max-width: 25rem;
+  width: 100%;
 }
 
 .profile-header {
@@ -163,6 +164,190 @@ main {
 
 .social-link:active {
   transform: scale(0.9);
+}
+
+/* Hevy activity */
+.hevy {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.hevy[hidden] {
+  display: none;
+}
+
+.activity-header,
+.github-activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.activity-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.hevy-mark {
+  width: 0.9rem;
+  height: 0.8rem;
+  fill: currentColor;
+  opacity: 0.7;
+}
+
+.activity-github {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+  opacity: 0.7;
+}
+
+.activity-total {
+  color: var(--color-text-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.hevy-content {
+  display: block;
+}
+
+.hevy-summary {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  margin-bottom: 0.7rem;
+}
+
+.hevy-summary strong {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hevy-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+}
+
+.hevy-metrics div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1rem;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.hevy-metrics div + div {
+  border-left: 1px solid var(--color-border);
+}
+
+.hevy-metrics strong {
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hevy-metrics span {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+}
+
+@media (max-width: 30rem) {
+  .activity-header {
+    gap: 0.7rem;
+  }
+
+  .activity-total {
+    font-size: 0.75rem;
+  }
+
+  .hevy-metrics div {
+    padding: 0 0.65rem;
+  }
+}
+
+/* GitHub contribution activity */
+.github-activity {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.github-activity[hidden] {
+  display: none;
+}
+
+.github-graph {
+  display: grid;
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: var(--github-cell-size, minmax(0, 1fr));
+  gap: 0.16rem;
+  height: 3.35rem;
+}
+
+.github-total {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.github-total-compact {
+  display: none;
+}
+
+@media (max-width: 30rem) {
+  .github-total-full {
+    display: none;
+  }
+
+  .github-total-compact {
+    display: inline;
+  }
+
+  .github-graph {
+    height: 4.4rem;
+  }
+}
+
+@media (max-width: 22rem) {
+  .github-total-compact {
+    display: none;
+  }
+}
+
+.github-cell {
+  border-radius: 0.08rem;
+  background: color-mix(in oklab, var(--color-bg) 82%, var(--color-border) 18%);
+}
+
+.github-cell[data-level="1"] {
+  background: color-mix(in oklab, var(--color-bg) 72%, var(--color-text) 28%);
+}
+
+.github-cell[data-level="2"] {
+  background: color-mix(in oklab, var(--color-bg) 58%, var(--color-text) 42%);
+}
+
+.github-cell[data-level="3"] {
+  background: color-mix(in oklab, var(--color-bg) 42%, var(--color-text) 58%);
+}
+
+.github-cell[data-level="4"] {
+  background: color-mix(in oklab, var(--color-bg) 24%, var(--color-text) 76%);
 }
 
 /* Icons */

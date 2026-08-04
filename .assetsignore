@@ -3,6 +3,7 @@ gymtracker/
 node_modules/
 .wrangler/
 .git/
+src/
 
 # Build output
 dist/
