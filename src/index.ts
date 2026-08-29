@@ -24,7 +24,7 @@ const HEVY_API_URL = "https://api.hevyapp.com/v1";
 const GITHUB_CONTRIBUTIONS_URL = "https://github.com/users/Hann8n/contributions";
 const PAGE_SIZE = 1;
 const EDGE_CACHE_SECONDS = 600;
-const ASSET_VERSION = "2026-07-14-hevy-centered";
+const ASSET_VERSION = "2026-08-29-gym-tracker-chip";
 
 export default {
   async fetch(request, env, ctx) {
