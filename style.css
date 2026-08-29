@@ -207,6 +207,29 @@ main {
   height: 0.9rem;
   fill: currentColor;
   opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.activity-name {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.15em;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.github-activity-header:hover .activity-github,
+.github-activity-header:focus-visible .activity-github {
+  opacity: 1;
+}
+
+.github-activity-header:hover .activity-name,
+.github-activity-header:focus-visible .activity-name {
+  text-decoration-color: currentColor;
+}
+
+.github-activity-header:focus-visible {
+  outline: 1.5px solid var(--color-border);
+  outline-offset: 4px;
 }
 
 .activity-total {
@@ -287,8 +310,35 @@ main {
   border-top: 1px solid var(--color-border);
 }
 
-.github-activity[hidden] {
-  display: none;
+.github-activity[data-state="loading"] .github-cell {
+  animation: github-pending 2.2s ease-in-out infinite;
+}
+
+.github-activity[data-state="error"] .github-cell {
+  opacity: 0.4;
+}
+
+.github-graph.is-revealing .github-cell {
+  animation: github-cell-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+}
+
+@keyframes github-pending {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+@keyframes github-cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .github-activity[data-state="loading"] .github-cell,
+  .github-graph.is-revealing .github-cell {
+    animation: none;
+  }
 }
 
 .github-graph {
@@ -360,6 +410,8 @@ main {
 
 /* Orbyt icon color adjustment */
 .orbyt-icon {
+  width: 1.125rem;
+  height: 1.125rem;
   filter: invert(1);
 }
 
