@@ -1,64 +1,97 @@
-# VT Gym Tracker Ads — Style Guide
+# Gym Tracker Web — Style Guide
 
-Full reference for design tokens and component classes used on the `/ads` landing page.
+Design reference for the public Gym Tracker pages: the app landing page (`/`) and the ads landing page (`/ads`). Both share one design language, derived from the privacy policy page (`public/docs/privacy-policy.html`).
+
+> The `/admin` dashboard is intentionally exempt — it keeps its own dark tool aesthetic.
+
+---
+
+## Design Principles
+
+1. **Typography-first.** No display fonts. System-ui everywhere, generous whitespace, plain bold headings.
+2. **Document-like simplicity.** A single centered column, hairline dividers between sections, no alternating background blocks.
+3. **Restrained color.** Neutral text on white; maroon/orange VT accents only for links, CTAs, and small highlights.
+4. **Light and dark, always.** Every page supports automatic dark mode. Never hardcode light-only colors.
 
 ---
 
 ## Design Tokens
 
-All tokens are defined as CSS custom properties on `:root`.
+All tokens are CSS custom properties on `:root`, overridden by `.dark-theme` and by the `prefers-color-scheme: dark` media query (see Dark Mode below).
 
 ### Color
 
-| Token | Value | Usage |
-|---|---|---|
-| `--maroon` | `#861F41` | Primary brand color, links, accents |
-| `--maroon-dark` | `#5c1530` | Hover state for maroon elements |
-| `--maroon-deep` | `#3a0d1e` | Hero/nav/footer backgrounds |
-| `--orange` | `#E87722` | CTAs, highlights, eyebrows |
-| `--orange-dark` | `#c4611a` | Hover state for orange elements |
-| `--bg` | `#f8f5f2` | Page background, alternating sections |
-| `--surface` | `#ffffff` | Cards, inputs, elevated surfaces |
-| `--border` | `#e8e3de` | Default borders |
-| `--border-strong` | `#d0c9c3` | Form inputs, emphasized borders |
-| `--text` | `#1a1614` | Primary body text |
-| `--text-mid` | `#4a4240` | Secondary text, form labels |
-| `--muted` | `#7a7270` | Captions, hints, placeholders |
+| Token | Light | Dark | Usage |
+|---|---|---|---|
+| `--bg-color` | `#ffffff` | `#1a1a1a` | Page background, inputs |
+| `--text-color` | `#333333` | `#e0e0e0` | Primary text |
+| `--text-mid` | `#555555` | `#b3b3b3` | Secondary text |
+| `--muted` | `#767676` | `#8a8a8a` | Captions, hints, placeholders, footer links |
+| `--link-color` | `#c95a7a` | `#c95a7a` | Inline links (VT maroon-light) |
+| `--link-hover-color` | `#E5751F` | `#E5751F` | Link/button hover (VT burnt orange) |
+| `--vt-maroon` | `#861F41` | `#861F41` | Primary CTA fill |
+| `--maroon-dark` | `#6d1936` | `#9d3a58` | CTA hover |
+| `--maroon-tint` | `rgba(134,31,65,0.08)` | `rgba(201,90,122,0.16)` | Tier active state, ad CTA strip fill |
+| `--cta-fg` | `var(--vt-maroon)` | `#c95a7a` | Foreground on tinted surfaces |
+| `--border` | `#e5e5e5` | `#2e2e2e` | Hairlines, card borders |
+| `--border-strong` | `#d4d4d4` | `#3a3a3a` | Inputs, ghost buttons, toggles |
+| `--surface` | `#ffffff` | `#242424` | Cards, callouts, ad preview |
 
 ### Typography
 
-| Token | Value |
-|---|---|
-| `--font-display` | `'Bebas Neue', sans-serif` |
-| `--font-body` | `'Plus Jakarta Sans', system-ui, sans-serif` |
+Single stack, no webfonts:
 
-Both fonts load from Google Fonts. Always declare `font-family: var(--font-body)` on `body` and apply `var(--font-display)` only to headings and stat values.
+```css
+font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+```
 
-### Type Scale
-
-| Role | Size | Weight | Font |
+| Role | Size | Weight | Letter-spacing |
 |---|---|---|---|
-| Hero h1 | `clamp(3rem, 8vw, 6rem)` | 400 (Bebas) | Display |
-| Section title | `2.75rem` | 400 (Bebas) | Display |
-| Format card name | `1.5rem` | 400 (Bebas) | Display |
-| Tier button label | `1.1rem` | 400 (Bebas) | Display |
-| Hero stat value | `2.5rem` | 400 (Bebas) | Display |
-| Body / base | `16px` | 400 | Body |
-| Section sub | `1rem` | 400 | Body |
-| Feature title | `0.9375rem` | 700 | Body |
-| Form label | `0.8125rem` | 600 | Body |
-| Caption / hint / muted | `0.8rem–0.875rem` | 400–500 | Body |
-| Eyebrow / section label | `0.75rem` | 700 | Body |
+| `h1` | `clamp(2rem, 5vw, 2.5rem)` | 700 | `-0.02em` |
+| `h2` | `clamp(1.4rem, 4vw, 1.8rem)` | 600 | `-0.01em` |
+| Card `h3` | `1.05rem` | 700 | — |
+| Body | `16px`, line-height `1.65` | 400 | — |
+| Small / muted notes | `0.8125–0.875rem` | 400 | — |
+| Form labels | `0.8125rem` | 600 | — |
+| Stat values | `1.5rem` | 700 | — |
 
-Eyebrow labels are always `text-transform: uppercase` with `letter-spacing: 0.14em`.
-
-### Spacing
-
-Vertical section padding is `72px 0`. Internal component gaps use `8px`, `12px`, `16px`, `20px`, or `24px`. Use `rem` for vertical rhythm between components and `px` for internal element gaps.
+Do not use uppercase eyebrows, letter-spaced display type, or `text-transform` on headings.
 
 ### Border Radius
 
-The app and admin use squared-off surfaces. All borders use `border-radius: 0` — no rounding on buttons, inputs, cards, or badges.
+Rounded to match the privacy page's softer feel:
+
+| Element | Radius |
+|---|---|
+| Cards, callouts, ad preview | `12px` |
+| Buttons, inputs, tier toggle | `8px` |
+| Small logos inside preview header | `4px` |
+
+---
+
+## Dark Mode
+
+Copy this mechanism exactly on every page. Inline script in `<head>`, before any CSS:
+
+```html
+<script>
+  if (localStorage.getItem('theme') === 'dark' ||
+      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark-theme');
+  }
+</script>
+```
+
+CSS: define light values on `:root`, then override twice — once for the explicit class, once for the OS preference:
+
+```css
+.dark-theme { /* dark token values */ }
+@media (prefers-color-scheme: dark) {
+  :root:not(.light-theme):not(.dark-theme) { /* same dark token values */ }
+}
+```
+
+Also set `color-scheme: light dark` on `:root` so native controls (file inputs, scrollbars) follow the theme. There is no visible toggle; a `localStorage.theme` value (`'dark'`) acts as a manual override.
 
 ---
 
@@ -67,427 +100,112 @@ The app and admin use squared-off surfaces. All borders use `border-radius: 0` �
 ### `.container`
 
 ```css
-max-width: 1080px;
+max-width: 840px;   /* 1060px at ≥ 1024px */
 margin: 0 auto;
-padding: 0 24px;
+padding: 0 20px;
 ```
 
-The single layout wrapper. Use on every section's direct child.
+The home page uses a narrower leading-edge column instead (max-width `560px`, edge padding `clamp(24px, 6vw, 64px)`).
 
-### `.section`
+### Sections
 
 ```css
-padding: 72px 0;
+main > section { padding: 44px 0; }
+main > section + section { border-top: 1px solid var(--border); }
 ```
 
-Base section class. Combine with modifiers:
+Sections are separated by hairlines, not background swaps. The hero is the first section and gets extra top padding: `padding-top: clamp(40px, 8vw, 64px)`.
 
-| Class | Effect |
-|---|---|
-| `.section` | Transparent background (shows `--bg`) |
-| `.section-alt` | `background: var(--surface)` — white |
-| `.section-dark` | `background: var(--maroon-deep)` — dark maroon |
+### Back link (`.back-link`)
 
-Sections alternate `.section` → `.section-alt` → `.section` → `.section-alt` → `.section-dark` down the page.
+No page chrome — the privacy page has no header, and neither do these pages. Sub-pages start with a quiet back link above the `h1`:
 
-### `.section-header`
-
-```css
-margin-bottom: 44px;
+```html
+<a href="/" class="back-link">&larr; Back</a>
 ```
 
-Wraps `.section-label` + `.section-title` + `.section-sub` at the top of each section.
+`display: inline-block`, `0.875rem`, `color: var(--muted)`, `margin-bottom: 24px`; hover follows the global link rule (`--link-hover-color`).
+
+### Footer (`.footer`)
+
+Identical markup on every page. `border-top: 1px solid var(--border)`, `padding: 20px 0`, with a `.footer-inner` wrapper (centered column, `14px` gap; edge padding matches each page's content). Two rows:
+
+- `.footer-social` — four icon links (Website, LinkedIn, GitHub, Bluesky), same SVGs as the privacy page. `40px` circular hit areas, `18px` icons with `fill: currentColor`, `color: var(--muted)`, hover `--link-hover-color` + `translateY(-2px)`.
+- `.footer-links` — text links (`Advertise`, `Privacy`): `0.875rem`, `var(--muted)`, hover `--link-hover-color`.
+
+On desktop (≥ 1024px) `.footer-inner` becomes a row: social left, text links right.
 
 ---
 
-## Typography Components
+## Components
 
-### `.section-label`
+### Buttons
 
-Eyebrow text above section titles.
-
-```css
-font-size: 0.75rem;
-font-weight: 700;
-letter-spacing: 0.14em;
-text-transform: uppercase;
-color: var(--orange);
-margin-bottom: 10px;
-```
-
-### `.section-title`
+**`.btn-primary`** — solid maroon, white text:
 
 ```css
-font-family: var(--font-display);
-font-size: 2.75rem;
-letter-spacing: 0.03em;
-color: var(--text);
-line-height: 1;
-margin-bottom: 12px;
-```
-
-Modifier `.on-dark` overrides color to `#fff` for use on dark backgrounds.
-
-### `.section-sub`
-
-```css
-font-size: 1rem;
-color: var(--muted);
-max-width: 520px;
-line-height: 1.7;
-```
-
----
-
-## Navigation
-
-### `.nav`
-
-```css
-position: sticky;
-top: 0;
-z-index: 100;
-background: var(--maroon-deep);
-border-bottom: 1px solid rgba(255,255,255,0.08);
-```
-
-### `.nav-inner`
-
-```css
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 14px 0;
-```
-
-### `.nav-logo`
-
-Bebas Neue, `1.25rem`, `letter-spacing: 0.08em`, white. No underline on hover — use `opacity: 0.85` instead.
-
-### `.nav-links a`
-
-`0.875rem`, weight 500, `rgba(255,255,255,0.6)`. On hover: `color: #fff`. Hidden below `600px`.
-
----
-
-## Hero
-
-### `.hero`
-
-```css
-background: var(--maroon-deep);
-padding: 72px 0 0;
-overflow: hidden;
-position: relative;
-```
-
-The `::before` pseudo-element adds a radial glow in the top-right: `radial-gradient(circle, rgba(134,31,65,0.5) 0%, transparent 70%)`.
-
-### `.hero-eyebrow`
-
-Same rules as `.section-label` — orange, uppercase, tracked.
-
-### `.hero h1`
-
-```css
-font-family: var(--font-display);
-font-size: clamp(3rem, 8vw, 6rem);
-line-height: 0.95;
-letter-spacing: 0.02em;
+background: var(--vt-maroon);
 color: #fff;
-max-width: 680px;
-margin-bottom: 24px;
-```
-
-Use `<em>` inside for orange accent text: `color: var(--orange); font-style: normal`.
-
-### `.hero-sub`
-
-```css
-font-size: 1.0625rem;
-color: rgba(255,255,255,0.65);
-max-width: 480px;
-margin-bottom: 36px;
-line-height: 1.7;
-```
-
-### `.hero-stats`
-
-Four-column grid pinned to the bottom of the hero, separated by a top border and thin column dividers. Collapses to two columns below `640px`.
-
-```css
-display: grid;
-grid-template-columns: repeat(4, 1fr);
-border-top: 1px solid rgba(255,255,255,0.1);
-margin-top: 56px;
-```
-
-### `.hero-stat-val` / `.hero-stat-label`
-
-Value: Bebas Neue, `2.5rem`, white. Label: `0.8125rem`, weight 500, `rgba(255,255,255,0.5)`.
-
----
-
-## Buttons
-
-### `.btn-primary`
-
-Orange filled button. Used for the main hero CTA.
-
-```css
-background: var(--orange);
-color: #fff;
-font-weight: 700;
+font-weight: 600;
 font-size: 0.9375rem;
-padding: 13px 26px;
-border-radius: 0;
+padding: 12px 22px;
+border-radius: 8px;
 ```
 
-Hover: `background: var(--orange-dark)`, `transform: translateY(-1px)`.
+Hover: `background: var(--maroon-dark)` (color stays `#fff`).
 
-### `.btn-ghost`
-
-Outlined, for use on dark backgrounds only.
+**`.btn-ghost`** — outlined, for secondary actions:
 
 ```css
-color: rgba(255,255,255,0.7);
-border: 1px solid rgba(255,255,255,0.2);
+color: var(--text-color);
+border: 1px solid var(--border-strong);
 font-weight: 500;
 font-size: 0.9375rem;
-padding: 13px 22px;
-border-radius: 0;
+padding: 12px 18px;
+border-radius: 8px;
 ```
 
-Hover: `color: #fff`, `border-color: rgba(255,255,255,0.5)`.
+Hover: `border-color: var(--muted)`.
 
-### `.btn-contact`
+### Stat row (`.hero-stats`)
 
-Maroon filled. Used inside the wizard CTA box.
+Flex row (`gap: 40px`, wraps), borderless and muted. Each `.hero-stat` is a column: bold `1.5rem` value over a `0.8125rem` muted label.
 
-```css
-background: var(--maroon);
-color: #fff;
-font-weight: 700;
-font-size: 0.9375rem;
-padding: 12px 24px;
-border-radius: 0;
-```
+### Format cards (`.formats-grid` / `.format-card`)
 
-Hover: `background: var(--maroon-dark)`, `transform: translateY(-1px)`.
+Three-column grid (`repeat(3, 1fr)`, gap `16px`, single column ≤ 640px). Card: `var(--surface)` bg, `1px solid var(--border)`, radius `12px`, `padding: 20px`. Contains `h3`, one muted `<p>`, and a `dl.format-specs` (`dt` weight 600 in `--text-color`, `dd` in `--text-mid`, `0.8125rem`). No image placeholders — the wizard below demonstrates formats live.
 
-### `.btn-email`
+### Form elements
 
-Orange filled. Used in the contact section.
-
-```css
-background: var(--orange);
-color: #fff;
-font-weight: 700;
-font-size: 1rem;
-padding: 14px 28px;
-border-radius: 0;
-```
-
-Hover: `background: var(--orange-dark)`.
-
----
-
-## Cards
-
-### `.format-card`
-
-```css
-background: var(--bg);
-border: 1px solid var(--border);
-border-radius: 0;
-overflow: hidden;
-```
-
-Used in a three-column `auto-fit, minmax(260px, 1fr)` grid. Each card has a `.format-card-preview` (white background, border-bottom) and `.format-card-info` (padding `18px 20px`).
-
-**`.format-card-name`** — Bebas Neue, `1.5rem`, `var(--maroon)`.
-
-**`.format-card-desc`** — `0.875rem`, `var(--muted)`, `line-height: 1.6`.
-
-### `.feature-card`
-
-```css
-background: var(--bg);
-border: 1px solid var(--border);
-border-radius: 0;
-padding: 24px;
-```
-
-Used in a two-column grid. Each card contains a `.feature-icon`, `.feature-title`, and `.feature-desc`.
-
-**`.feature-icon`** — `36×36px`, `border-radius: 0`, `background: rgba(134,31,65,0.1)`, flex-centered. SVG icons are `18×18px` with `stroke: #861F41`.
-
-**`.feature-title`** — `0.9375rem`, weight 700, `var(--text)`.
-
-**`.feature-desc`** — `0.875rem`, `var(--muted)`, `line-height: 1.65`.
-
----
-
-## Wizard
-
-### `.wizard-grid`
-
-Two-column layout: form on the left, preview on the right.
-
-```css
-display: grid;
-grid-template-columns: 1fr 300px;
-gap: 40px;
-align-items: start;
-```
-
-Collapses to single column below `800px`.
-
-### Tier Buttons (`.tier-btn`)
-
-Three-column grid with equal widths.
-
-```css
-padding: 10px 0;
-text-align: center;
-border: 1.5px solid var(--border-strong);
-border-radius: 0;
-background: var(--surface);
-font-family: var(--font-display);
-font-size: 1.1rem;
-letter-spacing: 0.06em;
-color: var(--muted);
-```
-
-Each button contains a `<span>` subtitle: body font, `0.75rem`, weight 500.
-
-**Active state** (`.tier-btn.active`):
-```css
-border-color: var(--maroon);
-background: var(--maroon);
-color: #fff;
-/* span color: rgba(255,255,255,0.75) */
-```
-
-### Form Elements
-
-**`.form-label`**
-```css
-font-size: 0.8125rem;
-font-weight: 600;
-color: var(--text-mid);
-margin-bottom: 7px;
-letter-spacing: 0.01em;
-```
+**`.form-label`** — `0.8125rem`, weight 600, `var(--text-color)`, `6px` bottom margin. Optional suffixes use `<span class="opt">` (weight 400, muted).
 
 **`.form-input`**
+
 ```css
-width: 100%;
-padding: 10px 14px;
+padding: 10px 12px;
 border: 1px solid var(--border-strong);
-border-radius: 0;
+border-radius: 8px;
 font-size: 0.9375rem;
-background: var(--surface);
-color: var(--text);
+font-family: inherit;
+background: var(--bg-color);
+color: var(--text-color);
 ```
 
-Focus ring: `border-color: var(--maroon)`, `box-shadow: 0 0 0 3px rgba(134,31,65,0.1)`.
+Focus: `border-color: var(--link-color)` + `box-shadow: 0 0 0 3px rgba(201,90,122,0.15)`. Placeholder: `var(--muted)` at 70% opacity.
 
-Placeholder color: `#b5afaa`.
+**`.form-hint`** — `0.8rem`, muted, `5px` top margin.
 
-**`.form-hint`** — `0.8rem`, `var(--muted)`, `margin-top: 5px`.
+**Hidden-able groups** (`#imageFieldWrap`) animate via `max-height` + `opacity` transitions; the `.image-field-hidden` class collapses to zero.
 
-**`.image-group-hidden`** — `display: none`. Applied to the image URL group when Text tier is active.
+### Tier toggle (`.tier-toggle` / `.tier-btn`)
 
-### `.wizard-cta-box`
+Flex row inside a `1px solid var(--border-strong)` container, radius `8px`, overflow hidden. Buttons: flex 1, `10px 16px`, weight 500, `var(--muted)`, separated by `1px solid var(--border)`. Active: `background: var(--maroon-tint)`, `color: var(--cta-fg)`, weight 600.
 
-```css
-margin-top: 32px;
-padding: 22px;
-background: rgba(134,31,65,0.05);
-border: 1px solid rgba(134,31,65,0.15);
-border-radius: 0;
-```
+### Ad preview (`.preview`)
 
-Inner `<p>`: `0.9rem`, `var(--text-mid)`, `line-height: 1.65`.
+Simulates the in-feed sponsored card. Stack: `.preview-section-header` (logo + uppercase sponsor title + "Sponsored"), optional image (`.preview-img-wrap` with fixed inline height — `140px` banner, `220px` feature; `.preview-img-placeholder` when no image), `.preview-img-divider`, then `.preview-body` (or `.preview-text-inner` for the text tier) containing `.preview-copy-stack` (`.preview-headline` bold, `.preview-subline` muted) and `.preview-cta-wrap` (tinted strip: `background: var(--maroon-tint)`, `color: var(--cta-fg)`, radius `8px`, `↗` arrow suffix).
 
----
-
-## Ad Preview
-
-### `.preview-pane`
-
-```css
-position: sticky;
-top: 84px;
-```
-
-Sticky offset accounts for the nav height (`~56px`) plus buffer.
-
-### `.preview-device`
-
-Simulates an app chrome frame.
-
-```css
-background: var(--bg);
-border: 1px solid var(--border);
-border-radius: 0;
-padding: 16px;
-overflow: hidden;
-```
-
-**`.preview-device-bar`** — flex row, `margin-bottom: 12px`. Contains `.preview-device-title` (weight 700, `0.8125rem`, `var(--text-mid)`) and three `.preview-device-dot` circles (`6×6px`, `var(--border-strong)`).
-
-### `.preview-card`
-
-```css
-background: var(--surface);
-border: 1px solid var(--border);
-border-radius: 0;
-overflow: hidden;
-```
-
-**Image wrap** — `.preview-card-img-wrap`: `overflow: hidden`, gradient placeholder background. Height is `80px` for Banner, `120px` for Feature.
-
-**Body** — `.preview-card-body`: `padding: 14px 16px`.
-
-**Sponsor row** — `.preview-sponsor-row`: flex, `gap: 7px`, `margin-bottom: 6px`. Contains optional `.preview-logo-img` (`20×20px`, `border-radius: 0`) and `.preview-sponsor-name` (`0.8125rem`, weight 500, `var(--muted)`).
-
-**Headline** — `.preview-headline`: `1rem`, weight 700, `var(--text)`, `line-height: 1.3`.
-
-**Subline** — `.preview-subline`: `0.8125rem`, `var(--muted)`, `margin-bottom: 10px`.
-
-**CTA** — `.preview-cta`: `0.8125rem`, weight 700, `var(--orange)`. Always append `↗` character.
-
-**Caption** — `.preview-label`: `0.75rem`, `var(--muted)`, centered, `margin-top: 10px`.
-
----
-
-## Contact Section
-
-Centered content inside `.contact-inner` (max-width `560px`, `margin: 0 auto`, `text-align: center`). Built on `.section-dark`.
-
-`.contact-note` — `0.875rem`, `rgba(255,255,255,0.4)`, `margin-top: 16px`.
-
----
-
-## Footer
-
-### `.footer`
-
-```css
-padding: 28px 0;
-border-top: 1px solid rgba(255,255,255,0.08);
-background: var(--maroon-deep);
-```
-
-### `.footer-inner`
-
-Flex row, `justify-content: space-between`, wraps at small sizes.
-
-**`.footer-copy`** — `0.8125rem`, `rgba(255,255,255,0.35)`.
-
-**`.footer-links a`** — `0.8125rem`, `rgba(255,255,255,0.45)`. Hover: `rgba(255,255,255,0.8)`, no underline.
+Card chrome: `var(--surface)`, `1px solid var(--border)`, radius `12px`, overflow hidden. The preview is rebuilt from JS on every input — keep the class names stable.
 
 ---
 
@@ -495,7 +213,15 @@ Flex row, `justify-content: space-between`, wraps at small sizes.
 
 | Breakpoint | Change |
 |---|---|
-| `≤ 800px` | `.wizard-grid` collapses to single column |
-| `≤ 720px` | `.formats-grid` collapses to single column |
-| `≤ 640px` | `.features-grid` collapses to single column; `.hero-stats` collapses to 2 columns |
-| `≤ 600px` | `.nav-links` hidden |
+| `≤ 800px` | `.wizard-grid` collapses to one column; preview pane un-sticks |
+| `≤ 640px` | `.formats-grid` single column; `.hero-stats` gap tightens to `24px` |
+| `≥ 1024px` | `.container` widens to `1060px`; `.contact-cols` splits into two columns; wizard preview column grows to `340px`; footer becomes a row |
+
+---
+
+## Content Rules
+
+- One `h1` per page, in `--text-color` (no dark hero blocks, no glows).
+- Keep the hero to: h1, one subline, two actions, stat row.
+- Metrics come from the operator (installs, impressions, DAU) — keep them in the hero stat row only, not repeated per section.
+- Never fabricate data. Only real operator metrics appear (installs, impressions, DAU); anything unmeasured gets left out entirely.
