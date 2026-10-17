@@ -33,7 +33,7 @@ try {
   assert.equal(await page.locator('#tabEvents').getAttribute('aria-selected'),'true');
   assert.equal(await page.locator('#eventCategory').inputValue(),'ads');
   assert.equal(await page.locator('#eventCampaign').inputValue(),campaign);
-  assert.equal(await page.locator('#eventReadout tbody tr').count(),2);
+  assert.equal(await page.locator('#eventReadout .event-row').count(),2);
   await page.getByRole('tab',{name:'Overview',exact:true}).click();
   await page.locator('#chartMetric').selectOption('event_opens');
   await page.reload();await loaded();

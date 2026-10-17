@@ -39,7 +39,27 @@ try {
   await page.getByRole('tab',{name:'Events',exact:true}).click();
   await page.waitForSelector('#eventReadout table');
   assert.equal(await page.locator('#eventReadout thead th').count(),4);
-  assert.equal(await page.locator('#eventReadout tbody tr').first().locator('th,td').count(),4);
+  assert.equal(await page.locator('#eventReadout .event-row').first().locator('th,td').count(),4);
+  for (const width of [1440,1024,768,760,390,320]) {
+    await page.setViewportSize({width,height:1000});
+    const layout=await page.locator('#eventsPanel').evaluate(panel=>{
+      const readout=panel.querySelector('#eventReadout');
+      const rows=[...readout.querySelectorAll('.event-row')];
+      const bounds=readout.getBoundingClientRect();
+      return {
+        fits:readout.scrollWidth<=readout.clientWidth+1,
+        cellsFit:rows.every(row=>[...row.children].every(cell=>{const r=cell.getBoundingClientRect();return r.left>=bounds.left-1&&r.right<=bounds.right+1;})),
+        numericColumns:rows.map(row=>[row.children[1].getBoundingClientRect().right,row.children[2].getBoundingClientRect().right]),
+        controls:[...panel.querySelectorAll('.event-toolbar select,.event-toolbar button')].map(el=>el.getBoundingClientRect().height),
+        labelsVisible:rows.every(row=>row.querySelector('.event-mobile-label').getBoundingClientRect().height>0)
+      };
+    });
+    assert.ok(layout.fits&&layout.cellsFit,'Every event value must fit at '+width);
+    assert.ok(layout.numericColumns.every(cols=>cols.every((x,i)=>Math.abs(x-layout.numericColumns[0][i])<1)),'Event columns must align at '+width);
+    assert.ok(layout.controls.every(h=>h===40),'Filter/export controls must align at '+width);
+    if(width<=760) assert.ok(layout.labelsVisible,'Mobile values need visible labels');
+    assert.ok(await page.locator('.topbar').evaluate(el=>{const home=el.querySelector('.topbar-home').getBoundingClientRect(),center=el.querySelector('.topbar-center').getBoundingClientRect(),right=el.querySelector('.topbar-right').getBoundingClientRect();return home.right<=center.left&&center.right<=right.left;}),'Header items must not collide at '+width);
+  }
   await page.getByRole('tab',{name:'Campaigns',exact:true}).click();
   await page.locator('.ad-card').first().click();
   assert.equal(await page.locator('label[for=cta]').innerText(),'Link button text');

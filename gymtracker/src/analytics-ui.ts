@@ -92,12 +92,48 @@ export const ANALYTICS_STYLES = `
   .analytics-details { margin-top: 20px; }
   .analytics-details summary { color: #bbb; font-size: 12px; cursor: pointer; padding: 12px 0; }
   .analytics-empty { padding: 36px 16px; text-align: center; color: var(--muted); font-size: 13px; }
-  .event-toolbar { display: flex; align-items: end; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
-  .event-filter { display: flex; flex-direction: column; gap: 6px; min-width: 160px; }
+  .analytics-card.events-card { padding: 0; }
+  .events-heading { padding: 20px 20px 16px; }
+  .events-heading h2 { margin-bottom: 5px; }
+  .event-toolbar { display: grid; grid-template-columns: minmax(220px,360px) minmax(160px,220px) auto; align-items: end; gap: 16px; padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
+  .event-filter { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .event-filter label { color: #aaa; font-size: 12px; }
-  .event-filter select { font: 13px var(--font); }
-  .event-toolbar button { margin-left: auto; min-height: 40px; padding: 8px 16px; color: var(--text); }
-  #eventsStatus { margin: 0 0 16px; }
+  .event-filter select { width: 100%; min-width: 0; height: 40px; font: 13px var(--font); }
+  .event-toolbar button { justify-self: end; min-height: 40px; padding: 8px 16px; color: var(--text); }
+  #eventsStatus { margin: 0; }
+  #eventReadout { padding: 0 20px; }
+  .event-table { table-layout: fixed; }
+  .event-table col:first-child { width: 44%; }
+  .event-table col:nth-child(2), .event-table col:nth-child(3) { width: 17%; }
+  .event-table col:last-child { width: 22%; }
+  .event-table thead th { border-top: 0; padding-top: 14px; padding-bottom: 14px; }
+  .event-table .event-group th { text-align: left; padding: 18px 0 10px; color: #aaa; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .event-table tbody:first-of-type .event-group th { border-top: 0; padding-top: 6px; }
+  .event-table .event-row > * { padding-top: 12px; padding-bottom: 12px; }
+  .event-table .event-row th { font-size: 13px; line-height: 1.5; }
+  .event-table .event-description { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 400; }
+  .event-table .event-number { font-size: 14px; font-weight: 500; }
+  .event-table .event-time { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+  .event-mobile-label { display: none; }
+  .event-definitions { padding: 16px 20px; border-top: 1px solid var(--border); margin: 0; }
+  .event-definitions dl { margin-bottom: 0; }
+  @media (max-width: 760px) {
+    .event-toolbar { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+    .event-toolbar .event-filter:first-child { grid-column: 1/-1; }
+    .event-toolbar button { width: 100%; padding: 8px 10px; font-size: 12px; white-space: nowrap; }
+    .event-table { min-width: 0 !important; }
+    .event-table, .event-table tbody { display: block; width: 100%; }
+    .event-table colgroup, .event-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    .event-table .event-group { display: block; }
+    .event-table .event-group th { display: block; border-top: 0; padding: 20px 0 10px; }
+    .event-table tbody:first-of-type .event-group th { padding-top: 20px; }
+    .event-table .event-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 20px; padding: 16px 0; border-top: 1px solid var(--border); }
+    .event-table .event-row > * { display: block; border: 0; padding: 0; text-align: left; min-width: 0; }
+    .event-table .event-row th, .event-table .event-last { grid-column: 1/-1; }
+    .event-mobile-label { display: block; color: var(--muted); font-size: 11px; font-weight: 400; margin-bottom: 5px; }
+    .event-table .event-last { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 11px; color: var(--muted); }
+    .event-last .event-mobile-label, .event-table .event-time { display: inline; margin: 0; }
+  }
   .field-label { font-size: 12px; color: #aaa; }
   .admin-form input:not(#id):not(#creative_version):not(#start_at):not(#end_at), .admin-form select { font-family: var(--font); }
   button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
@@ -109,7 +145,8 @@ export const ANALYTICS_STYLES = `
     .overview-kpi { padding: 0 16px; } .overview-kpi:nth-child(3) { padding-left: 0; border: 0; }
     .overview-kpi-value { font-size: 28px; } .analytics-card { padding: 16px; }
     .product-strip { gap: 14px; } .product-strip strong { font-size: 20px; }
-    .event-filter { min-width: 0; flex: 1; } .event-toolbar button { width: 100%; }
+    .events-heading { padding: 16px 16px 14px; } .event-toolbar { gap: 12px; padding: 0 16px 16px; }
+    #eventReadout { padding: 0 16px; } .event-definitions { padding: 16px; }
     .analytics-table { min-width: 480px; } .analytics-card-header { align-items: start; }
   }
 `;
@@ -130,14 +167,16 @@ export const ANALYTICS_MARKUP = `
     <div id="dailyMetrics" hidden></div>
   </section>
   <section id="eventsPanel" role="tabpanel" aria-labelledby="tabEvents" hidden>
+    <div class="analytics-card events-card">
+    <header class="events-heading"><h2>Tracked activity</h2><p id="eventsStatus" class="analytics-note" role="status">Loading events…</p></header>
     <div class="event-toolbar">
       <div class="event-filter"><label for="eventCampaign">Campaign</label><select id="eventCampaign"><option value="">All campaigns & product events</option></select></div>
       <div class="event-filter"><label for="eventCategory">Event category</label><select id="eventCategory"><option value="all">All events</option><option value="ads">Advertising</option><option value="product">Product usage</option><option value="siri">Siri</option></select></div>
-      <button type="button" id="exportEvents">Export CSV ↓</button>
+      <button type="button" id="exportEvents" disabled>Export CSV ↓</button>
     </div>
-    <p id="eventsStatus" class="analytics-note" role="status">Loading events…</p>
-    <div class="analytics-card"><div class="analytics-table-wrap" id="eventReadout"></div></div>
-    <p class="analytics-footer">Aggregated interactions only. Unique app installs means separate copies of the app, not new downloads or verified people. The same app can appear in several event rows, so these audience counts cannot be added together.</p>
+    <div id="eventReadout" aria-busy="true"></div>
+    <details class="metric-definitions event-definitions"><summary>How to read these numbers</summary><dl><div><dt>Times recorded</dt><dd>Total recorded actions in the reporting period, including repeat use.</dd></div><div><dt>App installs</dt><dd>Separate copies of the app that recorded each action, not new downloads or verified people. One install can appear in several rows; do not add these counts together.</dd></div></dl></details>
+    </div>
   </section>
 `;
 
@@ -159,6 +198,15 @@ export const ANALYTICS_SCRIPT = String.raw`
     event_open: 'Recreation event opened', passport_open: 'Campus ID opened', settings_open: 'Settings opened',
     siri_crowds: 'Siri · Current crowds', siri_events: 'Siri · Find events', siri_event_details: 'Siri · Event details'
   };
+  const eventDescriptions = {
+    ad_impression: 'Ad displayed in the home feed', ad_tap: 'Ad link button tapped',
+    app_session: 'A visit to the app', event_open: 'Recreation event details viewed',
+    passport_open: 'Campus ID screen viewed', settings_open: 'Settings screen viewed',
+    siri_crowds: 'Crowd checks and gym recommendations', siri_events: 'Requests to find recreation events',
+    siri_event_details: 'Requests for a specific event’s details'
+  };
+  const eventGroups = [{key:'product', label:'Product usage'}, {key:'ads', label:'Advertising'}, {key:'siri', label:'Siri'}];
+  function trackedEventCategory(event) { return event.startsWith('ad_') ? 'ads' : event.startsWith('siri_') ? 'siri' : 'product'; }
   const analyticsNumber = value => (Number(value) || 0).toLocaleString('en-US');
   const analyticsPercent = (part, whole) => whole ? (part / whole * 100).toFixed(1) + '%' : '—';
   function showDashboardView(view, restoring = false) {
@@ -279,6 +327,8 @@ export const ANALYTICS_SCRIPT = String.raw`
     const currentRequest = ++eventRequest;
     const status = document.getElementById('eventsStatus');
     status.textContent = 'Loading events…';
+    document.getElementById('eventReadout').setAttribute('aria-busy', 'true');
+    document.getElementById('exportEvents').disabled = true;
     try {
       const query = new URLSearchParams({days: document.getElementById('analyticsPeriod').value});
       const campaign = document.getElementById('eventCampaign').value;
@@ -289,18 +339,30 @@ export const ANALYTICS_SCRIPT = String.raw`
       if (currentRequest !== eventRequest) return;
       trackedEvents = Array.isArray(data.events) ? data.events : [];
       status.textContent = 'Last ' + data.days + ' days · UTC · Aggregated first-party events';
+      document.getElementById('eventReadout').setAttribute('aria-busy', 'false');
       renderTrackedEvents();
       if (!dashboardReady) restoreDashboardScroll();
-    } catch (error) { if (currentRequest !== eventRequest) return; trackedEvents = []; document.getElementById('eventReadout').innerHTML = ''; status.textContent = error.message; if (!dashboardReady) restoreDashboardScroll(); }
+    } catch (error) { if (currentRequest !== eventRequest) return; trackedEvents = []; const readout = document.getElementById('eventReadout'); readout.setAttribute('aria-busy', 'false'); readout.innerHTML = '<p class="analytics-empty">Tracked activity could not be loaded.</p>'; document.getElementById('exportEvents').disabled = true; status.textContent = error.message; if (!dashboardReady) restoreDashboardScroll(); }
   }
   function filteredTrackedEvents() {
     const category = document.getElementById('eventCategory').value;
-    return trackedEvents.filter(row => category === 'all' || (category === 'ads' ? row.event.startsWith('ad_') : category === 'siri' ? row.event.startsWith('siri_') : !row.event.startsWith('ad_') && !row.event.startsWith('siri_')));
+    return trackedEvents.filter(row => category === 'all' || trackedEventCategory(row.event) === category);
   }
   function renderTrackedEvents() {
     const rows = filteredTrackedEvents();
-    document.getElementById('eventReadout').innerHTML = rows.length ? '<table class="analytics-table"><thead><tr><th scope="col">Event</th><th scope="col">Times recorded</th><th scope="col">Unique app installs</th><th scope="col">Last recorded · UTC</th></tr></thead><tbody>' + rows.map(row => '<tr><th scope="row">' + escapeHtml(eventLabels[row.event] || row.event) + '</th><td>' + analyticsNumber(row.occurrences) + '</td><td>' + analyticsNumber(row.installations) + '</td><td>' + escapeHtml(new Date(row.last_received).toLocaleString('en-US', {month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'UTC'})) + '</td></tr>').join('') + '</tbody></table>' : '<p class="analytics-empty">No events recorded for these filters yet.</p>';
-    document.getElementById('exportEvents').disabled = !rows.length;
+    const groups = eventGroups.map(group => {
+      const items = rows.filter(row => trackedEventCategory(row.event) === group.key);
+      if (!items.length) return '';
+      return '<tbody role="rowgroup" aria-label="' + group.label + '"><tr class="event-group" role="row"><th colspan="4" scope="rowgroup" role="rowheader">' + group.label + '</th></tr>' + items.map(row => {
+        const recorded = new Date(row.last_received);
+        const validDate = Number.isFinite(recorded.getTime());
+        const date = validDate ? recorded.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}) : 'Unavailable';
+        const time = validDate ? recorded.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit',timeZone:'UTC'}) + ' UTC' : '';
+        return '<tr class="event-row" role="row"><th scope="row" role="rowheader">' + escapeHtml((eventLabels[row.event] || row.event).replace(/^Siri · /, '')) + '<span class="event-description">' + escapeHtml(eventDescriptions[row.event] || 'Recorded app interaction') + '</span></th><td role="cell"><span class="event-mobile-label" aria-hidden="true">Times recorded</span><span class="event-number">' + analyticsNumber(row.occurrences) + '</span></td><td role="cell"><span class="event-mobile-label" aria-hidden="true">Unique app installs</span><span class="event-number">' + analyticsNumber(row.installations) + '</span></td><td class="event-last" role="cell"><span class="event-mobile-label" aria-hidden="true">Last recorded</span>' + escapeHtml(date) + '<span class="event-time">' + escapeHtml(time) + '</span></td></tr>';
+      }).join('') + '</tbody>';
+    }).join('');
+    document.getElementById('eventReadout').innerHTML = rows.length ? '<table class="analytics-table event-table" role="table"><caption class="visually-hidden">Tracked activity by event, grouped by category</caption><colgroup><col><col><col><col></colgroup><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Event</th><th scope="col" role="columnheader">Times recorded</th><th scope="col" role="columnheader">App installs<span class="event-time">Unique</span></th><th scope="col" role="columnheader">Last recorded<span class="event-time">UTC</span></th></tr></thead>' + groups + '</table>' : '<p class="analytics-empty">No events recorded for these filters yet.</p>';
+    document.getElementById('exportEvents').disabled = !rows.length || document.getElementById('eventReadout').getAttribute('aria-busy') === 'true';
   }
   window.addEventListener('resize', () => { const metric = document.getElementById('chartMetric'); if (metric) renderActivityChart(metric.value); });
   document.getElementById('eventCategory').addEventListener('change', event => { saveDashboardPrefs({eventCategory:event.target.value}); renderTrackedEvents(); });
