@@ -1,3 +1,4 @@
+import { ANALYTICS_STYLES, ANALYTICS_MARKUP, ANALYTICS_SCRIPT } from "./analytics-ui";
 /** Admin UI HTML — served at /admin, uses Cloudflare Access for auth. */
 export const ADMIN_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -6,8 +7,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- admin-build: 20260324f-revert-render-flow -->
-  <title>Gym Tracker Ads Admin</title>
+  <!-- admin-build: 20261017-labels-metrics -->
+  <title>Gym Tracker Dashboard</title>
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="/favicon/favicon-16x16.png" type="image/png" sizes="16x16">
@@ -363,25 +364,25 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     #adCards.loading, #calendarWrap.loading { opacity: 0.6; pointer-events: none; }
     .calendar-empty { margin-top: 16px; padding: 24px; border: 1px dashed var(--border); background: var(--surface); text-align: center; max-width: 240px; }
     .calendar-empty-text { color: var(--muted); font-size: var(--text-sm); margin: 0; }
-    .calendar-wrap { margin-top: 16px; border: 1px solid var(--border); background: var(--surface); padding: 18px 22px; width: 100%; min-width: 340px; max-width: 100%; }
-    .calendar-header { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 14px; }
-    .cal-month-label { font-size: var(--text-md); font-weight: 500; color: var(--text); margin: 0; }
+    .calendar-wrap { margin-top: 16px; border: 1px solid var(--border); background: var(--surface); padding: 18px 22px; width: 100%; min-width: 0; max-width: 100%; }
+    .calendar-header { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px auto; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .cal-month-label { min-width: 0; text-align: center; overflow-wrap: anywhere; font-size: var(--text-md); font-weight: 500; color: var(--text); margin: 0; }
     .cal-nav { padding: 4px 10px; font-size: var(--text-xs); background: transparent; border: 1px solid var(--border); color: var(--muted); cursor: pointer; }
-    .cal-nav.cal-today { margin-left: 8px; }
+    .cal-nav.cal-today { margin-left: 0; }
     .cal-nav:hover { color: var(--text); border-color: var(--text); }
     .calendar-grid { display: flex; flex-direction: column; gap: 0; }
-    .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .cal-weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     .cal-weekdays span { text-align: center; }
-    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); width: 100%; }
-    .cal-cell { min-height: 80px; height: auto; padding: 10px; background: var(--surface); display: flex; flex-direction: column; font-size: var(--text-xs); }
+    .cal-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--border); width: 100%; }
+    .cal-cell { min-width: 0; min-height: 80px; height: auto; padding: 10px; background: var(--surface); display: flex; flex-direction: column; font-size: var(--text-xs); }
     .cal-cell.other-month { background: var(--bg); }
     .cal-cell.other-month .cal-cell-num { color: var(--muted); opacity: 0.6; }
     .cal-cell.today { outline: 1px solid var(--accent); outline-offset: -1px; z-index: 1; }
     .cal-cell.today .cal-cell-num { color: var(--accent); font-weight: 500; }
     .cal-cell.has-conflict { outline: 1px dashed var(--yellow); outline-offset: -1px; }
     .cal-cell-num { font-size: var(--text-sm); color: var(--text); margin-bottom: 4px; }
-    .cal-cell-ads { display: flex; flex-wrap: wrap; gap: 2px; align-content: flex-start; overflow: hidden; }
-    .cal-ad-pill { font-size: var(--text-xs); padding: 5px 8px; min-height: 28px; border: none; cursor: pointer; font-family: var(--font); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .cal-cell-ads { min-width: 0; width: 100%; display: flex; flex-wrap: wrap; gap: 2px; align-content: flex-start; overflow: hidden; }
+    .cal-ad-pill { min-width: 0; width: 100%; font-size: var(--text-xs); padding: 5px 8px; min-height: 28px; border: none; cursor: pointer; font-family: var(--font); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .cal-ad-pill.chip-live { background: rgba(34,197,94,0.2); color: var(--green); }
     .cal-ad-pill.chip-scheduled { background: rgba(20,184,166,0.2); color: var(--accent); }
     .cal-ad-pill.chip-ended { background: rgba(102,102,102,0.2); color: var(--muted); }
@@ -498,10 +499,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     #start_at[readonly], #end_at[readonly] { cursor: pointer; }
 
     @media (min-width: 900px) {
-      .schedule-grid { grid-template-columns: 1fr minmax(420px, 560px); }
+      .schedule-grid { grid-template-columns: minmax(0, 1fr) minmax(420px, 560px); }
     }
     @media (min-width: 1200px) {
-      .schedule-grid { grid-template-columns: 1fr minmax(480px, 640px); }
+      .schedule-grid { grid-template-columns: minmax(0, 1fr) minmax(480px, 640px); }
       .cal-cell { min-height: 88px; }
       .cal-ad-pill { font-size: var(--text-xs); min-height: 30px; }
     }
@@ -574,6 +575,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       .new-ad-card { min-height: 88px; }
       .ad-cards { grid-template-columns: 1fr; }
     }
+    ${ANALYTICS_STYLES}
     </style>
 </head>
 <body>
@@ -583,7 +585,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     <div class="topbar-center">
       <span class="topbar-title">Gym Tracker</span>
       <span class="topbar-sep">/</span>
-      <span class="topbar-sub">ads admin</span>
+      <span class="topbar-sub">dashboard</span>
     </div>
     <div class="topbar-right">
       <button type="button" id="refreshBtn" class="topbar-refresh" title="Refresh">↻</button>
@@ -595,7 +597,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
   </div>
   <div class="main">
     <div class="schedule-page">
-      <div class="schedule-grid">
+      ${ANALYTICS_MARKUP}
+      <div class="schedule-grid" id="campaignsPanel" role="tabpanel" aria-labelledby="tabCampaigns" hidden>
         <div class="schedule-ads">
           <div class="main-toolbar" id="mainToolbar">
             <input type="text" id="adsSearch" placeholder="Search sponsor or ID" class="toolbar-search">
@@ -635,6 +638,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -688,6 +692,15 @@ export const ADMIN_HTML = `<!DOCTYPE html>
                 <span class="field-error" id="err-sponsor"></span>
               </div>
               <div class="field">
+                <label class="field-label" for="sponsored_label">Content label</label>
+                <select id="sponsored_label" name="sponsored_label">
+                  <option value="Sponsored">Sponsored</option>
+                  <option value="Partner">Partner</option>
+                  <option value="Student Organization">Student Organization</option>
+                  <option value="">None</option>
+                </select>
+              </div>
+              <div class="field">
                 <div class="field-label">Headline</div>
                 <input type="text" id="headline" name="headline" required placeholder="e.g. Your headline here">
                 <span class="field-error" id="err-headline"></span>
@@ -726,7 +739,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           </form>
           <aside class="preview-pane">
             <div id="adKpiBox" class="ad-kpi-box" hidden>
-              <div class="group-label">KPI (last 7d)</div>
+              <div class="group-label" id="adKpiPeriod">Performance · last 7 days</div>
               <div class="kpi-grid" id="adKpiGrid"></div>
             </div>
             <div id="adPreview" class="ad-preview"></div>
@@ -734,6 +747,11 @@ export const ADMIN_HTML = `<!DOCTYPE html>
               <button type="button" class="tier-btn" data-tier="text">Text</button>
               <button type="button" class="tier-btn active" data-tier="banner">Banner</button>
               <button type="button" class="tier-btn" data-tier="feature">Feature</button>
+            </div>
+            <div class="group report-actions" id="campaignReportActions" hidden>
+              <label class="field-label" for="reportPeriod">Campaign report</label>
+              <select id="reportPeriod"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="180">Last 180 days</option><option value="365">Last 365 days</option><option value="campaign">Campaign dates</option></select>
+              <a id="campaignReportLink" class="report-export" target="_blank" rel="noopener">Export campaign report ↗</a>
             </div>
           </aside>
         </div>
@@ -752,6 +770,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     </div>
   </div>
 
+  <script>${ANALYTICS_SCRIPT}</script>
   <script src="/vendor/flatpickr/flatpickr.min.js"></script>
   <script src="/vendor/flatpickr/plugins/rangePlugin.js"></script>
   <script>
@@ -966,6 +985,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     }
 
     function updateAdKpiBox() {
+      const actions = document.getElementById('campaignReportActions');
+      const selected = scheduledAds[selectedIndex];
+      actions.hidden = !selected;
+      if (selected) document.getElementById('campaignReportLink').href = '/api/admin/campaign-report?id=' + encodeURIComponent(selected.id) + '&days=' + document.getElementById('reportPeriod').value;
       const box = document.getElementById('adKpiBox');
       const grid = document.getElementById('adKpiGrid');
       if (!box || !grid) return;
@@ -985,18 +1008,37 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         '<div class="kpi-item"><span class="kpi-label">CTR</span><span class="kpi-value">' + formatCtrPct(stats) + '%</span></div>';
     }
 
-    async function loadPostHogStats() {
+    let statsRequest = 0;
+    async function loadAnalyticsStats() {
+      const currentRequest = ++statsRequest;
+      const status = document.getElementById('metricsStatus');
+      document.getElementById('appMetrics').hidden = true;
+      document.getElementById('dailyMetrics').hidden = true;
+      status.textContent = 'Loading analytics…';
       try {
-        const res = await fetchWithRetry('/api/admin/stats', { credentials: 'include' });
-        if (res.status === 401) { show401Banner(); return; }
+        const days = document.getElementById('analyticsPeriod').value;
+        const res = await fetchWithRetry('/api/admin/stats?days=' + days, { credentials: 'include' });
+        if (res.status === 401) { show401Banner(); throw new Error('Sign in to view analytics.'); }
+        if (!res.ok) throw new Error('Analytics unavailable. Refresh to try again.');
         const data = await res.json();
+        if (currentRequest !== statsRequest) return;
+        if (!data.configured) throw new Error('Analytics reporting is not configured yet.');
         perAdStats = Array.isArray(data.per_ad) ? data.per_ad : [];
-        renderAdCards();
-        updateAdKpiBox();
-      } catch (_) {
+        status.textContent = Number(data.active_period) ? 'Updated ' + new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) + ' · Last ' + data.days + ' days' : 'Collection is ready. Activity will appear as the updated app is used.';
+        document.getElementById('adKpiPeriod').textContent = 'Performance · last ' + data.days + ' days';
+        renderAnalytics(data, scheduledAds);
+        loadTrackedEvents();
+      } catch (error) {
+        if (currentRequest !== statsRequest) return;
         perAdStats = [];
+        status.textContent = error.message || 'Analytics unavailable.';
       }
+      renderAdCards();
+      updateAdKpiBox();
     }
+    document.getElementById('analyticsPeriod').addEventListener('change', loadAnalyticsStats);
+
+    document.getElementById('reportPeriod').addEventListener('change', updateAdKpiBox);
 
     let lastOverlayTrigger = null;
 
@@ -1156,7 +1198,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     function escapeHtml(s) {
       const div = document.createElement('div');
       div.textContent = s || '';
-      return div.innerHTML;
+      return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     function getAdsForDay(year, month, day) {
@@ -1330,6 +1372,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         document.getElementById('active').value = 'true';
         updateActiveInactiveButtons();
         document.getElementById('sponsor').value = '';
+        document.getElementById('sponsored_label').value = 'Sponsored';
         document.getElementById('headline').value = '';
         document.getElementById('subline').value = '';
         document.getElementById('cta').value = '';
@@ -1367,6 +1410,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         document.getElementById('active').value = data.active ? 'true' : 'false';
         updateActiveInactiveButtons();
         document.getElementById('sponsor').value = data.sponsor || '';
+        document.getElementById('sponsored_label').value = data.sponsored_label ?? 'Sponsored';
         document.getElementById('headline').value = data.headline || '';
         document.getElementById('subline').value = data.subline || '';
         document.getElementById('cta').value = data.cta || '';
@@ -1388,6 +1432,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     function getFormData() {
       return {
         sponsor: document.getElementById('sponsor').value.trim(),
+        sponsored_label: document.getElementById('sponsored_label').value,
         headline: document.getElementById('headline').value.trim(),
         subline: document.getElementById('subline').value.trim() || null,
         cta: document.getElementById('cta').value.trim(),
@@ -1417,7 +1462,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       const sectionHeader = '<div class="preview-section-header">' +
         (logo_url ? '<img src="' + escapeHtml(logo_url) + '" alt="" class="preview-section-header-logo" onerror="this.style.display=\\'none\\'">' : '') +
         '<span class="preview-section-header-title">' + escapeHtml(sponsor) + '</span>' +
-        '<span class="preview-section-sponsored">Sponsored</span></div>';
+        (d.sponsored_label ? '<span class="preview-section-sponsored">' + escapeHtml(d.sponsored_label) + '</span>' : '') + '</div>';
       const copyStack = '<div class="preview-copy-stack">' +
         '<strong class="preview-headline">' + escapeHtml(headline) + '</strong>' +
         (subline ? '<span class="preview-subline">' + escapeHtml(subline) + '</span>' : '') +
@@ -1720,7 +1765,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           selectAd(-1);
         }
         setStatus(fetchStatus, 'Connected', true);
-        loadPostHogStats();
+        loadAnalyticsStats();
       } catch (err) {
         setStatus(fetchStatus, 'Not connected', false);
         document.getElementById('adCards').classList.remove('loading');
@@ -1743,6 +1788,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         tier,
         active: document.getElementById('active').value === 'true',
         sponsor: document.getElementById('sponsor').value.trim(),
+        sponsored_label: document.getElementById('sponsored_label').value,
         headline: document.getElementById('headline').value.trim(),
         subline: document.getElementById('subline').value.trim() || null,
         cta: document.getElementById('cta').value.trim(),

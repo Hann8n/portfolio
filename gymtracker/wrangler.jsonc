@@ -6,9 +6,22 @@
     "binding": "ASSETS",
     "run_worker_first": ["/api/*", "/", "/admin*", "/ads*"]
   },
+  "d1_databases": [{
+    "binding": "METRICS",
+    "database_name": "gymtracker-metrics",
+    "database_id": "38bea70b-a15c-4813-9585-2effdcba4361",
+    "migrations_dir": "migrations"
+  }],
+  "ratelimits": [{
+    "name": "METRICS_RATE_LIMITER", "namespace_id": "48130517",
+    "simple": { "limit": 600, "period": 60 }
+  }],
+  "triggers": { "crons": ["23 7 * * *"] },
+  "workers_dev": false,
+  "preview_urls": false,
   "vars": {
-    "POSTHOG_PROJECT_ID": "352692",
-    "POSTHOG_HOST": "https://us.posthog.com"
+    "ACCESS_ISSUER": "https://orbyt-video.cloudflareaccess.com",
+    "ACCESS_AUDIENCE": "bd5a7772459973ac4a5d38222965f2d4af68423f9b97e16786d2731e241d4454"
   },
   "dev": {
     "host": "localhost"

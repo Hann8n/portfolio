@@ -21,6 +21,7 @@ interface AdConfig {
   id: string;
   active: boolean;
   sponsor: string;
+  sponsored_label?: string;
   headline: string;
   subline?: string | null;
   cta: string;
@@ -65,7 +66,7 @@ function corsHeaders(origin: string | null): Record<string, string> {
     origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     "Access-Control-Allow-Origin": allow,
-    "Access-Control-Allow-Methods": "GET, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
     "Access-Control-Max-Age": "86400",
   };
@@ -121,6 +122,12 @@ function validateAdConfig(
   const sponsor = o.sponsor;
   if (typeof sponsor !== "string" || !sponsor.trim()) {
     return { valid: false, error: "Missing or invalid required field: sponsor" };
+  }
+
+  if (o.sponsored_label != null &&
+      (typeof o.sponsored_label !== "string" ||
+       !["Sponsored", "Partner", "Student Organization", ""].includes(o.sponsored_label.trim()))) {
+    return { valid: false, error: "sponsored_label must be Sponsored, Partner, Student Organization, or empty" };
   }
 
   const headline = o.headline;
@@ -181,10 +188,21 @@ function validateAdConfig(
     };
   }
 
+  for (const field of ["start_at", "end_at"] as const) {
+    const value = o[field];
+    if (value != null && value !== "" && (typeof value !== "string" || !Number.isFinite(Date.parse(value)))) {
+      return { valid: false, error: `${field} must be a valid date` };
+    }
+  }
+  if (typeof o.start_at === "string" && typeof o.end_at === "string" && Date.parse(o.end_at) < Date.parse(o.start_at)) {
+    return { valid: false, error: "end_at must not precede start_at" };
+  }
+
   const config: AdConfig = {
     id: String(id).trim(),
     active: Boolean(o.active),
     sponsor: String(sponsor).trim(),
+    sponsored_label: typeof o.sponsored_label === "string" ? o.sponsored_label.trim() : "Sponsored",
     headline: String(headline).trim(),
     subline:
       o.subline != null && o.subline !== ""
@@ -298,130 +316,9 @@ import { getAdminHtml } from "./admin-html";
 import { getAdsLandingHtml } from "./ads-landing-html";
 import { getMainLandingHtml } from "./main-landing-html";
 
-interface PerAdStats {
-  ad_id: string;
-  impressions: number;
-  clicks: number;
-  ctr_percent: number;
-}
-
-async function fetchPostHogStats(env: Env): Promise<
-  | {
-      configured: true;
-      impressions: number;
-      clicks: number;
-      ctr_percent: number;
-      per_ad: PerAdStats[];
-    }
-  | { configured: false }
-> {
-  const apiKey = env.POSTHOG_PERSONAL_API_KEY;
-  const projectId = env.POSTHOG_PROJECT_ID;
-  const host = (env.POSTHOG_HOST || "https://us.posthog.com").replace(/\/$/, "");
-
-  if (!apiKey || !projectId) {
-    return { configured: false };
-  }
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`,
-  };
-
-  const runQuery = async (query: string, name: string): Promise<number> => {
-    const res = await fetch(`${host}/api/projects/${projectId}/query/`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        query: { kind: "HogQLQuery", query },
-        name,
-      }),
-    });
-    if (!res.ok) return 0;
-    const data = (await res.json()) as { results?: unknown[][] };
-    const rows = data.results;
-    if (!Array.isArray(rows) || rows.length === 0) return 0;
-    const first = rows[0];
-    if (!Array.isArray(first) || first.length === 0) return 0;
-    const val = first[0];
-    return typeof val === "number" ? val : parseInt(String(val), 10) || 0;
-  };
-
-  const runQueryRows = async (
-    query: string,
-    name: string
-  ): Promise<PerAdStats[]> => {
-    try {
-      const res = await fetch(`${host}/api/projects/${projectId}/query/`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          query: { kind: "HogQLQuery", query },
-          name,
-        }),
-      });
-      if (!res.ok) return [];
-      const data = (await res.json()) as {
-        results?: unknown[][];
-        columns?: string[];
-      };
-      const rows = data.results;
-      if (!Array.isArray(rows) || rows.length === 0) return [];
-      const parsed: PerAdStats[] = [];
-      for (const row of rows) {
-        if (!Array.isArray(row) || row.length < 3) continue;
-        const adId = String(row[0] ?? "").trim();
-        if (!adId) continue;
-        const imp = typeof row[1] === "number" ? row[1] : parseInt(String(row[1]), 10) || 0;
-        const clk = typeof row[2] === "number" ? row[2] : parseInt(String(row[2]), 10) || 0;
-        const ctr = imp > 0 ? (clk / imp) * 100 : 0;
-        parsed.push({ ad_id: adId, impressions: imp, clicks: clk, ctr_percent: ctr });
-      }
-      return parsed;
-    } catch {
-      return [];
-    }
-  };
-
-  const perAdQuery = `
-    SELECT
-      coalesce(properties.ad_id, '') AS ad_id,
-      countIf(event = 'ad_impression') AS impressions,
-      countIf(event = 'ad_tap') AS clicks
-    FROM events
-    WHERE event IN ('ad_impression', 'ad_tap')
-      AND timestamp >= now() - INTERVAL 7 DAY
-      AND coalesce(properties.placement, 'home_feed') = 'home_feed'
-    GROUP BY properties.ad_id
-    HAVING ad_id != ''
-    ORDER BY impressions DESC
-  `.trim();
-
-  const [aggResult, perAd] = await Promise.all([
-    Promise.all([
-      runQuery(
-        "SELECT count() FROM events WHERE event = 'ad_impression' AND timestamp >= now() - INTERVAL 7 DAY",
-        "ads-impressions-7d"
-      ),
-      runQuery(
-        "SELECT count() FROM events WHERE event = 'ad_tap' AND timestamp >= now() - INTERVAL 7 DAY",
-        "ads-clicks-7d"
-      ),
-    ]),
-    runQueryRows(perAdQuery, "ads-per-ad-7d"),
-  ]);
-
-  const [impressions, clicks] = aggResult;
-  const ctr_percent = impressions > 0 ? (clicks / impressions) * 100 : 0;
-
-  return {
-    configured: true,
-    impressions,
-    clicks,
-    ctr_percent,
-    per_ad: perAd,
-  };
-}
+import { hasAccessAuth } from "./access-auth";
+import { captureMetric, fetchAppStats, fetchEventStats } from "./metrics";
+import { buildCampaignReport, campaignReportHtml } from "./campaign-report";
 
 /** True if request is from local dev (host=localhost; prod uses gymtracker.jackhannon.net). */
 function isLocalRequest(request: Request): boolean {
@@ -433,20 +330,12 @@ function isLocalRequest(request: Request): boolean {
   }
 }
 
-/**
- * True if request passed Cloudflare Access or is local dev.
- * Cloudflare adds Cf-Access-Jwt-Assertion after a successful Access login; the user email
- * header is also present for authenticated requests (see Cloudflare Access docs).
- */
-function hasAccessAuth(request: Request): boolean {
-  if (isLocalRequest(request)) return true;
-  return !!(
-    request.headers.get("Cf-Access-Jwt-Assertion") ||
-    request.headers.get("Cf-Access-Authenticated-User-Email")
-  );
-}
-
 export default {
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+    // Raw analytics are retained for at most 366 days plus the daily cleanup interval.
+    if (env.METRICS) ctx.waitUntil(env.METRICS.prepare("DELETE FROM metric_events WHERE received_at < ?")
+      .bind(new Date(Date.now() - 366 * 86400000).toISOString()).run());
+  },
   async fetch(
     request: Request,
     env: Env,
@@ -456,7 +345,7 @@ export default {
     const path = normalizedPathname(url.pathname);
 
     if (path === "/admin") {
-      if (!hasAccessAuth(request)) {
+      if (!(await hasAccessAuth(request, env))) {
         const helpHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sign in required</title></head><body style="font-family:system-ui;max-width:32rem;margin:4rem auto;padding:2rem;">
           <h1>Sign in required</h1>
           <p>This admin is protected by <a href="https://developers.cloudflare.com/cloudflare-one/">Cloudflare Access</a>. Configure Access to protect <code>gymtracker.jackhannon.net/admin</code> and <code>/api/admin</code>.</p>
@@ -475,15 +364,59 @@ export default {
       });
     }
 
+    if (path === "/api/events") {
+      if (request.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405, request);
+      return captureMetric(request, env);
+    }
+
+    if (path === "/api/admin/campaign-report") {
+      if (!(await hasAccessAuth(request, env))) return jsonResponse({ error: "Unauthorized" }, 401, request);
+      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
+      const id = url.searchParams.get("id");
+      const days = url.searchParams.get("days");
+      if (days !== null && !["7", "30", "90", "180", "365", "campaign"].includes(days)) return jsonResponse({ error: "Invalid report period" }, 400, request);
+      const ads = await getAdsArray(env.AD_CONFIG);
+      const ad = ads.find(a => a.id === id);
+      if (!ad) return jsonResponse({ error: "Campaign not found" }, 404, request);
+      try {
+        const report = await buildCampaignReport(env, ad, days);
+        if (url.searchParams.get("format") === "json") return jsonResponse(report, 200, request);
+        const download = new URL(url);
+        download.searchParams.set("download", "1");
+        const filename = ad.id.replace(/[^a-z0-9_-]/gi, "-").slice(0, 80) || "campaign";
+        return new Response(campaignReportHtml(report, download.pathname + download.search), {
+          headers: { "Content-Type": "text/html; charset=utf-8", ...ADMIN_HTML_CACHE_HEADERS,
+            "Content-Disposition": (url.searchParams.get("download") === "1" ? "attachment" : "inline") + '; filename="' + filename + '-report.html"' },
+        });
+      } catch {
+        return jsonResponse({ error: "Campaign reporting temporarily unavailable" }, 503, request);
+      }
+    }
+
+    if (path === "/api/admin/events") {
+      if (!(await hasAccessAuth(request, env))) return jsonResponse({ error: "Unauthorized" }, 401, request);
+      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
+      const days = url.searchParams.get("days") || "7";
+      const campaign = url.searchParams.get("campaign");
+      if (!["7", "30", "90", "180", "365"].includes(days) || (campaign && campaign.length > 128)) return jsonResponse({ error: "Invalid event filters" }, 400, request);
+      try { return jsonResponse(await fetchEventStats(env, Number(days), campaign), 200, request); }
+      catch { return jsonResponse({ error: "Events temporarily unavailable" }, 503, request); }
+    }
+
     if (path === "/api/admin/stats") {
-      if (!hasAccessAuth(request)) {
+      if (!(await hasAccessAuth(request, env))) {
         return jsonResponse({ error: "Unauthorized" }, 401, request);
       }
       if (request.method !== "GET") {
         return jsonResponse({ error: "Method not allowed" }, 405, request);
       }
-      const stats = await fetchPostHogStats(env);
-      return jsonResponse(stats, 200, request);
+      try {
+        const days = url.searchParams.get("days") || "7";
+        if (!["7", "30", "90", "180", "365"].includes(days)) return jsonResponse({ error: "Invalid reporting period" }, 400, request);
+        return jsonResponse(await fetchAppStats(env, new Date(), Number(days)), 200, request);
+      } catch {
+        return jsonResponse({ configured: true, error: "Analytics temporarily unavailable" }, 503, request);
+      }
     }
 
     if (path === "/api/admin/ads") {
@@ -497,7 +430,7 @@ export default {
           },
         });
       }
-      if (!hasAccessAuth(request)) {
+      if (!(await hasAccessAuth(request, env))) {
         return jsonResponse({ error: "Unauthorized" }, 401, request);
       }
       if (request.method === "GET") {
@@ -547,6 +480,10 @@ export default {
             : "public, max-age=3600",
         },
       });
+    }
+
+    if (path === "/privacy" || path === "/privacy-policy") {
+      return env.ASSETS.fetch(new Request(new URL("/docs/privacy-policy.html", request.url), request));
     }
 
     if (path === "/ads") {
