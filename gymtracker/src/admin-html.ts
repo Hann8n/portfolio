@@ -348,14 +348,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .ad-card.selected { border-color: var(--accent); background: rgba(20,184,166,0.08); }
     .ad-card-head { font-weight: 500; font-size: var(--text-sm); line-height: 1.4; word-break: break-word; }
     .ad-card-dates { font-size: var(--text-xs); color: var(--muted); line-height: 1.4; }
-    .ad-card-stats { font-size: var(--text-xs); color: var(--green); display: block; margin-top: 2px; line-height: 1.4; }
     .ad-card-tier { font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; line-height: 1.4; }
-    .ad-kpi-box { margin-bottom: 16px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); }
-    .ad-kpi-box .group-label { margin-bottom: 8px; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; }
-    .kpi-item { display: flex; flex-direction: column; gap: 2px; }
-    .kpi-label { font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; }
-    .kpi-value { font-size: var(--text-sm); font-weight: 500; color: var(--green); }
     .chip { font-size: var(--text-xs); font-weight: 500; padding: 2px 6px; border: 1px solid transparent; line-height: 1.5; }
     .chip-live { color: var(--green); background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3); }
     .chip-scheduled { color: var(--accent); background: rgba(20,184,166,0.15); border-color: rgba(20,184,166,0.3); }
@@ -589,10 +582,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
             </div>
             <div class="group schedule-group">
               <div class="group-label">Schedule</div>
-              <div class="field-label">Start at (optional)</div>
+              <label class="field-label" for="start_at">Start at (optional)</label>
               <input type="text" id="start_at" name="start_at" placeholder="Pick date & time" readonly>
               <div id="endAtWrap" class="end-at-wrap" hidden>
-                <div class="field-label">End at (optional)</div>
+                <label class="field-label" for="end_at">End at (optional)</label>
                 <input type="text" id="end_at" name="end_at" placeholder="Pick date & time" readonly>
               </div>
               <div class="date-presets">
@@ -608,7 +601,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
             <div class="group">
               <div class="group-label">Creative</div>
               <div class="field">
-                <div class="field-label">Sponsor</div>
+                <label class="field-label" for="sponsor">Sponsor</label>
                 <input type="text" id="sponsor" name="sponsor" required placeholder="e.g. Acme Corp">
                 <span class="field-error" id="err-sponsor"></span>
               </div>
@@ -622,12 +615,12 @@ export const ADMIN_HTML = `<!DOCTYPE html>
                 </select>
               </div>
               <div class="field">
-                <div class="field-label">Headline</div>
+                <label class="field-label" for="headline">Headline</label>
                 <input type="text" id="headline" name="headline" required placeholder="e.g. Your headline here">
                 <span class="field-error" id="err-headline"></span>
               </div>
               <div class="field">
-                <div class="field-label">Subline (optional)</div>
+                <label class="field-label" for="subline">Subline (optional)</label>
                 <input type="text" id="subline" name="subline" placeholder="e.g. 123 Main St · Open 7am–10pm">
               </div>
               <div class="field">
@@ -636,21 +629,21 @@ export const ADMIN_HTML = `<!DOCTYPE html>
                 <span class="field-error" id="err-cta"></span>
               </div>
               <div class="field">
-                <div class="field-label">Destination URL (HTTPS)</div>
+                <label class="field-label" for="destination_url">Destination URL (HTTPS)</label>
                 <input type="url" id="destination_url" name="destination_url" required placeholder="https://">
                 <span class="field-error" id="err-destination_url"></span>
               </div>
               <div class="field" id="imageUrlWrap">
-                <div class="field-label">Image URL (required for banner/feature)</div>
+                <label class="field-label" for="image_url">Image URL (required for banner/feature)</label>
                 <input type="url" id="image_url" name="image_url" placeholder="https://">
                 <span class="field-error" id="err-image_url"></span>
               </div>
               <div class="field">
-                <div class="field-label">Logo URL (optional)</div>
+                <label class="field-label" for="logo_url">Logo URL (optional)</label>
                 <input type="url" id="logo_url" name="logo_url" placeholder="https://">
               </div>
               <div id="placementWrap" class="placement-wrap" hidden>
-                <div class="field-label">Placement</div>
+                <label class="field-label" for="placement">Placement</label>
                 <select id="placement" name="placement">
                   <option value="home_feed">Main feed</option>
                 </select>
@@ -659,20 +652,11 @@ export const ADMIN_HTML = `<!DOCTYPE html>
             </div>
           </form>
           <aside class="preview-pane">
-            <div id="adKpiBox" class="ad-kpi-box" hidden>
-              <div class="group-label" id="adKpiPeriod">Performance · last 7 days</div>
-              <div class="kpi-grid" id="adKpiGrid"></div>
-            </div>
             <div id="adPreview" class="ad-preview"></div>
             <div class="tier-toggle">
               <button type="button" class="tier-btn" data-tier="text">Text</button>
               <button type="button" class="tier-btn active" data-tier="banner">Banner</button>
               <button type="button" class="tier-btn" data-tier="feature">Feature</button>
-            </div>
-            <div class="group report-actions" id="campaignReportActions" hidden>
-              <label class="field-label" for="reportPeriod">Campaign report</label>
-              <select id="reportPeriod"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="180">Last 180 days</option><option value="365">Last 365 days</option><option value="campaign">Campaign dates</option></select>
-              <a id="campaignReportLink" class="report-export" target="_blank" rel="noopener">Export campaign report ↗</a>
             </div>
           </aside>
         </div>
@@ -797,8 +781,8 @@ ${ANALYTICS_SCRIPT}</script>
     const calDays = document.getElementById('calDays');
     const calMonthLabel = document.getElementById('calMonthLabel');
 
-    let calViewYear = new Date().getFullYear();
-    let calViewMonth = new Date().getMonth();
+    let calViewYear = Number.isInteger(dashboardPrefs.calendarYear) && dashboardPrefs.calendarYear >= 1970 && dashboardPrefs.calendarYear <= 9999 ? dashboardPrefs.calendarYear : new Date().getFullYear();
+    let calViewMonth = Number.isInteger(dashboardPrefs.calendarMonth) && dashboardPrefs.calendarMonth >= 0 && dashboardPrefs.calendarMonth <= 11 ? dashboardPrefs.calendarMonth : new Date().getMonth();
     const saveBtn = document.getElementById('saveBtn');
     const saveStatus = document.getElementById('saveStatus');
     const cloneBtn = document.getElementById('cloneBtn');
@@ -813,9 +797,10 @@ ${ANALYTICS_SCRIPT}</script>
     let formDirty = false;
     let suppressDirty = false;
     let previewDebounce = null;
-    let perAdStats = [];
-    let adsFilterStatus = 'all';
-    let adsSearchQuery = '';
+    let adsFilterStatus = ['all','live','scheduled','paused','ended'].includes(dashboardPrefs.adStatus) ? dashboardPrefs.adStatus : 'all';
+    let adsSearchQuery = typeof dashboardPrefs.adSearch === 'string' ? dashboardPrefs.adSearch.slice(0,200) : '';
+    document.getElementById('adsSearch').value = adsSearchQuery;
+    document.querySelectorAll('.status-filter').forEach(button => button.classList.toggle('active',button.dataset.filter === adsFilterStatus));
 
     function setStatus(el, msg, ok) {
       el.textContent = msg;
@@ -862,16 +847,6 @@ ${ANALYTICS_SCRIPT}</script>
       return { total: scheduledAds.length, live, scheduled, ended, paused };
     }
 
-    function formatStatusSummary(c) {
-      if (c.total === 0) return 'No ads';
-      const parts = [];
-      if (c.live) parts.push(c.live + ' live');
-      if (c.scheduled) parts.push(c.scheduled + ' scheduled');
-      if (c.ended) parts.push(c.ended + ' ended');
-      if (c.paused) parts.push(c.paused + ' paused');
-      return parts.join(' · ') || 'No ads';
-    }
-
     function renderOverview() {
       updateFilterChips(countByStatus());
       clearErrorBanner();
@@ -887,54 +862,12 @@ ${ANALYTICS_SCRIPT}</script>
       });
     }
 
-    function formatCompact(n) {
-      const x = Number(n);
-      if (!Number.isFinite(x)) return '0';
-      if (x >= 1000000) return (x / 1000000).toFixed(1) + 'M';
-      if (x >= 1000) return (x / 1000).toFixed(1) + 'k';
-      return String(Math.trunc(x));
-    }
-
-    /** A rate needs recorded views; zero views must not look like a measured zero percent. */
-    function formatCtrPct(stats) {
-      const views = Number(stats?.impressions);
-      const taps = Number(stats?.clicks);
-      if (!(views > 0) || !Number.isFinite(taps)) return 'Not available';
-      return (taps / views * 100).toFixed(1) + '%';
-    }
-
-    function getAdStats(adId) {
-      return perAdStats.find((s) => s.ad_id === adId) || null;
-    }
-
-    function updateAdKpiBox() {
-      const actions = document.getElementById('campaignReportActions');
-      const selected = scheduledAds[selectedIndex];
-      actions.hidden = !selected;
-      if (selected) document.getElementById('campaignReportLink').href = '/api/admin/campaign-report?id=' + encodeURIComponent(selected.id) + '&days=' + document.getElementById('reportPeriod').value;
-      const box = document.getElementById('adKpiBox');
-      const grid = document.getElementById('adKpiGrid');
-      if (!box || !grid) return;
-      if (selectedIndex < 0 || selectedIndex >= scheduledAds.length) {
-        box.hidden = true;
-        return;
-      }
-      const ad = scheduledAds[selectedIndex];
-      const stats = getAdStats(ad.id);
-      if (!stats) {
-        box.hidden = true;
-        return;
-      }
-      box.hidden = false;
-      grid.innerHTML = '<div class="kpi-item"><span class="kpi-label">Ad views</span><span class="kpi-value">' + formatCompact(stats.impressions) + '</span></div>' +
-        '<div class="kpi-item"><span class="kpi-label">Link taps</span><span class="kpi-value">' + formatCompact(stats.clicks) + '</span></div>' +
-        '<div class="kpi-item"><span class="kpi-label">Tap rate</span><span class="kpi-value">' + formatCtrPct(stats) + '</span></div>';
-    }
-
     let statsRequest = 0;
     async function loadAnalyticsStats() {
       const currentRequest = ++statsRequest;
       const status = document.getElementById('metricsStatus');
+      if (dashboardReady) saveDashboardPrefs({scroll:document.getElementById('dashboardContent').scrollTop});
+      dashboardReady = false;
       analyticsSnapshot = null;
       renderCampaignReporting(scheduledAds);
       document.getElementById('appMetrics').hidden = true;
@@ -948,24 +881,19 @@ ${ANALYTICS_SCRIPT}</script>
         const data = await res.json();
         if (currentRequest !== statsRequest) return;
         if (!data.configured) throw new Error('Analytics reporting is not configured yet.');
-        perAdStats = Array.isArray(data.per_ad) ? data.per_ad : [];
         status.textContent = Number(data.active_period) ? 'Updated ' + new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})  : 'Waiting for recorded activity';
-        document.getElementById('adKpiPeriod').textContent = 'Performance · last ' + data.days + ' days';
         renderAnalytics(data, scheduledAds);
         loadTrackedEvents();
       } catch (error) {
         if (currentRequest !== statsRequest) return;
-        perAdStats = [];
         analyticsSnapshot = null;
         renderCampaignReporting(scheduledAds);
         status.textContent = error.message || 'Analytics unavailable.';
+        restoreDashboardScroll();
       }
-      renderAdCards();
-      updateAdKpiBox();
     }
     document.getElementById('analyticsPeriod').addEventListener('change', loadAnalyticsStats);
 
-    document.getElementById('reportPeriod').addEventListener('change', updateAdKpiBox);
 
     let lastOverlayTrigger = null;
 
@@ -1080,10 +1008,6 @@ ${ANALYTICS_SCRIPT}</script>
         cardWrap.className = 'ad-cards';
         list.forEach(({ ad, i }) => {
           const s = adStatus(ad);
-          const stats = getAdStats(ad.id);
-          const statsLine = stats
-            ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' views · ' + formatCompact(stats.clicks) + ' link taps · ' + formatCtrPct(stats) + ' tap rate</span>'
-            : '';
           const card = document.createElement('div');
           card.className = 'ad-card-wrap';
           const canToggle = s === 'live' || s === 'paused';
@@ -1097,7 +1021,6 @@ ${ANALYTICS_SCRIPT}</script>
             '<span class="ad-card-head">' + escapeHtml(ad.sponsor) + ' — ' + escapeHtml(ad.id) + '</span>' +
             chipHtml +
             '<span class="ad-card-dates">' + formatDateRange(ad) + '</span>' +
-            (statsLine ? statsLine : '') +
             '<span class="ad-card-tier">' + (ad.tier || 'banner') + '</span>' +
             '</div>';
           const cardEl = card.querySelector('.ad-card');
@@ -1215,6 +1138,7 @@ ${ANALYTICS_SCRIPT}</script>
       if (formDirty && !confirm('Discard unsaved changes?')) return;
       formDirty = false;
       selectedIndex = index;
+      if (index >= 0 && scheduledAds[index]) { reportingCampaignId = scheduledAds[index].id; saveDashboardPrefs({campaign:reportingCampaignId}); renderCampaignReporting(scheduledAds); }
       setStatus(saveStatus, '', undefined);
       renderAdCards();
       renderCalendar();
@@ -1232,7 +1156,6 @@ ${ANALYTICS_SCRIPT}</script>
       updateImageUrlVisibility();
       updateDeleteButton();
       updatePreview();
-      updateAdKpiBox();
     }
 
     function markDirty() {
@@ -1579,6 +1502,7 @@ ${ANALYTICS_SCRIPT}</script>
 
     document.getElementById('adsSearch').addEventListener('input', (e) => {
       adsSearchQuery = (e.target.value || '').trim();
+      saveDashboardPrefs({adSearch:adsSearchQuery});
       renderAdCards();
     });
     document.querySelectorAll('.status-filter').forEach(btn => {
@@ -1586,22 +1510,26 @@ ${ANALYTICS_SCRIPT}</script>
         document.querySelectorAll('.status-filter').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         adsFilterStatus = btn.dataset.filter || 'all';
+        saveDashboardPrefs({adStatus:adsFilterStatus});
         renderAdCards();
       });
     });
 
     document.getElementById('calPrev').addEventListener('click', () => {
       if (calViewMonth === 0) { calViewMonth = 11; calViewYear--; } else calViewMonth--;
+      saveDashboardPrefs({calendarYear:calViewYear,calendarMonth:calViewMonth});
       renderCalendar();
     });
     document.getElementById('calNext').addEventListener('click', () => {
       if (calViewMonth === 11) { calViewMonth = 0; calViewYear++; } else calViewMonth++;
+      saveDashboardPrefs({calendarYear:calViewYear,calendarMonth:calViewMonth});
       renderCalendar();
     });
     document.getElementById('calToday').addEventListener('click', () => {
       const now = new Date();
       calViewYear = now.getFullYear();
       calViewMonth = now.getMonth();
+      saveDashboardPrefs({calendarYear:calViewYear,calendarMonth:calViewMonth});
       renderCalendar();
     });
 

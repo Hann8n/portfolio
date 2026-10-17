@@ -42,7 +42,7 @@ export async function buildCampaignReport(env: Env, ad: Campaign, days: string |
 }
 
 type Report = Awaited<ReturnType<typeof buildCampaignReport>>;
-export function campaignReportHtml(report: Report, downloadUrl: string): string {
+export function campaignReportHtml(report: Report, downloadUrl: string, standalone = false): string {
   const e = escapeHtml;
   const n = (value: unknown) => (Number(value) || 0).toLocaleString("en-US");
   const percent = (views: number, taps: number) => views ? ctr(views, taps).toFixed(2) + "%" : "Not available";
@@ -59,6 +59,8 @@ export function campaignReportHtml(report: Report, downloadUrl: string): string 
   const summary = hasData
     ? `The campaign recorded ${n(report.impressions)} ad ${report.impressions === 1 ? "view" : "views"} across ${n(report.reach)} unique app ${report.reach === 1 ? "install" : "installs"}. The link button was tapped ${n(report.clicks)} ${report.clicks === 1 ? "time" : "times"}.`
     : report.period.not_started ? "This campaign has not started yet." : "No campaign activity was recorded in the selected period.";
+  const selectedPeriod = report.period.label === "Campaign dates" ? "campaign" : report.period.label.match(/Last (\d+) days/)?.[1] || "30";
+  const periodOptions = periods.map(value => `<option value="${value}"${value === selectedPeriod ? " selected" : ""}>${value === "campaign" ? "Campaign dates" : `Last ${value} days`}</option>`).join("");
   const metrics = hasData ? `<div class="metrics">
     <div><strong>${n(report.impressions)}</strong><span>Ad views</span><small>Recorded after half the ad is visible for a second.</small></div>
     <div><strong>${n(report.reach)}</strong><span>Audience reached</span><small>Unique app installs with a recorded ad view.</small></div>
@@ -80,7 +82,8 @@ export function campaignReportHtml(report: Report, downloadUrl: string): string 
   * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font:15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
   a { color:var(--link); text-decoration:none; } a:hover { text-decoration:underline; }
   .actions { max-width:880px; margin:auto; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); }
-  .actions-group { display:flex; gap:8px; } .actions-group>* { font:500 13px/1.4 system-ui; padding:10px 14px; min-height:40px; border-radius:8px; cursor:pointer; }
+  .report-period { display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:12px; } .report-period select { max-width:100%; border:1px solid var(--line); border-radius:6px; padding:8px; color:var(--text); background:var(--bg); font:inherit; }
+  .actions { flex-wrap:wrap; } .actions-group { display:flex; gap:8px; } .actions-group>* { font:500 13px/1.4 system-ui; padding:10px 14px; min-height:40px; border-radius:8px; cursor:pointer; }
   .download { border:1px solid var(--line); color:var(--text); } button { border:1px solid var(--maroon); background:var(--maroon); color:white; }
   a:focus-visible,button:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
   .sheet { max-width:880px; margin:auto; padding:28px 24px; } .brand { color:var(--muted); font-size:13px; margin-bottom:16px; }
@@ -109,7 +112,7 @@ export function campaignReportHtml(report: Report, downloadUrl: string): string 
   }
   @media screen and (max-width:600px) { .actions { align-items:start; flex-direction:column; padding:14px 20px; } .actions-group { width:100%; } .actions-group>* { flex:1; text-align:center; } .sheet { padding:24px 20px; } h1 { font-size:26px; } .periods,.campaign-details { grid-template-columns:1fr; } .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; } .campaign-details .destination { grid-column:auto; } table { min-width:410px; } footer { flex-direction:column; gap:4px; } }
 </style></head><body>
-<nav class="actions" aria-label="Report export"><a href="/admin">← Dashboard</a><div class="actions-group"><a class="download" href="${e(downloadUrl)}">Download HTML</a><button onclick="window.print()">Save as PDF / Print</button></div></nav>
+<nav class="actions" aria-label="Report export">${standalone ? '<span>Campaign report</span>' : `<a href="/admin">← Dashboard</a><form class="report-period" action="/api/admin/campaign-report" method="get"><input type="hidden" name="id" value="${e(campaign.id)}"><label for="reportPeriod">Period</label><select id="reportPeriod" name="days" onchange="this.form.requestSubmit()">${periodOptions}</select><noscript><button type="submit">Apply</button></noscript></form>`}<div class="actions-group">${standalone ? "" : `<a class="download" href="${e(downloadUrl)}">Download HTML</a>`}<button onclick="window.print()">Save as PDF / Print</button></div></nav>
 <main class="sheet">
   <header><div class="brand">Gym Tracker · Campaign report</div><h1>${e(campaign.sponsor)}</h1><p class="headline">${e(campaign.headline)}</p>
     <dl class="periods"><div><dt>Reporting period · ${e(report.period.label)}</dt><dd>${e(date(report.period.from))} – ${e(date(report.period.before))} · UTC</dd></div><div><dt>Dates with recorded activity</dt><dd>${e(activity)}</dd></div></dl>

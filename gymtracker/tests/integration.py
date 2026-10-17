@@ -42,6 +42,17 @@ stats=data('/api/admin/stats')
 assert stats['sessions']==baseline['sessions']+1,stats
 assert stats['siri_actions']==baseline['siri_actions']+2,stats
 assert stats['siri_unavailable']==baseline['siri_unavailable']+1,stats
+# Distinguish repeat feature use from unique app installs, including first use on a second install.
+for name,which in [('event_open',0),('event_open',1),('settings_open',0)]:
+    assert request('/api/events',event(name,which),'POST')[0]==204
+feature_stats=data('/api/admin/stats')
+def feature_row(report,name):
+    return next((r for r in report.get('features',[]) if r['event']==name),{'opens':0,'installations':0,'repeat_installations':0})
+before=feature_row(baseline,'event_open');after=feature_row(feature_stats,'event_open')
+assert after['opens']==before['opens']+3,after
+assert after['installations']==before['installations']+2,after
+assert after['repeat_installations']==before['repeat_installations']+1,after
+assert feature_row(feature_stats,'settings_open')['opens']==feature_row(baseline,'settings_open')['opens']+1
 per=next(x for x in stats['per_ad'] if x['ad_id']==campaign)
 assert per['reach']==2,per
 assert per['impressions']==2 and per['clicks']==1 and per['ctr_percent']==50,per
