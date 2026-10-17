@@ -14,11 +14,11 @@ Cloudflare Worker serving ad config at `gymtracker.jackhannon.net/api/ads`.
 
 3. **Deploy:** `npm run deploy`
 
-4. **(Optional) PostHog analytics** — To show ad impressions, clicks, and CTR in the Overview:
-   - Create a [Personal API key](https://us.posthog.com/settings/user-api-keys#personal-api-keys) with `query:read` scope
-   - `npx wrangler secret put POSTHOG_PERSONAL_API_KEY`
-   - Project ID and host are in `wrangler.jsonc` vars; override via `POSTHOG_PROJECT_ID` / `POSTHOG_HOST` if needed
-   - The app must send `ad_impression` and `ad_tap` events to PostHog
+4. **First-party analytics** — Apply the D1 migration before deploying the Worker:
+   ```bash
+   npx wrangler d1 migrations apply METRICS --remote
+   ```
+   No external analytics account or SDK is required. See [analytics-reporting.md](docs/analytics-reporting.md) for definitions, privacy, retention, validation, and reporting conventions.
 
 ## Initial KV State
 
@@ -32,6 +32,10 @@ Before any ad has been PUT, GET returns `404` with `{ "error": "No active ad" }`
 | GET | /api/ads?schedule=1 | X-API-Key header | Return all scheduled ads (for admin) |
 | PUT | /api/ads | X-API-Key header | Upsert ad config (by id) |
 | OPTIONS | /api/ads | None | CORS preflight |
+| POST | /api/events | Public, rate limited | Allowlisted first-party events |
+| GET | /api/admin/stats?days=7 | Cloudflare Access | Overview statistics (7, 30, 90, 180, or 365 days) |
+| GET | /api/admin/events?days=7&campaign=ID | Cloudflare Access | Aggregated event readouts |
+| GET | /api/admin/campaign-report?id=ID&days=30 | Cloudflare Access | Print-ready campaign report; optional download=1 or format=json |
 
 The API filters ads by `start_at` and `end_at` on the server. Multiple ads can be scheduled; the public GET returns the one active "now". Legacy single-ad config is auto-migrated on first request.
 
@@ -42,6 +46,7 @@ The API filters ads by `start_at` and `end_at` on the server. Multiple ads can b
 | `id` | string | yes | Unique; e.g. `sponsor-2025-q1` |
 | `active` | boolean | yes | Whether ad can be shown |
 | `sponsor` | string | yes | Non-empty |
+| `sponsored_label` | `"Sponsored" \| "Partner" \| "Student Organization" \| ""` | no | Missing/null defaults to Sponsored; empty hides label |
 | `headline` | string | yes | Non-empty |
 | `subline` | string \| null | no | Optional |
 | `cta` | string | yes | Call-to-action text |
