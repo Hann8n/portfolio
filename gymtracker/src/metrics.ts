@@ -86,6 +86,7 @@ export async function fetchAppStats(env: Env, now = new Date(), days = 7) {
       GROUP BY ad_id ORDER BY impressions DESC LIMIT 200`).bind(from, before),
     env.METRICS.prepare(`SELECT substr(received_at, 1, 10) AS date, COUNT(DISTINCT installation_id) AS active,
       SUM(event = 'app_session') AS sessions, SUM(event LIKE 'siri_%') AS siri_actions,
+      SUM(event = 'event_open') AS event_opens, SUM(event = 'passport_open') AS passport_opens, SUM(event = 'settings_open') AS settings_opens,
       SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks
       FROM metric_events WHERE received_at >= ? AND received_at < ? GROUP BY date ORDER BY date`).bind(from, before),
     env.METRICS.prepare(`SELECT app_version, build, COUNT(DISTINCT installation_id) AS active,
@@ -98,6 +99,13 @@ export async function fetchAppStats(env: Env, now = new Date(), days = 7) {
       COUNT(DISTINCT CASE WHEN event = 'ad_impression' THEN installation_id END) AS reach,
       SUM(event = 'app_session') AS sessions FROM metric_events WHERE received_at >= ? AND received_at < ?`)
       .bind(new Date(now.getTime() - days * 2 * day).toISOString(), from),
+    env.METRICS.prepare(`SELECT event, SUM(uses) AS opens, COUNT(*) AS installations,
+      SUM(uses > 1) AS repeat_installations, MAX(last_received) AS last_received
+      FROM (SELECT event, installation_id, COUNT(*) AS uses, MAX(received_at) AS last_received
+        FROM metric_events WHERE received_at >= ? AND received_at < ?
+        AND event IN ('event_open','passport_open','settings_open','siri_crowds','siri_events','siri_event_details')
+        GROUP BY event, installation_id)
+      GROUP BY event ORDER BY opens DESC`).bind(from, before),
   ]);
   if (results.some(r => !r.success)) throw new Error("Analytics query failed");
   const coverage = await env.METRICS.prepare("SELECT MIN(received_at) AS since FROM metric_events").first<{ since: string | null }>();
@@ -110,7 +118,7 @@ export async function fetchAppStats(env: Env, now = new Date(), days = 7) {
     ctr_percent: ctr(metrics.impressions, metrics.clicks),
     per_ad: results[1].results.map(row => ({ ...row, ctr_percent: ctr(Number(row.impressions), Number(row.clicks)) })),
     daily: results[2].results, versions: results[3].results, siri: results[4].results,
-    previous: results[5].results[0],
+    previous: results[5].results[0], features: results[6].results,
   };
 }
 

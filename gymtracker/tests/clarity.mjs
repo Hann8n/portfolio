@@ -15,7 +15,7 @@ try {
   const campaign=await page.locator('#creativeCampaign').inputValue();
   const sponsor=await page.locator('#dashboardAdPreview .creative-sponsor').innerText();
   const metricText=await page.locator('#campaignContextDetails').innerText();
-  for(const label of ['Ad views','Audience reached','Link taps','Tap rate','Sponsor label','Starts','Ends','Link destination','Campaign ID']) assert.ok(metricText.includes(label));
+  for(const label of ['Ad views','Audience reached','Link taps','Tap rate','Ad format','Starts','Ends','Link destination','Campaign ID']) assert.ok(metricText.includes(label));
   assert.ok(!metricText.includes('CTA')&&!metricText.includes('CTR'));
   const report=await browser.newPage();
   await report.goto('http://localhost:8788/api/admin/campaign-report?id='+encodeURIComponent(campaign)+'&days=30');
@@ -43,9 +43,9 @@ try {
   await page.getByRole('tab',{name:'Campaigns',exact:true}).click();
   await page.locator('.ad-card').first().click();
   assert.equal(await page.locator('label[for=cta]').innerText(),'Link button text');
-  const before=await page.evaluate(()=>formatCtrPct({impressions:0,clicks:3,ctr_percent:0}));
-  assert.equal(before,'Not available');
-  assert.equal(await page.evaluate(()=>formatCtrPct({impressions:100,clicks:3})), '3.0%');
+  assert.equal(await page.locator('#formOverlay a[href*="campaign-report"]').count(),0);
+  assert.equal(await page.locator('#adKpiBox').count(),0);
+  assert.equal(await page.locator('#reportPeriod').count(),0);
   assert.deepEqual(errors,[]);
   console.log('PASS: app/campaign separation, preview beside metrics/settings, report consistency, editor context, compact tabs, event columns and zero-view rates');
 } finally {await browser.close();}

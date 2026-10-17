@@ -384,7 +384,7 @@ export default {
         const download = new URL(url);
         download.searchParams.set("download", "1");
         const filename = ad.id.replace(/[^a-z0-9_-]/gi, "-").slice(0, 80) || "campaign";
-        return new Response(campaignReportHtml(report, download.pathname + download.search), {
+        return new Response(campaignReportHtml(report, download.pathname + download.search, url.searchParams.get("download") === "1"), {
           headers: { "Content-Type": "text/html; charset=utf-8", ...ADMIN_HTML_CACHE_HEADERS,
             "Content-Disposition": (url.searchParams.get("download") === "1" ? "attachment" : "inline") + '; filename="' + filename + '-report.html"' },
         });

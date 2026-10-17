@@ -40,3 +40,9 @@ assert.ok(!renderAdPreview({...ad,sponsored_label:''}).includes('class="creative
 assert.ok(renderAdPreview(ad).includes('Sponsored'));
 assert.ok(!renderAdPreview({...ad,image_url:'javascript:alert(1)',logo_url:'data:image/svg+xml,test'}).includes('src='));
 console.log('PASS: shared previews, all ad formats and labels, escaping and HTTPS-only artwork');
+
+assert.ok(html.includes('id="reportPeriod"')&&html.includes('value="campaign"'));
+const standalone=campaignReportHtml(base,'?download=1',true);
+assert.ok(!standalone.includes('id="reportPeriod"')&&!standalone.includes('class="download"'));
+assert.ok(standalone.includes('window.print()')&&standalone.includes('aria-label="Ad creative preview"'));
+console.log('PASS: report viewer owns period controls; downloaded document has only print controls');

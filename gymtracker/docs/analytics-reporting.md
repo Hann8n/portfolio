@@ -48,3 +48,13 @@ npm run deploy
 Production campaigns are not seeded or modified by the tests. Local QA fixtures are identified by `qa-campaign-*` IDs. Do not publish screenshots containing QA fixture counts as actual advertiser results.
 
 Dashboard and campaign reports use the same ad preview renderer. Reports show the current saved creative (not a historical creative snapshot). Ad views are qualified impressions, audience reached counts distinct anonymous app installs with a view, link taps count button interactions, and tap rate is taps divided by views. A rate is unavailable when there are no recorded views.
+
+## Dashboard contexts and feature adoption
+
+Editing contains fields and a live preview. Campaign metrics and the export link live in Campaigns. The report viewer owns its period selector, including Campaign dates; downloaded HTML omits dashboard controls and retains print/PDF. Fields already visible in the ad preview are not repeated beside it.
+
+The browser remembers the current workspace, period, campaign, event filters, chart metric, campaign search/status, calendar month and content scroll position. Invalid or deleted selections fall back safely, and blocked storage does not prevent use. This stores dashboard preferences only; edit-form values are not saved as drafts.
+
+Feature usage aggregates Events detail opens, Campus ID display opens and Settings screen opens. Each row shows total opens, distinct anonymous app installs, share of all active installs, repeat installs (at least two opens in the period), and opens per install that used the feature. Shares overlap across features and include background-only active installs in their denominator. The chart can show these opens by UTC day. This measures event-detail use, not merely seeing the Events feed.
+
+Siri has separate per-action requests, answered requests and distinct app installs. Crowd recommendations share the existing crowds event. Only actions invoked in the app can be measured; speech Siri never matched is not reported as a failed intent. All counts remain best effort and anonymous. No campus ID contents or event text are collected.
