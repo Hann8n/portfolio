@@ -474,7 +474,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       .topbar-sub { display: none; }
       .topbar-sep { display: none; }
       .topbar-title { font-size: var(--text-sm); }
-      .topbar-home { font-size: var(--text-sm); }
+      .topbar-home { font-size: var(--text-sm); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+      .topbar-center { min-width: max-content; }
       .main-toolbar { flex-direction: column; align-items: stretch; }
       .toolbar-search { max-width: none; }
       .form-actions { flex-direction: column; align-items: stretch; }
