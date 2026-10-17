@@ -1,6 +1,6 @@
 # Analytics and advertiser reporting
 
-The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overview shows delivery, reach, engagement, previous-period changes, daily charts, and product health. Events provides aggregated occurrences, unique app installs, last receipt times, campaign/category filtering, and CSV export. Campaign reports support the last 7, 30, 90, 180, or 365 days, or campaign dates (retained up to 366 days), print-to-PDF, and downloadable HTML with inline styles (artwork still requires its source URL).
+The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overview shows active app installs, visits, feature usage, daily app activity, and release/Siri reliability. Campaigns contains a selected-campaign reporting workspace: the saved ad preview sits beside delivery, reach, link taps, tap rate, schedule, format, label, destination, version, editing, and export. Campaign metrics and creative are kept out of the app overview. The campaign schedule and creative manager follow below. Events provides aggregated occurrences, unique app installs, last receipt times, campaign/category filtering, and CSV export. Campaign reports support the last 7, 30, 90, 180, or 365 days, or campaign dates (retained up to 366 days), print-to-PDF, and downloadable HTML with inline styles (artwork still requires its source URL).
 
 ## Measurement and design references
 

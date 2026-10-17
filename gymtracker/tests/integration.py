@@ -43,6 +43,7 @@ assert stats['sessions']==baseline['sessions']+1,stats
 assert stats['siri_actions']==baseline['siri_actions']+2,stats
 assert stats['siri_unavailable']==baseline['siri_unavailable']+1,stats
 per=next(x for x in stats['per_ad'] if x['ad_id']==campaign)
+assert per['reach']==2,per
 assert per['impressions']==2 and per['clicks']==1 and per['ctr_percent']==50,per
 events=data('/api/admin/events?campaign='+campaign+'&days=30')['events']
 assert len(events)==2 and sum(e['occurrences'] for e in events)==3,events

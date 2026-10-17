@@ -32,7 +32,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
       --cta-orange: #E87722;
-      --ad-maroon: #861F41;
+      --ad-maroon: #e59ab4;
       --ad-cta-fill: rgba(134, 31, 65, 0.18);
       --text-xs: 11px;
       --text-sm: 12px;
@@ -515,7 +515,10 @@ export const ADMIN_HTML = `<!DOCTYPE html>
   <div class="main">
     <div class="schedule-page">
       ${ANALYTICS_MARKUP}
-      <div class="schedule-grid" id="campaignsPanel" role="tabpanel" aria-labelledby="tabCampaigns" hidden>
+      <section id="campaignsPanel" role="tabpanel" aria-labelledby="tabCampaigns" hidden>
+        <div id="campaignReporting"></div>
+        <div class="campaign-section-heading"><h2>Schedule & creative</h2><p class="analytics-note">Create and edit campaigns, or review their scheduled dates.</p></div>
+        <div class="schedule-grid">
         <div class="schedule-ads">
           <div class="main-toolbar" id="mainToolbar">
             <input type="text" id="adsSearch" placeholder="Search sponsor or ID" class="toolbar-search">
@@ -555,7 +558,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </section>
       </div>
     </div>
   </div>
@@ -931,6 +935,8 @@ ${ANALYTICS_SCRIPT}</script>
     async function loadAnalyticsStats() {
       const currentRequest = ++statsRequest;
       const status = document.getElementById('metricsStatus');
+      analyticsSnapshot = null;
+      renderCampaignReporting(scheduledAds);
       document.getElementById('appMetrics').hidden = true;
       document.getElementById('dailyMetrics').hidden = true;
       status.textContent = 'Loading analytics…';
@@ -950,6 +956,8 @@ ${ANALYTICS_SCRIPT}</script>
       } catch (error) {
         if (currentRequest !== statsRequest) return;
         perAdStats = [];
+        analyticsSnapshot = null;
+        renderCampaignReporting(scheduledAds);
         status.textContent = error.message || 'Analytics unavailable.';
       }
       renderAdCards();
