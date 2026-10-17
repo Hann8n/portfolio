@@ -1,6 +1,6 @@
 # Analytics and advertiser reporting
 
-The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overview shows delivery, reach, engagement, previous-period changes, daily charts, and product health. Events provides aggregated occurrences, unique installations, sessions, last receipt times, campaign/category filtering, and CSV export. Campaign reports support the last 7, 30, 90, 180, or 365 days, or campaign dates (retained up to 366 days), print-to-PDF, and downloadable self-contained HTML.
+The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overview shows delivery, reach, engagement, previous-period changes, daily charts, and product health. Events provides aggregated occurrences, unique app installs, last receipt times, campaign/category filtering, and CSV export. Campaign reports support the last 7, 30, 90, 180, or 365 days, or campaign dates (retained up to 366 days), print-to-PDF, and downloadable HTML with inline styles (artwork still requires its source URL).
 
 ## Measurement and design references
 
@@ -19,7 +19,7 @@ The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overv
 - **Session:** a foreground launch, or return after 30 minutes in background. Siri-only sessions do not count as foreground app sessions.
 - **Active installations:** distinct installation IDs with any recorded event in the period, including Siri activity. Feature users count installations that open that feature, without collecting its content.
 - **Siri data returned:** live or cached responses; unavailable, missing event, and invalid requests are separate failures. Per-action statuses remain in the statistics API and release breakdowns are shown in Overview.
-- Counts use server receipt time. Reporting windows are rolling 7/30/90/180/365 days; UTC daily charts have partial first and last days. Campaign windows intersect the selected range with the configured campaign schedule. Campaign metadata is the current configuration, not a historical snapshot. Use new IDs for new bookings and increment creative versions when replacing content.
+- Counts use server receipt time. Reporting windows are rolling 7/30/90/180/365 days; UTC daily charts have partial first and last days. Preset reporting windows preserve the selected length even when campaign settings change. The Campaign dates option uses the configured schedule, limited to available retention. Campaign metadata is the current configuration, not a historical snapshot. Use new IDs for new bookings and increment creative versions when replacing content.
 - No spend, CPM, CPC, sales, registrations, ROAS, conversion, or attribution figures are invented. These require actual billing or downstream conversion data before they can be reported accurately.
 
 ## First-party storage and deployment
@@ -46,3 +46,5 @@ npm run deploy
 ```
 
 Production campaigns are not seeded or modified by the tests. Local QA fixtures are identified by `qa-campaign-*` IDs. Do not publish screenshots containing QA fixture counts as actual advertiser results.
+
+Dashboard and campaign reports use the same ad preview renderer. Reports show the current saved creative (not a historical creative snapshot). Ad views are qualified impressions, audience reached counts distinct anonymous app installs with a view, link taps count button interactions, and tap rate is taps divided by views. A rate is unavailable when there are no recorded views.

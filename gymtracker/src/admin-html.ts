@@ -1,3 +1,4 @@
+import { AD_PREVIEW_STYLES, AD_PREVIEW_SCRIPT } from "./ad-preview";
 import { ANALYTICS_STYLES, ANALYTICS_MARKUP, ANALYTICS_SCRIPT } from "./analytics-ui";
 /** Admin UI HTML — served at /admin, uses Cloudflare Access for auth. */
 export const ADMIN_HTML = `<!DOCTYPE html>
@@ -405,91 +406,6 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     .id-version-header { min-width: 0; max-width: 320px; justify-self: center; }
     .id-version-header input { min-height: 36px; padding: 6px 10px; font-size: var(--text-sm); }
     .ad-preview { border: none; padding: 0; background: transparent; min-height: 8rem; overflow: visible; }
-    /* Section header inside frosted preview card (logo + sponsor | Sponsored) */
-    .preview-section-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      padding: 14px 16px 10px;
-      box-sizing: border-box;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .preview-section-header-logo {
-      width: 26px;
-      height: 26px;
-      object-fit: contain;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    .preview-section-header-title {
-      font-size: var(--text-sm);
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--text);
-      line-height: 1.2;
-      flex: 1;
-      min-width: 0;
-    }
-    .preview-section-sponsored {
-      font-size: var(--text-sm);
-      font-weight: 500;
-      color: var(--muted);
-      flex-shrink: 0;
-      line-height: 1.2;
-    }
-    .preview {
-      display: flex; flex-direction: column; align-items: stretch; text-align: left;
-      width: 100%; max-width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0;
-      overflow: hidden;
-      background: rgba(20, 20, 20, 0.75);
-      backdrop-filter: blur(40px) saturate(150%);
-      -webkit-backdrop-filter: blur(40px) saturate(150%);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-    .preview-text-inner {
-      display: flex; flex-direction: column; gap: 12px;
-      padding: 18px 16px; width: 100%;
-    }
-    .preview-section-header + .preview-text-inner {
-      padding-top: 14px;
-    }
-    .preview-body {
-      display: flex; flex-direction: column; gap: 12px;
-      padding: 12px 16px 18px; width: 100%;
-    }
-    .preview-copy-stack {
-      display: flex; flex-direction: column; align-items: flex-start; width: 100%;
-    }
-    .preview-headline {
-      font-size: var(--text-xl); font-weight: 700; line-height: 1.25; color: var(--text);
-      margin-top: 0;
-    }
-    .preview-subline {
-      font-size: var(--text-sm); font-weight: 500; color: var(--muted); line-height: 1.4; margin-top: 6px;
-    }
-    .preview-cta-wrap {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      width: 100%; padding: 10px;
-      color: var(--ad-maroon); background: var(--ad-cta-fill);
-      font-size: var(--text-sm); font-weight: 600; cursor: default;
-      border-radius: 0; box-sizing: border-box;
-    }
-    .preview-cta-arrow { font-size: 12px; opacity: 0.95; line-height: 1; }
-    .preview-img-divider { height: 1px; width: 100%; background: var(--border); flex-shrink: 0; }
-    .preview-img-wrap { width: 100%; overflow: hidden; position: relative; background: var(--border); }
-    .preview-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .preview-img-wrap.preview-img-error { background: var(--border); }
-    .preview-img-wrap.preview-img-error .preview-img { display: none; }
-    .preview-img-placeholder {
-      width: 100%; background: var(--border); display: flex; align-items: center; justify-content: center;
-      font-size: var(--text-sm); color: var(--muted);
-    }
-
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: var(--border); }
 
@@ -576,6 +492,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       .ad-cards { grid-template-columns: 1fr; }
     }
     ${ANALYTICS_STYLES}
+    ${AD_PREVIEW_STYLES}
     </style>
 </head>
 <body>
@@ -710,7 +627,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
                 <input type="text" id="subline" name="subline" placeholder="e.g. 123 Main St · Open 7am–10pm">
               </div>
               <div class="field">
-                <div class="field-label">CTA</div>
+                <label class="field-label" for="cta">Link button text</label>
                 <input type="text" id="cta" name="cta" required placeholder="e.g. Learn more">
                 <span class="field-error" id="err-cta"></span>
               </div>
@@ -770,7 +687,8 @@ export const ADMIN_HTML = `<!DOCTYPE html>
     </div>
   </div>
 
-  <script>${ANALYTICS_SCRIPT}</script>
+  <script>${AD_PREVIEW_SCRIPT}
+${ANALYTICS_SCRIPT}</script>
   <script src="/vendor/flatpickr/flatpickr.min.js"></script>
   <script src="/vendor/flatpickr/plugins/rangePlugin.js"></script>
   <script>
@@ -973,11 +891,12 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       return String(Math.trunc(x));
     }
 
-    /** PostHog rows may omit or stringify ctr_percent; never throw from card render. */
+    /** A rate needs recorded views; zero views must not look like a measured zero percent. */
     function formatCtrPct(stats) {
-      if (!stats || typeof stats !== 'object') return '0.0';
-      const x = Number(stats.ctr_percent);
-      return Number.isFinite(x) ? x.toFixed(1) : '0.0';
+      const views = Number(stats?.impressions);
+      const taps = Number(stats?.clicks);
+      if (!(views > 0) || !Number.isFinite(taps)) return 'Not available';
+      return (taps / views * 100).toFixed(1) + '%';
     }
 
     function getAdStats(adId) {
@@ -1003,9 +922,9 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         return;
       }
       box.hidden = false;
-      grid.innerHTML = '<div class="kpi-item"><span class="kpi-label">Impressions</span><span class="kpi-value">' + formatCompact(stats.impressions) + '</span></div>' +
-        '<div class="kpi-item"><span class="kpi-label">Clicks</span><span class="kpi-value">' + formatCompact(stats.clicks) + '</span></div>' +
-        '<div class="kpi-item"><span class="kpi-label">CTR</span><span class="kpi-value">' + formatCtrPct(stats) + '%</span></div>';
+      grid.innerHTML = '<div class="kpi-item"><span class="kpi-label">Ad views</span><span class="kpi-value">' + formatCompact(stats.impressions) + '</span></div>' +
+        '<div class="kpi-item"><span class="kpi-label">Link taps</span><span class="kpi-value">' + formatCompact(stats.clicks) + '</span></div>' +
+        '<div class="kpi-item"><span class="kpi-label">Tap rate</span><span class="kpi-value">' + formatCtrPct(stats) + '</span></div>';
     }
 
     let statsRequest = 0;
@@ -1024,7 +943,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
         if (currentRequest !== statsRequest) return;
         if (!data.configured) throw new Error('Analytics reporting is not configured yet.');
         perAdStats = Array.isArray(data.per_ad) ? data.per_ad : [];
-        status.textContent = Number(data.active_period) ? 'Updated ' + new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) + ' · Last ' + data.days + ' days' : 'Collection is ready. Activity will appear as the updated app is used.';
+        status.textContent = Number(data.active_period) ? 'Updated ' + new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})  : 'Waiting for recorded activity';
         document.getElementById('adKpiPeriod').textContent = 'Performance · last ' + data.days + ' days';
         renderAnalytics(data, scheduledAds);
         loadTrackedEvents();
@@ -1155,7 +1074,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
           const s = adStatus(ad);
           const stats = getAdStats(ad.id);
           const statsLine = stats
-            ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' imp · ' + formatCompact(stats.clicks) + ' clk · ' + formatCtrPct(stats) + '% CTR</span>'
+            ? '<span class="ad-card-stats">' + formatCompact(stats.impressions) + ' views · ' + formatCompact(stats.clicks) + ' link taps · ' + formatCtrPct(stats) + ' tap rate</span>'
             : '';
           const card = document.createElement('div');
           card.className = 'ad-card-wrap';
@@ -1350,7 +1269,7 @@ export const ADMIN_HTML = `<!DOCTYPE html>
       if (!id) { setFieldError('id', 'ID is required'); return false; }
       if (!sponsor) { setFieldError('sponsor', 'Sponsor is required'); return false; }
       if (!headline) { setFieldError('headline', 'Headline is required'); return false; }
-      if (!cta) { setFieldError('cta', 'CTA is required'); return false; }
+      if (!cta) { setFieldError('cta', 'Link button text is required'); return false; }
       if (!destination_url) { setFieldError('destination_url', 'Destination URL is required'); return false; }
       if (!isValidHttpsUrl(destination_url)) { setFieldError('destination_url', 'Must be a valid HTTPS URL'); return false; }
 
@@ -1450,41 +1369,11 @@ export const ADMIN_HTML = `<!DOCTYPE html>
 
     function updatePreview() {
       const d = getFormData();
-      const tier = d.tier || 'banner';
-      const sponsorRaw = d.sponsor || getPlaceholder('sponsor');
-      const sponsor = sponsorRaw.toUpperCase();
-      const headline = d.headline || getPlaceholder('headline');
-      const subline = d.subline || getPlaceholder('subline');
-      const cta = d.cta || getPlaceholder('cta');
-      const image_url = d.image_url || null;
-      const logo_url = d.logo_url || null;
-      const usesImageLayout = tier !== 'text';
-      const sectionHeader = '<div class="preview-section-header">' +
-        (logo_url ? '<img src="' + escapeHtml(logo_url) + '" alt="" class="preview-section-header-logo" onerror="this.style.display=\\'none\\'">' : '') +
-        '<span class="preview-section-header-title">' + escapeHtml(sponsor) + '</span>' +
-        (d.sponsored_label ? '<span class="preview-section-sponsored">' + escapeHtml(d.sponsored_label) + '</span>' : '') + '</div>';
-      const copyStack = '<div class="preview-copy-stack">' +
-        '<strong class="preview-headline">' + escapeHtml(headline) + '</strong>' +
-        (subline ? '<span class="preview-subline">' + escapeHtml(subline) + '</span>' : '') +
-        '</div>';
-      const ctaBtn = '<div class="preview-cta-wrap"><span class="preview-cta-text">' + escapeHtml(cta) + '</span><span class="preview-cta-arrow">↗</span></div>';
-      let html;
-      if (usesImageLayout) {
-        const imgHeight = tier === 'feature' ? 220 : 140;
-        html = '<div class="preview preview-' + tier + '">' + sectionHeader;
-        if (image_url) {
-          html += '<div class="preview-img-wrap" style="height:' + imgHeight + 'px">';
-          html += '<img src="' + escapeHtml(image_url) + '" alt="" class="preview-img" onerror="this.parentElement.classList.add(\\'preview-img-error\\')">';
-          html += '</div>';
-        } else {
-          html += '<div class="preview-img-placeholder" style="height:' + imgHeight + 'px">Image</div>';
-        }
-        html += '<div class="preview-img-divider"></div>';
-        html += '<div class="preview-body">' + copyStack + ctaBtn + '</div></div>';
-      } else {
-        html = '<div class="preview preview-text">' + sectionHeader + '<div class="preview-text-inner">' + copyStack + ctaBtn + '</div></div>';
-      }
-      adPreview.innerHTML = html;
+      adPreview.innerHTML = renderAdPreview({ ...d,
+        sponsor: d.sponsor || getPlaceholder('sponsor'),
+        headline: d.headline || getPlaceholder('headline'),
+        cta: d.cta || getPlaceholder('cta')
+      });
     }
 
     function debouncePreview() {
