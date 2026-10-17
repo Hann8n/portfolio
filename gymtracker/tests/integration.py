@@ -59,10 +59,22 @@ assert request('/api/admin/ads',{**ad,'start_at':'bad date'},'PUT')[0]==400
 assert request('/api/admin/ads',{**ad,'start_at':'2026-11-02T00:00:00Z','end_at':'2026-11-01T00:00:00Z'},'PUT')[0]==400
 report=data('/api/admin/campaign-report?id='+campaign+'&days=30&format=json')
 assert (report['impressions'],report['clicks'],report['reach'],report['unique_clickers'])==(2,1,2,1),report
+period_start=datetime.fromisoformat(report['period']['from'].replace('Z','+00:00'))
+period_end=datetime.fromisoformat(report['period']['before'].replace('Z','+00:00'))
+assert abs((period_end-period_start).total_seconds()-30*86400)<1,report['period']
+assert report['period']['label']=='Last 30 days'
+# Editing the current schedule must not erase recorded historical activity in a preset window.
+assert request('/api/admin/ads',{**ad,'start_at':'2030-01-01T00:00:00Z'},'PUT')[0]==200
+assert data('/api/admin/campaign-report?id='+campaign+'&days=30&format=json')['impressions']==2
+future=data('/api/admin/campaign-report?id='+campaign+'&days=campaign&format=json')
+assert future['period']['not_started'] is True and future['impressions']==0
+assert request('/api/admin/ads',ad,'PUT')[0]==200
 status,html,headers=request('/api/admin/campaign-report?id='+campaign+'&days=30')
 assert status==200 and 'Campus Partners &lt;Sample&gt;' in html and '50.00%' in html
 assert 'Save as PDF / Print' in html and 'Cache-Control' in headers
-assert 'anonymous installations' in html
+assert 'unique app' in html and 'What happened' in html
+assert 'break-before:page' not in html
+assert 'Link button text' in html
 assert request('/api/admin/campaign-report?id='+campaign+'&days=-1')[0]==400
 assert request('/api/admin/campaign-report?id=missing')[0]==404
 assert request('/api/admin/campaign-report?id='+campaign+'&download=1')[2]['Content-Disposition'].startswith('attachment')
