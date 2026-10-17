@@ -75,8 +75,8 @@ export function campaignReportHtml(report: Report, downloadUrl: string): string 
   @media screen and (max-width:600px) { .creative-details { grid-template-columns:1fr; } }
   @media print { .creative-details { grid-template-columns:minmax(0,270px) minmax(0,1fr); gap:20px; } .creative-copy h3 { font-size:13pt; } .creative-copy p,.creative-button { font-size:9pt; } .creative-header { padding:10px; } .creative-copy { padding:10px; } .creative-preview-feature .creative-image-wrap { height:165px; } .creative-preview-banner .creative-image-wrap { height:105px; } }
   :root { color-scheme:light dark; --bg:#fff; --text:#333; --secondary:#555; --muted:#767676; --line:#e5e5e5; --link:#c95a7a; --maroon:#861f41; }
-  .dark-theme { --bg:#1a1a1a; --text:#e0e0e0; --secondary:#b3b3b3; --muted:#969696; --line:#333; }
-  @media(prefers-color-scheme:dark) { :root:not(.light-theme):not(.dark-theme) { --bg:#1a1a1a; --text:#e0e0e0; --secondary:#b3b3b3; --muted:#969696; --line:#333; } }
+  .dark-theme { --bg:#1a1a1a; --text:#e0e0e0; --secondary:#b3b3b3; --muted:#969696; --line:#333; --ad-maroon:#e59ab4; }
+  @media(prefers-color-scheme:dark) { :root:not(.light-theme):not(.dark-theme) { --bg:#1a1a1a; --text:#e0e0e0; --secondary:#b3b3b3; --muted:#969696; --line:#333; --ad-maroon:#e59ab4; } }
   * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font:15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
   a { color:var(--link); text-decoration:none; } a:hover { text-decoration:underline; }
   .actions { max-width:880px; margin:auto; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); }
@@ -98,14 +98,14 @@ export function campaignReportHtml(report: Report, downloadUrl: string): string 
   .empty { color:var(--secondary); margin:0; font-size:13px; } footer { display:flex; justify-content:space-between; gap:16px; border-top:1px solid var(--line); margin-top:20px; padding-top:12px; font-size:10px; color:var(--muted); }
   @page { size:A4; margin:14mm 16mm; }
   @media print {
-    :root,.dark-theme { color-scheme:light; --bg:white; --text:#333; --secondary:#555; --muted:#666; --line:#ddd; }
+    :root,.dark-theme { color-scheme:light; --bg:white; --text:#333; --secondary:#555; --muted:#666; --line:#ddd; --ad-maroon:#861f41; }
     .actions { display:none; } .sheet { max-width:none; padding:0; } body { font-size:10pt; } .brand { margin-bottom:12px; font-size:9pt; }
     h1 { font-size:22pt; } .headline { font-size:10pt; margin-bottom:14px; } .periods { font-size:9pt; gap:16px; }
-    section { margin-top:16px; padding-top:14px; } h2 { font-size:11pt; margin-bottom:8px; } .summary { font-size:10pt; margin-bottom:14px; }
+    section { margin-top:12px; padding-top:10px; } h2 { font-size:11pt; margin-bottom:8px; } .summary { font-size:10pt; margin-bottom:14px; }
     .metrics { gap:16px; } .metrics strong { font-size:20pt; } .metrics span { font-size:9pt; } .metrics small { font-size:8pt; }
     .engagement { font-size:9pt; margin-top:12px; } table,.campaign-details { font-size:9pt; } th,td { padding:6px 5px; }
     thead { display:table-header-group; } .caption,.notes { font-size:8pt; line-height:1.5; } .notes p { margin-bottom:6px; } .table-wrap { overflow:visible; }
-    footer { font-size:8pt; margin-top:14px; padding-top:8px; }
+    footer { font-size:8pt; margin-top:10px; padding-top:6px; break-inside:avoid; }
   }
   @media screen and (max-width:600px) { .actions { align-items:start; flex-direction:column; padding:14px 20px; } .actions-group { width:100%; } .actions-group>* { flex:1; text-align:center; } .sheet { padding:24px 20px; } h1 { font-size:26px; } .periods,.campaign-details { grid-template-columns:1fr; } .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; } .campaign-details .destination { grid-column:auto; } table { min-width:410px; } footer { flex-direction:column; gap:4px; } }
 </style></head><body>
