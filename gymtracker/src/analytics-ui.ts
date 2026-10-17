@@ -62,11 +62,28 @@ export const ANALYTICS_STYLES = `
   .analytics-table .secondary { display: block; color: var(--muted); font: 11px/1.6 var(--font-mono); margin-top: 3px; }
   .analytics-link { color: var(--accent); font-size: 12px; text-decoration: none; }
   .analytics-link:hover { text-decoration: underline; }
-  .dashboard-preview { margin:20px 0; }
-  .dashboard-preview .analytics-card-header { flex-wrap:wrap; }
-  .dashboard-preview select { max-width:100%; }
-  .dashboard-preview-layout { display:grid; grid-template-columns:minmax(0,390px) minmax(0,1fr); gap:24px; align-items:center; }
-  @media(max-width:700px) { .dashboard-preview-layout { grid-template-columns:minmax(0,1fr); gap:12px; } }
+  .campaign-workspace { margin-bottom:28px; }
+  .campaign-workspace .analytics-card-header { flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+  .campaign-workspace select { max-width:100%; width:min(100%,380px); }
+  .campaign-context { display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:28px; align-items:start; }
+  .campaign-context .creative-preview { max-width:320px; }
+  .campaign-context .overview-kpis { margin-bottom:20px; }
+  .campaign-context .overview-kpi { padding:0 16px; }
+  .campaign-context .overview-kpi:first-child { padding-left:0; }
+  .campaign-context .overview-kpi-value { font-size:26px; }
+  .campaign-facts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px 24px; margin:0; font-size:12px; }
+  .campaign-facts dt { color:var(--muted); margin-bottom:4px; }
+  .campaign-facts dd { margin:0; overflow-wrap:anywhere; line-height:1.5; }
+  .campaign-facts .wide { grid-column:1/-1; }
+  .campaign-detail-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:16px; }
+  .campaign-detail-actions button { padding:8px 12px; min-height:36px; }
+  .campaign-detail-actions a { color:var(--accent); text-decoration:none; font-size:12px; }
+  .campaign-section-heading { margin-bottom:16px; }
+  .campaign-section-heading h2 { font-size:16px; font-weight:600; margin:0 0 6px; }
+  .overview-section-heading { margin:0 0 16px; }
+  .overview-section-heading h2 { font-size:16px; font-weight:600; margin:0 0 5px; }
+  @media(max-width:1100px) { .campaign-facts { grid-template-columns:repeat(2,minmax(0,1fr)); } .campaign-context .overview-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px; } .campaign-context .overview-kpi:nth-child(3) { padding-left:0; border:0; } }
+  @media(max-width:760px) { .campaign-context { grid-template-columns:minmax(0,1fr); gap:24px; } .campaign-context .creative-preview { max-width:390px; } }
   .analytics-footer { margin-top: 18px; color: var(--muted); font-size: 11px; }
   .analytics-details { margin-top: 20px; }
   .analytics-details summary { color: #bbb; font-size: 12px; cursor: pointer; padding: 12px 0; }
@@ -100,7 +117,7 @@ export const ANALYTICS_STYLES = `
 
 export const ANALYTICS_MARKUP = `
   <header class="workspace-heading">
-    <div><h1 id="workspaceTitle">Dashboard</h1><p class="workspace-sub" id="workspaceDescription">Campaign performance and product activity.</p></div>
+    <div><h1 id="workspaceTitle">Dashboard</h1><p class="workspace-sub" id="workspaceDescription">App activity, campaign reporting, and tracked events.</p></div>
     <div class="workspace-controls"><div class="period-control"><label for="analyticsPeriod">Reporting period</label><select id="analyticsPeriod"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="180">Last 180 days</option><option value="365">Last 365 days</option></select></div><p id="metricsStatus" class="analytics-note" role="status">Loading data…</p></div>
   </header>
   <nav class="dashboard-nav" role="tablist" aria-label="Dashboard sections">
@@ -143,6 +160,7 @@ export const ANALYTICS_SCRIPT = String.raw`
     ['overview', 'campaigns', 'events'].forEach(name => { document.getElementById(name + 'Panel').hidden = name !== view; });
     document.querySelectorAll('[data-view]').forEach(btn => { const active = btn.dataset.view === view; btn.setAttribute('aria-selected', String(active)); btn.tabIndex = active ? 0 : -1; });
     if (view === 'events') loadTrackedEvents();
+    if (view === 'overview') requestAnimationFrame(() => { const metric = document.getElementById('chartMetric'); if (metric && analyticsSnapshot) renderActivityChart(metric.value); });
   }
   document.querySelectorAll('[data-view]').forEach((btn, index, buttons) => {
     btn.addEventListener('click', () => showDashboardView(btn.dataset.view));
@@ -169,48 +187,73 @@ export const ANALYTICS_SCRIPT = String.raw`
     const max = Math.max(2, Math.ceil(Math.max(0, ...points.map(p => p.value || 0)) / 2) * 2);
     const width = Math.max(300, document.getElementById('activityChart').clientWidth), left = 44, top = 14, baseline = 168, usable = width - left - 8;
     const slot = usable / points.length, barWidth = Math.min(34, slot * .55);
-    const label = {impressions:'Recorded ad views', sessions:'App visits', active:'Active app installs'}[metric];
+    const label = {impressions:'Recorded ad views', sessions:'App visits', active:'Active app installs', siri_actions:'Siri requests'}[metric];
     let svg = '<svg class="analytics-chart" viewBox="0 0 ' + width + ' 205" role="img" aria-label="' + label + ' per UTC day. ' + points.map(p => p.date + ': ' + (p.value == null ? 'no recorded events' : p.value)).join('; ') + '">';
     [0, .5, 1].forEach(r => { const y = baseline - r * (baseline - top); svg += '<line class="grid-line" x1="44" x2="' + (width - 8) + '" y1="' + y + '" y2="' + y + '"/><text x="34" y="' + (y + 4) + '" text-anchor="end">' + analyticsNumber(Math.ceil(r * max)) + '</text>'; });
     points.forEach((p, i) => { const h = (p.value || 0) / max * (baseline - top); svg += '<rect class="bar" x="' + (left + i * slot + (slot - barWidth) / 2) + '" y="' + (baseline - h) + '" width="' + barWidth + '" height="' + h + '"><title>' + p.date + ': ' + (p.value == null ? 'No recorded events' : analyticsNumber(p.value)) + '</title></rect>'; if (i === 0 || i === points.length - 1 || i === Math.floor(points.length / 2)) svg += '<text x="' + (left + (i + .5) * slot) + '" y="192" text-anchor="middle">' + new Date(p.date + 'T12:00:00Z').toLocaleDateString('en-US', {month:'short',day:'numeric',timeZone:'UTC'}) + '</text>'; });
     document.getElementById('activityChart').innerHTML = svg + '</svg>';
   }
+  let reportingCampaignId = '';
+  function metricTiles(items) {
+    return '<div class="overview-kpis">' + items.map(([label,value,help]) => '<div class="overview-kpi"><span class="overview-kpi-label">' + label + '</span><strong class="overview-kpi-value">' + value + '</strong><span class="metric-help">' + help + '</span></div>').join('') + '</div>';
+  }
+  function renderCampaignReporting(ads) {
+    const host = document.getElementById('campaignReporting');
+    if (!host) return;
+    if (!ads.length) { host.innerHTML = '<section class="analytics-card campaign-workspace"><h2>Campaign reporting</h2><p class="analytics-note">Create a campaign below to see its creative, delivery, and advertiser report here.</p></section>'; return; }
+    const ad = ads.find(a => a.id === reportingCampaignId) || ads.find(a => adStatus(a) === 'live') || ads[0];
+    reportingCampaignId = ad.id;
+    host.innerHTML = '<section class="analytics-card campaign-workspace"><div class="analytics-card-header"><div><h2>Campaign reporting</h2><p class="analytics-note">Creative, delivery, and settings for one campaign.</p></div><label><span class="visually-hidden">Select campaign</span><select id="creativeCampaign">' + ads.map(a => '<option value="' + escapeHtml(a.id) + '">' + escapeHtml(a.sponsor + ' · ' + a.id) + '</option>').join('') + '</select></label></div><div class="campaign-context"><div><div id="dashboardAdPreview">' + renderAdPreview(ad) + '</div><p class="analytics-note" style="margin-top:10px">Current saved creative</p></div><div id="campaignContextDetails"></div></div></section>';
+    document.getElementById('creativeCampaign').value = ad.id;
+    document.getElementById('creativeCampaign').addEventListener('change', event => { reportingCampaignId = event.target.value; updateCampaignContext(ads.find(a => a.id === reportingCampaignId)); });
+    updateCampaignContext(ad);
+  }
+  function updateCampaignContext(ad) {
+    if (!ad) return;
+    document.getElementById('dashboardAdPreview').innerHTML = renderAdPreview(ad);
+    const data = analyticsSnapshot;
+    const stats = data?.per_ad?.find(row => row.ad_id === ad.id) || {};
+    const views = Number(stats.impressions) || 0, taps = Number(stats.clicks) || 0;
+    const reach = Number(stats.reach) || 0;
+    const days = document.getElementById('analyticsPeriod').value;
+    let html = '<p class="analytics-note" style="margin-bottom:14px">Performance · last ' + days + ' days</p>';
+    html += data ? metricTiles([
+      ['Ad views',analyticsNumber(views),'Half the ad visible for a second.'],
+      ['Audience reached',analyticsNumber(reach),'Unique app installs with a view.'],
+      ['Link taps',analyticsNumber(taps),'Link button interactions.'],
+      ['Tap rate',analyticsPercent(taps,views),analyticsNumber(taps) + (taps === 1 ? ' tap ÷ ' : ' taps ÷ ') + analyticsNumber(views) + ' views × 100.']
+    ]) : '<p class="analytics-note" style="margin-bottom:18px">Metrics are not available. The saved creative and settings are shown below.</p>';
+    const date = value => value ? new Date(value).toLocaleString([], {month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : 'Not set';
+    const facts = [
+      ['Sponsor',ad.sponsor],['Status',adStatus(ad)],['Starts',date(ad.start_at)],['Ends',date(ad.end_at)],
+      ['Ad format',ad.tier || 'banner'],['Sponsor label',ad.sponsored_label ?? 'Sponsored'],
+      ['Creative version',ad.creative_version || 'Not set'],['Placement',ad.placement || 'home_feed'],
+      ['Link button text',ad.cta],['Campaign ID',ad.id],['Link destination',ad.destination_url]
+    ];
+    html += '<dl class="campaign-facts">' + facts.map(([label,value]) => '<div' + (label === 'Link destination' ? ' class="wide"' : '') + '><dt>' + label + '</dt><dd>' + escapeHtml(value || (label === 'Sponsor label' ? 'No label' : 'Not set')) + '</dd></div>').join('') + '</dl>';
+    html += '<div class="campaign-detail-actions"><button type="button" id="editReportingCampaign">Edit campaign</button><a id="dashboardCampaignExport" target="_blank" rel="noopener" href="/api/admin/campaign-report?id=' + encodeURIComponent(ad.id) + '&days=' + days + '">Export campaign report ↗</a></div><p class="analytics-note" style="margin-top:12px">Link taps do not confirm website visits or sales. Reports include these results and the current saved creative; earlier versions may differ.</p>';
+    document.getElementById('campaignContextDetails').innerHTML = html;
+    document.getElementById('editReportingCampaign').addEventListener('click', () => { const index = scheduledAds.findIndex(a => a.id === ad.id); if (index >= 0) { selectAd(index); openFormOverlay('Edit: ' + (ad.sponsor || ad.id)); } });
+  }
   function renderAnalytics(data, ads) {
     analyticsSnapshot = data;
-    const previous = data.previous || {};
-    const ctr = analyticsPercent(data.clicks, data.impressions);
-    const kpis = [
-      ['Ad views', data.impressions, 'Recorded after half the ad is visible for a second.', analyticsDelta(data.impressions, Number(previous.impressions))],
-      ['Audience reached', data.reach, 'Unique app installs with a recorded ad view.', analyticsDelta(data.reach, Number(previous.reach))],
-      ['Link taps', data.clicks, 'Times an ad’s link button was tapped.', analyticsDelta(data.clicks, Number(previous.clicks))],
-      ['Tap rate', ctr, analyticsNumber(data.clicks) + (Number(data.clicks) === 1 ? ' link tap ÷ ' : ' link taps ÷ ') + analyticsNumber(data.impressions) + ' recorded ad views.', ''],
-    ];
-    document.getElementById('appMetrics').innerHTML = '<div class="overview-kpis">' + kpis.map(([label,value,help,note]) => '<div class="overview-kpi"><span class="overview-kpi-label">' + label + '</span><strong class="overview-kpi-value">' + (typeof value === 'string' ? value : analyticsNumber(value)) + '</strong><span class="metric-help">' + help + '</span>' + (data.comparison_available && note ? '<span class="overview-kpi-detail">' + note + '</span>' : '') + '</div>').join('') + '</div>';
-    const campaigns = (data.per_ad || []).slice(0, 6);
-    const frequency = data.reach ? (data.impressions / data.reach).toFixed(2) : '—';
-    const availableSiri = Number(data.siri_actions) - Number(data.siri_unavailable);
-    let html = '<div class="analytics-grid"><section class="analytics-card"><div class="analytics-card-header"><h2>Activity over time</h2><label><span class="visually-hidden">Chart metric</span><select id="chartMetric"><option value="impressions">Ad views</option><option value="sessions">App visits</option><option value="active">Active app installs</option></select></label></div><div id="activityChart"></div><p class="analytics-note">Recorded activity by day · UTC. Empty dates have no recorded events; activity before collection began is unknown.</p></section>';
-    html += '<section class="analytics-card"><div class="analytics-card-header"><h2>Responses to your ads</h2></div><div class="engagement-row"><span>App installs that tapped a link</span><strong>' + analyticsNumber(data.unique_clickers) + '</strong></div><div class="engagement-row"><span>Views per reached app install</span><strong>' + frequency + '</strong></div><p class="analytics-note">An app install is one copy of the app. It is not a new download or a verified person. A person using two devices may count twice.</p><p class="analytics-note">Link taps show interest. They do not confirm that someone visited the website, signed up, or made a purchase.</p></section></div>';
-    html += '<div class="analytics-grid"><section class="analytics-card"><div class="analytics-card-header"><h2>Campaign performance</h2><a href="#" class="analytics-link" id="viewCampaigns">Manage campaigns ↗</a></div>';
-    html += campaigns.length ? '<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th scope="col">Campaign</th><th scope="col">Ad views</th><th scope="col">Link taps</th><th scope="col">Tap rate</th><th scope="col">Report</th></tr></thead><tbody>' + campaigns.map(row => { const ad = ads.find(a => a.id === row.ad_id); return '<tr><th scope="row">' + escapeHtml(ad?.sponsor || row.ad_id) + '<span class="secondary">' + escapeHtml(row.ad_id) + '</span></th><td>' + analyticsNumber(row.impressions) + '</td><td>' + analyticsNumber(row.clicks) + '</td><td>' + analyticsPercent(row.clicks, row.impressions) + '</td><td><a class="analytics-link" target="_blank" rel="noopener" href="/api/admin/campaign-report?id=' + encodeURIComponent(row.ad_id) + '&days=' + data.days + '">Export ↗</a></td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="analytics-empty">Campaign activity will appear as the updated app is used.</p>';
-    html += '</section><section class="analytics-card"><div class="analytics-card-header"><h2>Product health</h2></div><div class="product-strip"><div><span class="analytics-note">Active · 24h</span><strong>' + analyticsNumber(data.active_24h) + '</strong></div><div><span class="analytics-note">Active · ' + data.days + 'd</span><strong>' + analyticsNumber(data.active_period) + '</strong></div><div><span class="analytics-note">App visits</span><strong>' + analyticsNumber(data.sessions) + '</strong></div></div><div class="product-health"><div class="engagement-row"><span>App installs opening events</span><strong>' + analyticsNumber(data.event_users) + '</strong></div><div class="engagement-row"><span>App installs opening Campus ID</span><strong>' + analyticsNumber(data.passport_users) + '</strong></div><div class="engagement-row"><span>Siri requests answered</span><strong>' + analyticsNumber(availableSiri) + ' / ' + analyticsNumber(data.siri_actions) + '</strong></div></div><p class="analytics-note">Active counts app installs with a recorded event. Visits start on launch or after 30 minutes away. Answered Siri requests returned live or cached data.</p></section></div>';
-    if (data.versions?.length) html += '<details class="analytics-details"><summary>Release adoption & Siri reliability</summary><div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th scope="col">Version (build)</th><th scope="col">Active app installs</th><th scope="col">App visits</th><th scope="col">Siri actions</th><th scope="col">Unavailable / invalid</th></tr></thead><tbody>' + data.versions.map(row => '<tr><th scope="row">' + escapeHtml(row.app_version) + ' (' + escapeHtml(row.build) + ')</th><td>' + analyticsNumber(row.active) + '</td><td>' + analyticsNumber(row.sessions) + '</td><td>' + analyticsNumber(row.siri_actions) + '</td><td>' + analyticsNumber(row.siri_unavailable) + '</td></tr>').join('') + '</tbody></table></div></details>';
-    html += '<details class="metric-definitions"><summary>How these numbers are counted</summary><dl><div><dt>Ad views (impressions)</dt><dd>At least half the ad must be visible for one continuous second. Each ad version counts once per app visit.</dd></div><div><dt>Audience reached</dt><dd>Each anonymous app install counts once for the period, even if it sees the ad several times. It is not a count of people or new downloads.</dd></div><div><dt>Link taps & tap rate</dt><dd>Link taps are button interactions. Tap rate = taps ÷ ad views × 100. Repeat taps can produce a rate above 100%; this is not a conversion rate.</dd></div><div><dt>Coverage</dt><dd>Older app versions, analytics opt-outs, and events that fail to upload are missing. An empty period does not prove that no one saw an ad.</dd></div></dl></details>';
-
-    if (ads.length) html += '<section class="analytics-card dashboard-preview"><div class="analytics-card-header"><h2>Ad preview</h2><label><span class="visually-hidden">Preview campaign</span><select id="creativeCampaign">' + ads.map(ad => '<option value="' + escapeHtml(ad.id) + '">' + escapeHtml(ad.sponsor + ' · ' + ad.id) + '</option>').join('') + '</select></label></div><div class="dashboard-preview-layout"><div id="dashboardAdPreview"></div><p class="analytics-note">Current saved creative, including its artwork, label, and link button. The same preview appears in the campaign report. It may differ from older versions included in the reporting period.</p></div></section>';
-    const previousPreview = document.getElementById('creativeCampaign')?.value;
+    const answered = Math.max(0, Number(data.siri_actions) - Number(data.siri_unavailable));
+    document.getElementById('appMetrics').innerHTML = '<div class="overview-section-heading"><h2>App overview</h2><p class="analytics-note">How people use Gym Tracker · last ' + data.days + ' days</p></div>' + metricTiles([
+      ['Active · 24 hours',analyticsNumber(data.active_24h),'App installs with a recorded event.'],
+      ['Active · ' + data.days + ' days',analyticsNumber(data.active_period),'Unique app installs in this period.'],
+      ['App visits',analyticsNumber(data.sessions),'Launches or returns after 30 minutes away.'],
+      ['Siri requests answered',analyticsNumber(answered) + ' / ' + analyticsNumber(data.siri_actions),'Requests that returned live or cached data.']
+    ]);
+    let html = '<div class="analytics-grid"><section class="analytics-card"><div class="analytics-card-header"><h2>App activity over time</h2><label><span class="visually-hidden">Chart metric</span><select id="chartMetric"><option value="sessions">App visits</option><option value="active">Active app installs</option><option value="siri_actions">Siri requests</option></select></label></div><div id="activityChart"></div><p class="analytics-note">Recorded events by UTC day. Empty dates have no recorded activity; older versions and opt-outs are not represented.</p></section>';
+    html += '<section class="analytics-card"><div class="analytics-card-header"><h2>Feature usage</h2></div><div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th scope="col">Feature</th><th scope="col">Opens</th><th scope="col">App installs</th></tr></thead><tbody><tr><th scope="row">Recreation events</th><td>' + analyticsNumber(data.event_opens) + '</td><td>' + analyticsNumber(data.event_users) + '</td></tr><tr><th scope="row">Campus ID</th><td>' + analyticsNumber(data.passport_opens) + '</td><td>' + analyticsNumber(data.passport_users) + '</td></tr></tbody></table></div><div class="product-health"><div class="engagement-row"><span>Siri requests</span><strong>' + analyticsNumber(data.siri_actions) + '</strong></div><div class="engagement-row"><span>Siri unable to return data</span><strong>' + analyticsNumber(data.siri_unavailable) + '</strong></div></div><p class="analytics-note">An app install is one anonymous copy of the app, not a new download or verified person. Repeat opens count separately.</p></section></div>';
+    if (data.versions?.length) html += '<section class="analytics-card"><div class="analytics-card-header"><h2>Release adoption & Siri reliability</h2></div><div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th scope="col">Version (build)</th><th scope="col">Active app installs</th><th scope="col">App visits</th><th scope="col">Siri requests</th><th scope="col">Unable to return data</th></tr></thead><tbody>' + data.versions.map(row => '<tr><th scope="row">' + escapeHtml(row.app_version) + ' (' + escapeHtml(row.build) + ')</th><td>' + analyticsNumber(row.active) + '</td><td>' + analyticsNumber(row.sessions) + '</td><td>' + analyticsNumber(row.siri_actions) + '</td><td>' + analyticsNumber(row.siri_unavailable) + '</td></tr>').join('') + '</tbody></table></div></section>';
+    html += '<p class="analytics-footer">Active app installs can include background Siri use. Visits count foreground use only. Collection is best effort; missing data does not establish zero usage.</p>';
     document.getElementById('dailyMetrics').innerHTML = html;
-    const previewSelect = document.getElementById('creativeCampaign');
-    if (previewSelect) {
-      if (ads.some(ad => ad.id === previousPreview)) previewSelect.value = previousPreview;
-      const update = () => { document.getElementById('dashboardAdPreview').innerHTML = renderAdPreview(ads.find(ad => ad.id === previewSelect.value) || {}); };
-      previewSelect.addEventListener('change', update); update();
-    }
     document.getElementById('dailyMetrics').hidden = false;
     document.getElementById('appMetrics').hidden = false;
-    document.getElementById('chartMetric').addEventListener('change', e => renderActivityChart(e.target.value));
-    document.getElementById('viewCampaigns').addEventListener('click', e => { e.preventDefault(); showDashboardView('campaigns'); });
-    renderActivityChart('impressions');
+    document.getElementById('chartMetric').addEventListener('change', event => renderActivityChart(event.target.value));
+    renderActivityChart('sessions');
+    renderCampaignReporting(ads);
     const selected = document.getElementById('eventCampaign').value;
     document.getElementById('eventCampaign').innerHTML = '<option value="">All campaigns & product events</option>' + ads.map(a => '<option value="' + escapeHtml(a.id) + '">' + escapeHtml(a.sponsor + ' · ' + a.id) + '</option>').join('');
     document.getElementById('eventCampaign').value = selected;

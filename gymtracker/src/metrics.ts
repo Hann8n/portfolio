@@ -80,7 +80,8 @@ export async function fetchAppStats(env: Env, now = new Date(), days = 7) {
       SUM(event LIKE 'siri_%' AND status IN ('unavailable', 'not_found', 'invalid_request')) AS siri_unavailable,
       SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks
       FROM metric_events WHERE received_at >= ? AND received_at < ?`).bind(since24h, from, before),
-    env.METRICS.prepare(`SELECT ad_id, SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks
+    env.METRICS.prepare(`SELECT ad_id, SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks,
+      COUNT(DISTINCT CASE WHEN event = 'ad_impression' THEN installation_id END) AS reach
       FROM metric_events WHERE received_at >= ? AND received_at < ? AND event IN ('ad_impression', 'ad_tap') AND placement = 'home_feed'
       GROUP BY ad_id ORDER BY impressions DESC LIMIT 200`).bind(from, before),
     env.METRICS.prepare(`SELECT substr(received_at, 1, 10) AS date, COUNT(DISTINCT installation_id) AS active,
