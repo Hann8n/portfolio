@@ -25,7 +25,7 @@ try {
   await page.locator('#editReportingCampaign').click();
   assert.equal(await page.locator('#id').inputValue(),campaign);
   await page.locator('#formOverlayClose').click();
-  for(const width of [1440,390]) {
+  for(const width of [1440,390,320]) {
     await page.setViewportSize({width,height:1000});
     const spacing=await page.evaluate(()=>{
       const nav=document.querySelector('.dashboard-nav'),tab=nav.children[0],range=document.createRange();range.selectNodeContents(tab);
@@ -33,6 +33,8 @@ try {
     });
     assert.ok(spacing.belowText<=7,JSON.stringify(spacing));
     assert.ok(spacing.afterBar<=12,JSON.stringify(spacing));
+    assert.ok(await page.locator('.campaign-workspace').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Campaign content overflow at '+width);
+    assert.ok(await page.locator('.campaign-context').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Campaign detail overflow at '+width);
   }
   await page.getByRole('tab',{name:'Events',exact:true}).click();
   await page.waitForSelector('#eventReadout table');

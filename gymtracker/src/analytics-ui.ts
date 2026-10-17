@@ -64,7 +64,8 @@ export const ANALYTICS_STYLES = `
   .analytics-link:hover { text-decoration: underline; }
   .campaign-workspace { margin-bottom:28px; }
   .campaign-workspace .analytics-card-header { flex-wrap:wrap; gap:12px; margin-bottom:18px; }
-  .campaign-workspace select { max-width:100%; width:min(100%,380px); }
+  .campaign-workspace .analytics-card-header label { flex:0 1 380px; min-width:0; max-width:100%; }
+  .campaign-workspace select { width:100%; min-width:0; max-width:100%; }
   .campaign-context { display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:28px; align-items:start; }
   .campaign-context .creative-preview { max-width:320px; }
   .campaign-context .overview-kpis { margin-bottom:20px; }
@@ -154,8 +155,7 @@ export const ANALYTICS_SCRIPT = String.raw`
   const analyticsNumber = value => (Number(value) || 0).toLocaleString('en-US');
   const analyticsPercent = (part, whole) => whole ? (part / whole * 100).toFixed(1) + '%' : '—';
   function showDashboardView(view) {
-    const titles = {overview: ['Overview', 'Campaign performance and product activity.'], campaigns: ['Campaigns', 'Manage creative, scheduling, and advertiser reports.'], events: ['Events', 'Explore delivery and engagement with detailed statistical readouts.']};
-    if (!titles[view]) view = 'overview';
+    if (!['overview', 'campaigns', 'events'].includes(view)) view = 'overview';
     document.getElementById('dashboardContent').scrollTop = 0;
     ['overview', 'campaigns', 'events'].forEach(name => { document.getElementById(name + 'Panel').hidden = name !== view; });
     document.querySelectorAll('[data-view]').forEach(btn => { const active = btn.dataset.view === view; btn.setAttribute('aria-selected', String(active)); btn.tabIndex = active ? 0 : -1; });
