@@ -1,6 +1,6 @@
 /**
- * Dependency-free SVG/HTML chart renderers shared by the dashboard (via Function#toString) and printed reports.
- * Keep each function self-contained: no imports or module-level helpers. Hosts style the emitted classes.
+ * Dependency-free SVG/HTML chart renderers for server-rendered, print-first documents (sponsor reports).
+ * Hosts style the emitted classes. The admin app uses shadcn/ui charts instead.
  */
 export interface ChartPoint { label: string; value: number; title?: string }
 export interface BarChartOptions {
@@ -11,6 +11,8 @@ export interface BarChartOptions {
   valueLabels?: boolean;
   /** Mark one bar index as highlighted. */
   highlight?: number;
+  /** Print every non-empty label as given instead of thinning labels to fit. */
+  explicitLabels?: boolean;
 }
 
 export function barChartSvg(points: ChartPoint[], options: BarChartOptions): string {
@@ -41,7 +43,7 @@ export function barChartSvg(points: ChartPoint[], options: BarChartOptions): str
     const h = top + plotH - y(p.value);
     svg += `<rect class="chart-bar${options.highlight === i ? " is-highlight" : ""}" x="${x}" y="${y(p.value)}" width="${barW}" height="${Math.max(p.value > 0 ? 1 : 0, h)}"><title>${esc(p.title || p.label + ": " + fmt(p.value))}</title></rect>`;
     if (options.valueLabels && p.value > 0) svg += `<text class="chart-value" x="${x + barW / 2}" y="${y(p.value) - 5}" text-anchor="middle">${fmt(p.value)}</text>`;
-    if (i % every === 0 || (i === points.length - 1 && i % every >= every * 0.6)) {
+    if (options.explicitLabels ? p.label : i % every === 0 || (i === points.length - 1 && i % every >= every * 0.6)) {
       svg += `<text class="chart-axis" x="${left + (i + 0.5) * slot}" y="${height - 6}" text-anchor="middle">${esc(p.label)}</text>`;
     }
   });
@@ -59,4 +61,3 @@ export function shareBarsHtml(rows: ShareRow[], ariaLabel: string): string {
   ).join("") + "</div>";
 }
 
-export const CHART_SCRIPT = `const barChartSvg = (${barChartSvg.toString()});\nconst shareBarsHtml = (${shareBarsHtml.toString()});`;

@@ -15,7 +15,7 @@
  *   PUT /api/ads — upsert ad (X-API-Key)
  *
  * Admin UI:
- *   GET /admin — serve admin page (Access protected)
+ *   GET /admin/* — React app from admin/ (Access protected), see serveAdminApp
  */
 
 interface AdConfig {
@@ -54,7 +54,7 @@ const NO_CACHE_HEADERS: Record<string, string> = {
   Pragma: "no-cache",
 };
 
-/** Admin HTML must not be cached at browser or Cloudflare edge (stale inline JS breaks the dashboard). */
+/** The admin app shell must not be cached at browser or Cloudflare edge, so a deploy takes effect on reload. */
 const ADMIN_HTML_CACHE_HEADERS: Record<string, string> = {
   "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate",
   Pragma: "no-cache",
@@ -313,13 +313,32 @@ async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
   }
 }
 
-import { getAdminHtml } from "./admin/page";
 import { getAdsLandingHtml } from "./ads-landing-html";
 import { getMainLandingHtml } from "./main-landing-html";
 
 import { hasAccessAuth } from "./access-auth";
 import { captureMetric } from "./analytics/ingest";
 import { ADMIN_ANALYTICS_ROUTES } from "./admin/api";
+
+/**
+ * The admin is a React app (admin/) built by Vite into static assets under /admin/. Hashed bundles are
+ * immutable; every other /admin path is a client-side route that gets the app shell, never cached.
+ */
+async function serveAdminApp(request: Request, env: Env, path: string): Promise<Response> {
+  // Real files (built bundles in production, Vite modules in development) pass through.
+  const asset = await env.ASSETS.fetch(request);
+  if (asset.status === 304) return asset;
+  if (asset.ok && !(asset.headers.get("Content-Type") || "").includes("text/html")) {
+    if (!path.startsWith("/admin/assets/")) return asset;
+    const response = new Response(asset.body, asset);
+    response.headers.set("Cache-Control", "private, max-age=31536000, immutable");
+    return response;
+  }
+  const shell = await env.ASSETS.fetch(new Request(new URL("/admin/", request.url), { headers: request.headers }));
+  const response = new Response(shell.body, { status: shell.ok ? 200 : shell.status, headers: shell.headers });
+  for (const [key, value] of Object.entries(ADMIN_HTML_CACHE_HEADERS)) response.headers.set(key, value);
+  return response;
+}
 
 /** True if request is from local dev (host=localhost; prod uses gymtracker.jackhannon.net). */
 function isLocalRequest(request: Request): boolean {
@@ -345,7 +364,7 @@ export default {
     const url = new URL(request.url);
     const path = normalizedPathname(url.pathname);
 
-    if (path === "/admin") {
+    if (path === "/admin" || path.startsWith("/admin/")) {
       if (!(await hasAccessAuth(request, env))) {
         const helpHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sign in required</title></head><body style="font-family:system-ui;max-width:32rem;margin:4rem auto;padding:2rem;">
           <h1>Sign in required</h1>
@@ -357,12 +376,7 @@ export default {
           headers: { "Content-Type": "text/html; charset=utf-8" },
         });
       }
-      return new Response(getAdminHtml(), {
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          ...ADMIN_HTML_CACHE_HEADERS,
-        },
-      });
+      return serveAdminApp(request, env, path);
     }
 
     if (path === "/api/events") {

@@ -2,6 +2,8 @@ import { audienceFilter, internalOnlyFilter, type Audience } from "./audience";
 import { prepare, sql } from "./sql";
 import { localDateSql, localTimeSql } from "./time";
 
+export const TIMELINE_MAX_DAYS = 4;
+
 type Row = Record<string, string | number | null>;
 const num = (value: unknown) => Number(value) || 0;
 const iso = (at: Date) => at.toISOString();
@@ -31,9 +33,12 @@ export async function campaignStats(env: Env, id: string, from: Date, before: Da
       FROM metric_events WHERE ${scope} AND ${filter} GROUP BY creative_version ORDER BY impressions DESC`,
     sql`SELECT COUNT(DISTINCT installation_id) AS installations, SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks
       FROM metric_events WHERE ${scope} AND ${internalOnlyFilter(audience)}`,
+    // Hour-by-hour delivery; reports chart it when activity spans TIMELINE_MAX_DAYS or less.
+    sql`SELECT substr(${localTime}, 1, 13) AS slot, SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks
+      FROM metric_events WHERE ${scope} AND ${filter} GROUP BY slot ORDER BY slot LIMIT ${TIMELINE_MAX_DAYS * 24 + 24}`,
   ].map(query => prepare(db, query)));
   if (results.some(result => !result.success)) throw new Error("Campaign query failed");
-  const [summary, daily, hourly, frequency, creatives, internal] = results.map(result => result.results);
+  const [summary, daily, hourly, frequency, creatives, internal, timeline] = results.map(result => result.results);
   const row = summary[0] || {};
   return {
     impressions: num(row.impressions), clicks: num(row.clicks), reach: num(row.reach), unique_clickers: num(row.unique_clickers),
@@ -42,6 +47,7 @@ export async function campaignStats(env: Env, id: string, from: Date, before: Da
     hourly: hourly.map(r => ({ hour: num(r.hour), impressions: num(r.impressions), clicks: num(r.clicks) })),
     frequency: frequency.map(r => ({ views: num(r.views), installs: num(r.installs) })),
     creatives: creatives.map(r => ({ creative_version: String(r.creative_version ?? ""), impressions: num(r.impressions), clicks: num(r.clicks) })),
+    timeline: timeline.map(r => ({ slot: String(r.slot), impressions: num(r.impressions), clicks: num(r.clicks) })),
     excluded: { internal_excluded: audience.excludeInternal, installations: num(internal[0]?.installations), impressions: num(internal[0]?.impressions), clicks: num(internal[0]?.clicks) },
   };
 }

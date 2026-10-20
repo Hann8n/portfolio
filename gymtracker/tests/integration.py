@@ -1,4 +1,4 @@
-"""Run against an isolated local `wrangler dev --port 8788` with migrations applied."""
+"""Run against an isolated local `npm run dev` (port 8788) with migrations applied."""
 import json,uuid,urllib.request,urllib.error
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
@@ -84,13 +84,13 @@ assert future['period']['not_started'] is True and future['impressions']==0
 assert request('/api/admin/ads',ad,'PUT')[0]==200
 status,html,headers=request('/api/admin/campaign-report?id='+campaign+'&days=30')
 assert status==200 and 'Campus Partners &lt;Sample&gt;' in html and '50.00%' in html
-assert 'Save as PDF / Print' in html and 'Cache-Control' in headers
-assert 'unique app' in html and 'Summary' in html and 'Methodology' in html and 'counter(pages)' in html
-assert 'break-before:page' not in html
+assert 'Save as PDF / Print' in html and 'cache-control' in {k.lower() for k in headers}
+assert 'unique app' in html and 'Results' in html and 'Methodology' in html and 'counter(pages)' in html
+assert 'class="has-summary"' in html  # page 1 is the executive summary
 assert 'Link button text' in html
 assert request('/api/admin/campaign-report?id='+campaign+'&days=-1')[0]==400
 assert request('/api/admin/campaign-report?id=missing')[0]==404
-assert request('/api/admin/campaign-report?id='+campaign+'&download=1')[2]['Content-Disposition'].startswith('attachment')
+assert {k.lower():v for k,v in request('/api/admin/campaign-report?id='+campaign+'&download=1')[2].items()}['content-disposition'].startswith('attachment')
 # Internal installs are excluded from every readout by default, disclosed in reports, and can be included again.
 assert request('/api/admin/audience',{'id':'not-a-uuid','internal':True},'PUT')[0]==400
 assert request('/api/admin/audience',{'id':installations[1],'label':'QA device','internal':True},'PUT')[0]==200

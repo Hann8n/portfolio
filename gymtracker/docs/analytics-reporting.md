@@ -1,13 +1,13 @@
 # Analytics and advertiser reporting
 
-The admin dashboard has four workspaces, registered in `src/admin/views.ts`:
+The admin dashboard (`admin/`, React + shadcn/ui) has four pages, listed in `admin/src/lib/nav.ts`:
 
-- **Overview** — five KPI cards (active installs, new installs, app visits, returning installs, Campus ID reach), each with a change chip against the previous period and a sparkline. Clicking a card drives the **Trend** chart, which overlays the previous period as dashed outlines once enough history exists. Below: a weekday × hour heatmap of app visits, visit frequency, feature usage, Siri reliability, and platform (each install counted once on its latest app and iOS version). Ad metrics stay in Campaigns.
-- **Campaigns** — selected campaign's saved creative beside views, unique reach, taps, tap rate, daily delivery, views per reached install, schedule, and links to the sponsor report (selected period or full flight). The schedule calendar and editor follow below.
-- **Events** — aggregated occurrences, unique installs, and last receipt per event with category/campaign filters and CSV export (the CSV records the period and whether internal installs were excluded).
+- **Overview** — five KPI cards (active installs, new installs, app visits, returning installs, Campus ID reach), each with a change badge against the previous period and a sparkline. Clicking a card drives the trend chart, which shows the previous period as faded bars once enough history exists. Below: a weekday × hour heatmap of app visits, visit frequency, feature usage, Siri reliability, and platform (each install counted once on its latest app and iOS version). Ad metrics stay in Campaigns.
+- **Campaigns** — campaign cards with status, dates, and delivery for the selected period, a status filter, search, and a month calendar. Each campaign has a detail page: views, unique reach, frequency, taps, tap rate, hourly or daily delivery, views per reached install, creative, details, pause/resume, and the sponsor report. The editor opens as a side sheet (full screen on phones) with a live preview.
+- **Events** — occurrences, unique installs, and last receipt per event with campaign/category filters and CSV export (the CSV records the period and whether internal installs were excluded).
 - **Data quality** — collection coverage, the internal-install list, and suggested internal installs ranked by test-device signals (several app builds, a build seen on three or fewer installs, beta iOS, unusually frequent visits, frequent Settings opens, repeated ad taps).
 
-Global controls apply to every workspace and to exported reports: reporting period and **Exclude internal installs** (on by default).
+Global controls in the top bar apply to every page and to exported reports: reporting period and **Exclude internal installs** (on by default). They are kept in the URL (`?days=30&internal=include`) and remembered as the next visit's default.
 
 ## Campus time and comparison windows
 
@@ -19,14 +19,19 @@ Developer, TestFlight, and demo devices skew small datasets. On launch data, one
 
 ## Sponsor report
 
-`src/report/campaign-report.ts` renders an A4, print-first document: a masthead, a facts strip (period, recorded activity, flight, placement and format), summary highlights, a KPI band (views, unique reach, taps, tap rate) with average frequency, delivery days and peak hours, daily delivery and time-of-day charts, views-per-install distribution, a daily table with totals, version comparison when more than one version ran, the creative with its details, and methodology. Page footers carry the sponsor, campaign ID, and "Page X of Y". Charts come from `src/charts.ts`, which the dashboard also uses.
+`src/report/campaign-report.ts` renders an A4, print-first document styled with the tokens in `ads-landing-style-guide.md` (system type, hairline sections, 12px cards, borderless stat row, VT maroon accents, automatic dark mode on screen). It follows a standard campaign recap structure:
+
+1. **Page 1, executive summary:** brand header; sponsor, headline, flight, reporting period, and placement; a results card (ad views, unique reach, average frequency, link taps, tap rate) with a short written summary; delivery (hour by hour when activity spans four days or less, otherwise per day), time of day, and views per reached install.
+2. **Page 2, detail:** daily breakdown with totals, version comparison when more than one version ran, the creative and its settings, and methodology with traffic-filtration and coverage notes.
+
+Footers carry "Gym Tracker campaign report · sponsor" and "Page X of Y". Reports with no delivery stay on one page and explain why. Charts come from `src/charts.ts`.
 
 ## Measurement and design references
 
 - [Google Ads: reach and frequency](https://support.google.com/google-ads/answer/2472714) establishes unique reach and average frequency as separate measures. Our reach counts anonymous installations, not modeled people across devices.
 - [Google Ads: dashboards](https://support.google.com/google-ads/answer/6379084) separates headline scorecards, visual reports, and notes. The Overview uses four headline advertising metrics; operational details live in Events.
 - [IAB: viewable display impressions](https://www.iab.com/news/viewability-has-arrived-what-you-need-to-know-to-see-through-this-sea-change/) defines the familiar 50% pixel / one continuous second threshold. Our first-party implementation checks visible card area in the scroll viewport, foreground state, known covering app sheets, and continuous exposure. It additionally caps one impression per campaign creative per app session; it is not an MRC-accredited viewability system.
-- The local `ads-landing-style-guide.md` governs the report: system typography, one centered column, hairlines, restrained maroon actions, automatic dark mode. The admin retains its documented dark tool aesthetic. Tables scroll within their panels on small screens; navigation supports keyboard tab/arrow interaction.
+- The local `ads-landing-style-guide.md` governs the report: system typography, one centered column, hairlines, restrained maroon actions, automatic dark mode. The admin uses shadcn/ui's neutral theme (light and dark) with brand colors in charts.
 
 ## Definitions
 
@@ -53,14 +58,14 @@ Run from `gymtracker/`:
 
 ```sh
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm ci
-npx tsc --noEmit
+npm run typecheck
 npx wrangler d1 migrations apply METRICS --local
-npx wrangler dev --port 8788
+npm run dev
 # In another terminal; local fixtures only:
 python3 tests/integration.py
 node --experimental-strip-types tests/access-auth.mjs
 for t in report analytics; do npx esbuild tests/$t.mjs --bundle --platform=node --format=esm --outfile=/tmp/$t.mjs && node /tmp/$t.mjs; done
-# Browser checks (Playwright): tests/clarity.mjs, tests/dashboard-state.mjs, tests/responsive.mjs
+node tests/dashboard.mjs   # Playwright: every page at 320–1440px, editor flows, filters, CSV
 # Production schema, then Worker:
 npx wrangler d1 migrations apply METRICS --remote
 npm run deploy
@@ -72,9 +77,9 @@ Dashboard and campaign reports use the same ad preview renderer. Reports show th
 
 ## Dashboard contexts and feature adoption
 
-Editing contains fields and a live preview. Campaign metrics and the export link live in Campaigns. The report viewer owns its period selector, including Campaign dates; downloaded HTML omits dashboard controls and retains print/PDF. Fields already visible in the ad preview are not repeated beside it.
+Editing contains fields and a live preview. Campaign metrics and the report links live on each campaign's page. The report viewer owns its period selector, including Campaign dates; downloaded HTML omits dashboard controls and retains print/PDF. Fields already visible in the ad preview are not repeated beside it.
 
-The browser remembers the current workspace, period, campaign, event filters, chart metric, campaign search/status, calendar month and content scroll position. Invalid or deleted selections fall back safely, and blocked storage does not prevent use. This stores dashboard preferences only; edit-form values are not saved as drafts.
+Pages and campaigns have their own URLs (`/admin/campaigns/<id>`), so the back button and shared links work. The browser remembers the period, internal-install filter, chart metric, and theme; invalid values fall back to defaults, and blocked storage does not prevent use. Edit-form values are not saved as drafts; closing the editor with unsaved changes asks first.
 
 Feature usage aggregates Events detail opens, Campus ID display opens and Settings screen opens. Each row shows total opens, distinct anonymous app installs, share of all active installs, repeat installs (at least two opens in the period), and opens per install that used the feature. Shares overlap across features and include background-only active installs in their denominator. The Trend chart can show these opens by Eastern Time day. This measures event-detail use, not merely seeing the Events feed.
 

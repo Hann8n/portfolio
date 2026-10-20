@@ -6,7 +6,9 @@
     "lib": ["ES2022"],
     "strict": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": { "@/*": ["./admin/src/*"] }
   },
   "include": ["src/**/*", "worker-configuration.d.ts", "env.d.ts"]
 }
