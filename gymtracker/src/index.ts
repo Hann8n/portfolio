@@ -8,13 +8,14 @@
  *   GET /api/admin/ads — return all scheduled ads
  *   PUT /api/admin/ads — upsert ad by id
  *   DELETE /api/admin/ads?id=... — delete ad by id
+ *   /api/admin/stats, /events, /audience, /campaign-report — analytics, see admin/api.ts
  *
  * Legacy (API key, for backward compat):
  *   GET /api/ads?schedule=1 — return all ads (X-API-Key)
  *   PUT /api/ads — upsert ad (X-API-Key)
  *
  * Admin UI:
- *   GET /admin — serve admin page (Access protected)
+ *   GET /admin/* — React app from admin/ (Access protected), see serveAdminApp
  */
 
 interface AdConfig {
@@ -53,7 +54,7 @@ const NO_CACHE_HEADERS: Record<string, string> = {
   Pragma: "no-cache",
 };
 
-/** Admin HTML must not be cached at browser or Cloudflare edge (stale inline JS breaks the dashboard). */
+/** The admin app shell must not be cached at browser or Cloudflare edge, so a deploy takes effect on reload. */
 const ADMIN_HTML_CACHE_HEADERS: Record<string, string> = {
   "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate",
   Pragma: "no-cache",
@@ -312,13 +313,32 @@ async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
   }
 }
 
-import { getAdminHtml } from "./admin-html";
 import { getAdsLandingHtml } from "./ads-landing-html";
 import { getMainLandingHtml } from "./main-landing-html";
 
 import { hasAccessAuth } from "./access-auth";
-import { captureMetric, fetchAppStats, fetchEventStats } from "./metrics";
-import { buildCampaignReport, campaignReportHtml } from "./campaign-report";
+import { captureMetric } from "./analytics/ingest";
+import { ADMIN_ANALYTICS_ROUTES } from "./admin/api";
+
+/**
+ * The admin is a React app (admin/) built by Vite into static assets under /admin/. Hashed bundles are
+ * immutable; every other /admin path is a client-side route that gets the app shell, never cached.
+ */
+async function serveAdminApp(request: Request, env: Env, path: string): Promise<Response> {
+  // Real files (built bundles in production, Vite modules in development) pass through.
+  const asset = await env.ASSETS.fetch(request);
+  if (asset.status === 304) return asset;
+  if (asset.ok && !(asset.headers.get("Content-Type") || "").includes("text/html")) {
+    if (!path.startsWith("/admin/assets/")) return asset;
+    const response = new Response(asset.body, asset);
+    response.headers.set("Cache-Control", "private, max-age=31536000, immutable");
+    return response;
+  }
+  const shell = await env.ASSETS.fetch(new Request(new URL("/admin/", request.url), { headers: request.headers }));
+  const response = new Response(shell.body, { status: shell.ok ? 200 : shell.status, headers: shell.headers });
+  for (const [key, value] of Object.entries(ADMIN_HTML_CACHE_HEADERS)) response.headers.set(key, value);
+  return response;
+}
 
 /** True if request is from local dev (host=localhost; prod uses gymtracker.jackhannon.net). */
 function isLocalRequest(request: Request): boolean {
@@ -344,7 +364,7 @@ export default {
     const url = new URL(request.url);
     const path = normalizedPathname(url.pathname);
 
-    if (path === "/admin") {
+    if (path === "/admin" || path.startsWith("/admin/")) {
       if (!(await hasAccessAuth(request, env))) {
         const helpHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sign in required</title></head><body style="font-family:system-ui;max-width:32rem;margin:4rem auto;padding:2rem;">
           <h1>Sign in required</h1>
@@ -356,12 +376,7 @@ export default {
           headers: { "Content-Type": "text/html; charset=utf-8" },
         });
       }
-      return new Response(getAdminHtml(), {
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          ...ADMIN_HTML_CACHE_HEADERS,
-        },
-      });
+      return serveAdminApp(request, env, path);
     }
 
     if (path === "/api/events") {
@@ -369,54 +384,16 @@ export default {
       return captureMetric(request, env);
     }
 
-    if (path === "/api/admin/campaign-report") {
-      if (!(await hasAccessAuth(request, env))) return jsonResponse({ error: "Unauthorized" }, 401, request);
-      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
-      const id = url.searchParams.get("id");
-      const days = url.searchParams.get("days");
-      if (days !== null && !["7", "30", "90", "180", "365", "campaign"].includes(days)) return jsonResponse({ error: "Invalid report period" }, 400, request);
-      const ads = await getAdsArray(env.AD_CONFIG);
-      const ad = ads.find(a => a.id === id);
-      if (!ad) return jsonResponse({ error: "Campaign not found" }, 404, request);
-      try {
-        const report = await buildCampaignReport(env, ad, days);
-        if (url.searchParams.get("format") === "json") return jsonResponse(report, 200, request);
-        const download = new URL(url);
-        download.searchParams.set("download", "1");
-        const filename = ad.id.replace(/[^a-z0-9_-]/gi, "-").slice(0, 80) || "campaign";
-        return new Response(campaignReportHtml(report, download.pathname + download.search, url.searchParams.get("download") === "1"), {
-          headers: { "Content-Type": "text/html; charset=utf-8", ...ADMIN_HTML_CACHE_HEADERS,
-            "Content-Disposition": (url.searchParams.get("download") === "1" ? "attachment" : "inline") + '; filename="' + filename + '-report.html"' },
-        });
-      } catch {
-        return jsonResponse({ error: "Campaign reporting temporarily unavailable" }, 503, request);
-      }
-    }
-
-    if (path === "/api/admin/events") {
-      if (!(await hasAccessAuth(request, env))) return jsonResponse({ error: "Unauthorized" }, 401, request);
-      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
-      const days = url.searchParams.get("days") || "7";
-      const campaign = url.searchParams.get("campaign");
-      if (!["7", "30", "90", "180", "365"].includes(days) || (campaign && campaign.length > 128)) return jsonResponse({ error: "Invalid event filters" }, 400, request);
-      try { return jsonResponse(await fetchEventStats(env, Number(days), campaign), 200, request); }
-      catch { return jsonResponse({ error: "Events temporarily unavailable" }, 503, request); }
-    }
-
-    if (path === "/api/admin/stats") {
-      if (!(await hasAccessAuth(request, env))) {
-        return jsonResponse({ error: "Unauthorized" }, 401, request);
-      }
-      if (request.method !== "GET") {
-        return jsonResponse({ error: "Method not allowed" }, 405, request);
-      }
-      try {
-        const days = url.searchParams.get("days") || "7";
-        if (!["7", "30", "90", "180", "365"].includes(days)) return jsonResponse({ error: "Invalid reporting period" }, 400, request);
-        return jsonResponse(await fetchAppStats(env, new Date(), Number(days)), 200, request);
-      } catch {
-        return jsonResponse({ configured: true, error: "Analytics temporarily unavailable" }, 503, request);
-      }
+    const analyticsRoute = ADMIN_ANALYTICS_ROUTES[path];
+    if (analyticsRoute) {
+      const json = (body: object, status = 200) => jsonResponse(body, status, request);
+      if (!(await hasAccessAuth(request, env))) return json({ error: "Unauthorized" }, 401);
+      const handler = analyticsRoute[request.method];
+      if (!handler) return json({ error: "Method not allowed" }, 405);
+      return handler({
+        request, env, url, json, campaigns: () => getAdsArray(env.AD_CONFIG),
+        html: (body, headers = {}) => new Response(body, { headers: { "Content-Type": "text/html; charset=utf-8", ...ADMIN_HTML_CACHE_HEADERS, ...headers } }),
+      });
     }
 
     if (path === "/api/admin/ads") {

@@ -1,4 +1,4 @@
-/** Shared preview for the dashboard, editor, and campaign report. Keep this renderer self-contained for the browser. */
+/** Shared preview for the admin app (imported directly) and the server-rendered campaign report. */
 export interface PreviewAd {
   sponsor?: string; sponsored_label?: string; headline?: string; subline?: string | null;
   cta?: string; image_url?: string | null; logo_url?: string | null; tier?: string;
@@ -22,7 +22,6 @@ export function renderAdPreview(ad: PreviewAd): string {
   </article>`;
 }
 
-export const AD_PREVIEW_SCRIPT = `const renderAdPreview = (${renderAdPreview.toString()});`;
 export const AD_PREVIEW_STYLES = `
   .creative-preview { --creative-line:var(--border,var(--line,#ddd)); width:100%; max-width:390px; border:1px solid var(--creative-line); background:var(--surface,var(--bg,#fff)); color:var(--text,#333); overflow:hidden; text-align:left; break-inside:avoid; }
   .creative-header { display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--creative-line); }

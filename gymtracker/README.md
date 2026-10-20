@@ -1,6 +1,22 @@
 # Gym Tracker Ads API
 
-Cloudflare Worker serving ad config at `gymtracker.jackhannon.net/api/ads`.
+Cloudflare Worker serving ad config at `gymtracker.jackhannon.net/api/ads`, first-party analytics, sponsor reports, and the admin dashboard at `/admin`.
+
+## Project layout
+
+| Path | What it is |
+|------|------------|
+| `src/` | Worker: public API, analytics ingestion and queries (`src/analytics/`), admin API routes (`src/admin/api.ts`), server-rendered sponsor report (`src/report/`) |
+| `admin/` | Admin dashboard: React + Vite + Tailwind + [shadcn/ui](https://ui.shadcn.com) (charts via Recharts) |
+| `public/` | Static assets (privacy policy, favicons) |
+| `vite.config.ts` | One build for the Worker and the dashboard (`@cloudflare/vite-plugin`) |
+
+### Dashboard
+
+- **Pages** live in `admin/src/pages/`. To add one, create the page, add it to `admin/src/lib/nav.ts` (sidebar), and add a route in `admin/src/main.tsx`.
+- **Components:** shadcn/ui primitives are in `admin/src/components/ui/`; add more with `npx shadcn@latest add <name>`. App components (KPI card, bar list, heatmap, charts, ad preview) are in `admin/src/components/`.
+- **Data** comes from typed React Query hooks in `admin/src/lib/api.ts`. Global filters (period, internal installs) live in the URL via `useFilters()`.
+- **Mobile:** layouts use responsive Tailwind grids; the sidebar becomes a sheet on phones; tables and the heatmap scroll inside their cards. A global rule lets grid and flex children shrink, so wide content can't widen the page. `tests/dashboard.mjs` fails if any page scrolls sideways at 320–1440px.
 
 ## Setup
 
@@ -12,12 +28,15 @@ Cloudflare Worker serving ad config at `gymtracker.jackhannon.net/api/ads`.
    ```
    Generate a key: `openssl rand -hex 24`
 
-3. **Deploy:** `npm run deploy`
+3. **Develop:** `npm run dev` serves the Worker and dashboard with hot reload at http://localhost:8788 (`/admin` needs no sign-in on localhost).
 
-4. **First-party analytics** — Apply the D1 migration before deploying the Worker:
+4. **Deploy:** `npm run deploy` (builds with Vite, then `wrangler deploy`)
+
+5. **First-party analytics** — Apply the D1 migration before deploying the Worker:
    ```bash
    npx wrangler d1 migrations apply METRICS --remote
    ```
+   Migration `0002` adds an installation index used by new-install and engagement queries.
    No external analytics account or SDK is required. See [analytics-reporting.md](docs/analytics-reporting.md) for definitions, privacy, retention, validation, and reporting conventions.
 
 ## Initial KV State
@@ -33,9 +52,12 @@ Before any ad has been PUT, GET returns `404` with `{ "error": "No active ad" }`
 | PUT | /api/ads | X-API-Key header | Upsert ad config (by id) |
 | OPTIONS | /api/ads | None | CORS preflight |
 | POST | /api/events | Public, rate limited | Allowlisted first-party events |
-| GET | /api/admin/stats?days=7 | Cloudflare Access | Overview statistics (7, 30, 90, 180, or 365 days) |
+| GET | /api/admin/stats?days=7 | Cloudflare Access | Overview statistics (7, 30, 90, 180, or 365 days, Eastern Time) |
 | GET | /api/admin/events?days=7&campaign=ID | Cloudflare Access | Aggregated event readouts |
-| GET | /api/admin/campaign-report?id=ID&days=30 | Cloudflare Access | Print-ready campaign report; optional download=1 or format=json |
+| GET | /api/admin/campaign-report?id=ID&days=30 | Cloudflare Access | Print-ready sponsor report; optional download=1 or format=json |
+| GET / PUT | /api/admin/audience | Cloudflare Access | Data coverage, internal (test) installs, and suggested ones |
+
+Analytics endpoints exclude internal installs by default; add `internal=include` to count them.
 
 The API filters ads by `start_at` and `end_at` on the server. Multiple ads can be scheduled; the public GET returns the one active "now". Legacy single-ad config is auto-migrated on first request.
 
@@ -85,8 +107,8 @@ curl -X PUT https://gymtracker.jackhannon.net/api/ads \
   -d @seed-ad-active.json
 ```
 
-For local dev (with `npx wrangler dev` running), use `http://localhost:8787` instead of the production URL.
+For local dev (with `npm run dev` running), use `http://localhost:8788` instead of the production URL.
 
-**Admin UI:** Visit [https://gymtracker.jackhannon.net/admin](https://gymtracker.jackhannon.net/admin) — sign in with Cloudflare Access (Google or your configured provider). See [ACCESS_SETUP.md](ACCESS_SETUP.md) to configure.
+**Admin UI:** Visit [https://gymtracker.jackhannon.net/admin](https://gymtracker.jackhannon.net/admin) — sign in with Cloudflare Access (Google or your configured provider). See [ACCESS_SETUP.md](ACCESS_SETUP.md) to configure. The Worker verifies the Access token on every `/admin/*` path, including the app's bundles under `/admin/assets/`.
 
-**Ads landing page:** Public sales page with mockup wizard at [/ads](https://gymtracker.jackhannon.net/ads). Local dev: run `npx wrangler dev` from this directory, then open http://localhost:8787/ads (port may vary — check wrangler output).
+**Ads landing page:** Public sales page with mockup wizard at [/ads](https://gymtracker.jackhannon.net/ads). Local dev: run `npm run dev` from this directory, then open http://localhost:8788/ads.

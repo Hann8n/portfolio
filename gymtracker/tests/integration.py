@@ -1,4 +1,4 @@
-"""Run against an isolated local `wrangler dev --port 8788` with migrations applied."""
+"""Run against an isolated local `npm run dev` (port 8788) with migrations applied."""
 import json,uuid,urllib.request,urllib.error
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
@@ -62,7 +62,8 @@ assert data('/api/admin/events?campaign=%27%20OR%201%3D1')['events']==[]
 assert request('/api/admin/events?days=-1')[0]==400
 for days in [7,30,90,180,365]:
     overview=data('/api/admin/stats?days='+str(days))
-    assert overview['days']==days and overview['schema_version']==1
+    assert overview['days']==days and overview['schema_version']==2 and overview['time_zone']=='America/New_York'
+    assert len(overview['daily'])==days and all(set(row)>={'date','active','sessions','new_installs'} for row in overview['daily'])
     assert overview['comparison_available'] is False
     assert request('/api/admin/events?days='+str(days))[0]==200
     assert request('/api/admin/campaign-report?id='+campaign+'&days='+str(days))[0]==200
@@ -83,14 +84,26 @@ assert future['period']['not_started'] is True and future['impressions']==0
 assert request('/api/admin/ads',ad,'PUT')[0]==200
 status,html,headers=request('/api/admin/campaign-report?id='+campaign+'&days=30')
 assert status==200 and 'Campus Partners &lt;Sample&gt;' in html and '50.00%' in html
-assert 'Save as PDF / Print' in html and 'Cache-Control' in headers
-assert 'unique app' in html and 'What happened' in html
-assert 'break-before:page' not in html
+assert 'Save as PDF / Print' in html and 'cache-control' in {k.lower() for k in headers}
+assert 'unique app' in html and 'Results' in html and 'Methodology' in html and 'counter(pages)' in html
+assert 'class="has-summary"' in html  # page 1 is the executive summary
 assert 'Link button text' in html
 assert request('/api/admin/campaign-report?id='+campaign+'&days=-1')[0]==400
 assert request('/api/admin/campaign-report?id=missing')[0]==404
-assert request('/api/admin/campaign-report?id='+campaign+'&download=1')[2]['Content-Disposition'].startswith('attachment')
+assert {k.lower():v for k,v in request('/api/admin/campaign-report?id='+campaign+'&download=1')[2].items()}['content-disposition'].startswith('attachment')
+# Internal installs are excluded from every readout by default, disclosed in reports, and can be included again.
+assert request('/api/admin/audience',{'id':'not-a-uuid','internal':True},'PUT')[0]==400
+assert request('/api/admin/audience',{'id':installations[1],'label':'QA device','internal':True},'PUT')[0]==200
+assert any(row['id']==installations[1] for row in data('/api/admin/audience')['internal'])
+excluded=data('/api/admin/campaign-report?id='+campaign+'&days=30&format=json')
+assert (excluded['impressions'],excluded['reach'])==(1,1) and excluded['excluded']['installations']==1,excluded
+assert data('/api/admin/campaign-report?id='+campaign+'&days=30&format=json&internal=include')['impressions']==2
+assert 'internal test install' in request('/api/admin/campaign-report?id='+campaign+'&days=30')[1]
+assert next(x for x in data('/api/admin/stats?days=7')['per_ad'] if x['ad_id']==campaign)['reach']==1
+assert next(x for x in data('/api/admin/stats?days=7&internal=include')['per_ad'] if x['ad_id']==campaign)['reach']==2
+assert request('/api/admin/audience',{'id':installations[1],'internal':False},'PUT')[0]==200
+assert not any(row['id']==installations[1] for row in data('/api/admin/audience')['internal'])
 assert request('/privacy')[0]==200
 Path('/tmp/gymtracker-qa-campaign.txt').write_text(campaign)
 Path('/tmp/gymtracker-report-sample.html').write_text(html)
-print('PASS: labels, backwards compatibility, validation, event idempotency, metrics, reach/CTR, campaign export, and privacy route')
+print('PASS: labels, backwards compatibility, validation, event idempotency, metrics, reach/CTR, campaign export, internal-install exclusion, and privacy route')

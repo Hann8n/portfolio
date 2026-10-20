@@ -80,7 +80,7 @@ The public endpoint `GET https://gymtracker.jackhannon.net/api/ads` must **not**
 
 Before testing, confirm in Zero Trust that both paths are protected:
 
-- [ ] `/admin` — Admin UI page
+- [ ] `/admin` — Admin UI (covers `/admin/*`, including the app bundle under `/admin/assets/`)
 - [ ] `/api/admin` — Admin API (includes `/api/admin/ads`, `/api/admin/stats`)
 
 If you use a single application with multiple paths, ensure both are included. If you use separate applications, ensure each has the correct path.
