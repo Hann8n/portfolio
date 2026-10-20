@@ -55,13 +55,13 @@ const report={campaign:ad,period:{from:'2026-10-18T04:00:00Z',before:'2026-10-19
   frequency:[{views:1,installs:57},{views:2,installs:18},{views:5,installs:3}],timeline:[{slot:'2026-10-18 01',impressions:4,clicks:0},{slot:'2026-10-19 15',impressions:30,clicks:1}],creatives:[{creative_version:'',impressions:147,clicks:1}],
   excluded:{internal_excluded:true,installations:1,impressions:9,clicks:6}};
 const html=campaignReportHtml(report,'?download=1');
-assert.ok(html.includes('0.68%')&&html.includes('1 internal test install (9 views, 6 taps) is excluded'));
+assert.ok(html.includes('0.68%')&&html.includes('Excludes 1 internal test install (9 views, 6 taps).'));
 assert.ok(html.includes('counter(pages)')&&!html.includes('</style> ·'),'Sponsor text must be escaped inside the CSS page footer');
-assert.ok(html.includes('Delivery')&&html.includes('Views per reached install')&&!html.includes('Time of day'),'Short flights chart hourly delivery instead of a separate time-of-day chart');
-assert.ok(html.includes('Mon, Oct 19, 2026')&&html.includes('<tfoot>'),'Daily rows use Eastern Time dates and a total row');
+assert.ok(html.includes('Delivery')&&html.includes('Views per install')&&!html.includes('Time of day'),'Short flights chart hourly delivery instead of a separate time-of-day chart');
+assert.ok(html.includes('Mon, Oct 19')&&html.includes('<tfoot>'),'Daily rows use Eastern Time dates and a total row');
 assert.ok(html.includes('src="/favicon/apple-touch-icon.png"')&&campaignReportHtml(report,'?download=1',true).includes('src="https://gymtracker.jackhannon.net/favicon/apple-touch-icon.png"'));
-assert.ok(html.includes('Ad views per hour'),'Hourly delivery chart for a two-day flight');
-assert.ok(campaignReportHtml({...report,first_event:'2026-09-01T00:00:00Z'},'?download=1').includes('Ad views per day'),'Long activity spans chart daily delivery');
+assert.ok(html.includes('Views per hour'),'Hourly delivery chart for a two-day flight');
+assert.ok(campaignReportHtml({...report,first_event:'2026-09-01T00:00:00Z'},'?download=1').includes('Views per day'),'Long activity spans chart daily delivery');
 assert.ok(html.includes('Oct 18 – 19, 2026'),'Compact flight dates');
 assert.ok(!/NaN|Infinity|undefined/.test(html));
 console.log('PASS: sponsor report discloses internal exclusions, paginates, charts delivery, and escapes the print footer');
