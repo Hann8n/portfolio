@@ -19,12 +19,12 @@ Developer, TestFlight, and demo devices skew small datasets. On launch data, one
 
 ## Sponsor report
 
-`src/report/campaign-report.ts` renders an A4, print-first document styled with the tokens in `ads-landing-style-guide.md` (system type, hairline sections, 12px cards, borderless stat row, VT maroon accents, automatic dark mode on screen). It follows a standard campaign recap structure:
+`src/report/campaign-report.ts` renders an A4, print-first document. It is always light, on screen and in print, with neutral grays and VT maroon as the only accent (the busiest day's bar and the masthead rule). Each figure appears once, and copy is kept to labels.
 
-1. **Page 1, executive summary:** brand header; sponsor, headline, flight, reporting period, and placement; a results card (ad views, unique reach, average frequency, link taps, tap rate) with a short written summary; delivery (hour by hour when activity spans four days or less, otherwise per day), time of day, and views per reached install.
-2. **Page 2, detail:** daily breakdown with totals, version comparison when more than one version ran, the creative and its settings, and methodology with traffic-filtration and coverage notes.
+1. **Page 1, summary:** a slim masthead (Gym Tracker · Campaign report); the sponsor as the title with the headline beneath (house campaigns use the headline as the title, so the brand isn't repeated); dates, placement, and prepared date; one results row (ad views, reach, frequency, link taps, tap rate); delivery (per hour when activity spans four days or less, otherwise per day), time of day with its peak window, and views per install.
+2. **Page 2, detail:** daily table with totals (only when more than one day has activity), version comparison when more than one version ran, the creative with its button and destination, and short notes defining each metric and disclosing excluded internal traffic.
 
-Footers carry "Gym Tracker campaign report · sponsor" and "Page X of Y". Reports with no delivery stay on one page and explain why. Charts come from `src/charts.ts`.
+Footers carry "Gym Tracker · Campaign report · sponsor" and page numbers. Reports with no delivery stay on one page. Charts come from `src/charts.ts`.
 
 ## Measurement and design references
 

@@ -15,22 +15,25 @@ assert.equal(campaignRange({...ad,start_at:'2024-01-01T00:00:00Z'},'campaign',no
 assert.throws(()=>campaignRange(ad,'-1',now));
 const base={campaign:ad,period:{from:'2026-09-17T18:00:00Z',before:now.toISOString(),label:'Last 30 days',truncated:false,not_started:false},generated_at:now.toISOString(),campaign_first_recorded_at:'2026-10-17T17:00:00Z',first_event:'2026-10-17T17:00:00Z',last_event:'2026-10-17T17:59:00Z',impressions:1000,reach:200,clicks:30,unique_clickers:24,daily:[{date:'2026-10-17',impressions:1000,reach:200,clicks:30}],creatives:[{creative_version:'v1',impressions:1000,clicks:30}]};
 const html=campaignReportHtml(base,'?download=1');
-assert.ok(html.includes('3.00%')&&html.includes('<strong>30 link taps</strong>')&&html.includes('Tap rate = link taps ÷ ad views × 100'));
+assert.ok(html.includes('3.00%')&&html.includes('link taps ÷ ad views'));
 assert.ok(html.includes('5.00'));
-assert.ok(html.includes('Last 30 days')&&html.includes('Recorded activity: Oct 17, 2026'));
+assert.ok(html.includes('Last 30 days')&&html.includes('Campaign dates'));
+assert.ok(!html.includes('class="summary"'),'KPIs are shown once, not repeated in prose');
+const house=campaignReportHtml({...base,campaign:{...ad,sponsor:'Gym Tracker'}},'?download=1');
+assert.ok(house.includes('<h1 id="reportTitle">Community offer</h1>'),'House campaigns are titled by headline so the masthead brand is not repeated');
 assert.ok(html.includes('Campus Partners &lt;Sample&gt;'));
-assert.ok(!html.includes('Ad versions compared'),'Single-version table duplicated the summary');
+assert.ok(!html.includes('By ad version'),'Single-version table duplicated the summary');
 assert.ok(html.includes('class="has-summary"'),'Reports with delivery open with a one-page executive summary');
 const tapsOnly=campaignReportHtml({...base,impressions:0,reach:0,clicks:3,daily:[],creatives:[]},'?download=1');
-assert.ok(tapsOnly.includes('Not available')&&tapsOnly.includes('a tap rate cannot be calculated'));
+assert.ok(tapsOnly.includes('needs at least one view'));
 assert.ok(!tapsOnly.includes('NaN')&&!tapsOnly.includes('Infinity'));
 const empty=campaignReportHtml({...base,impressions:0,reach:0,clicks:0,unique_clickers:0,daily:[],creatives:[],first_event:null,last_event:null},'?download=1');
-assert.ok(empty.includes('No campaign activity was recorded')&&!empty.includes('0.00%'));
-assert.ok(!empty.includes('class="stat-card"')&&!empty.includes('class="has-summary"'),'Empty reports explain missing data on one page instead of presenting KPIs');
-assert.ok(campaignReportHtml({...base,creatives:[...base.creatives,{creative_version:'v2',impressions:10,clicks:1}]},'?download=1').includes('Ad versions compared'));
+assert.ok(empty.includes('No activity recorded')&&!empty.includes('0.00%'));
+assert.ok(!empty.includes('class="stats"')&&!empty.includes('class="has-summary"'),'Empty reports explain missing data on one page instead of presenting KPIs');
+assert.ok(campaignReportHtml({...base,creatives:[...base.creatives,{creative_version:'v2',impressions:10,clicks:1}]},'?download=1').includes('By ad version'));
 console.log('PASS: exact preset periods, scheduled/retained windows, rate/frequency math, empty/taps-only reports, escaping, and nonduplicated content');
 
-assert.ok(html.includes('aria-label="Ad creative preview"')&&html.includes('Current saved creative'));
+assert.ok(html.includes('aria-label="Ad creative preview"'));
 for (const tier of ['text','banner','feature']) {
   const preview=renderAdPreview({...ad,tier,subline:'Bring <friends>',sponsored_label:'Student Organization',image_url:'https://example.com/art.jpg',logo_url:'https://example.com/logo.png'});
   assert.ok(preview.includes('Student Organization')&&preview.includes('Bring &lt;friends&gt;'));
