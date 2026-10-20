@@ -7,15 +7,28 @@ try {
   await page.goto('http://localhost:8788/admin');
   await page.waitForFunction(()=>document.querySelector('#appMetrics')?.hidden===false);
   const overviewText=await page.locator('#overviewPanel').innerText();
-  for(const label of ['Active · 24 hours','App visits','Siri requests answered','Feature usage']) assert.ok(overviewText.includes(label));
+  for(const label of ['Active installs','active · 24 hours','New installs','App visits','Returning installs','Campus ID reach','Trend','When people open the app','Visit frequency','Siri requests answered','Feature usage','Platform']) assert.ok(overviewText.includes(label),'Overview is missing '+label);
   for(const label of ['Ad views','Tap rate','Ad preview','Campaign reporting']) assert.ok(!overviewText.includes(label));
   assert.equal(await page.locator('#overviewPanel .creative-preview').count(),0);
+  // KPI cards drive the trend chart, so a metric can be dissected without hunting for a control.
+  await page.locator('.kpi-card[data-series=sessions]').click();
+  assert.equal(await page.locator('#chartMetric').inputValue(),'sessions');
+  assert.equal(await page.locator('.kpi-card[data-series=sessions]').getAttribute('aria-pressed'),'true');
+  assert.ok((await page.locator('#activityInsight').innerText()).includes('visits'));
+  assert.equal(await page.locator('.heatmap tbody tr').count(),7);
+  for(const width of [1440,1024,768,390,320]) {
+    await page.setViewportSize({width,height:1000});
+    assert.ok(await page.locator('#overviewPanel').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Overview overflow at '+width);
+    assert.ok(await page.locator('.workspace-heading').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Header controls overflow at '+width);
+  }
+  await page.setViewportSize({width:1440,height:1000});
+  await page.locator('.kpi-card[data-series=active]').click();
   await page.getByRole('tab',{name:'Campaigns',exact:true}).click();
   assert.equal(await page.locator('#campaignsPanel .creative-preview').count(),1);
   const campaign=await page.locator('#creativeCampaign').inputValue();
   const sponsor=await page.locator('#dashboardAdPreview .creative-sponsor').innerText();
   const metricText=await page.locator('#campaignContextDetails').innerText();
-  for(const label of ['Ad views','Audience reached','Link taps','Tap rate','Ad format','Starts','Ends','Link destination','Campaign ID']) assert.ok(metricText.includes(label));
+  for(const label of ['Ad views','Unique reach','Link taps','Tap rate','Ad format','Starts','Ends','Link destination','Campaign ID']) assert.ok(metricText.includes(label));
   assert.ok(!metricText.includes('CTA')&&!metricText.includes('CTR'));
   const report=await browser.newPage();
   await report.goto('http://localhost:8788/api/admin/campaign-report?id='+encodeURIComponent(campaign)+'&days=30');
@@ -60,6 +73,10 @@ try {
     if(width<=760) assert.ok(layout.labelsVisible,'Mobile values need visible labels');
     assert.ok(await page.locator('.topbar').evaluate(el=>{const home=el.querySelector('.topbar-home').getBoundingClientRect(),center=el.querySelector('.topbar-center').getBoundingClientRect(),right=el.querySelector('.topbar-right').getBoundingClientRect();return home.right<=center.left&&center.right<=right.left;}),'Header items must not collide at '+width);
   }
+  await page.getByRole('tab',{name:'Data quality',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('#dataQuality')?.getAttribute('aria-busy')==='false');
+  const dataText=await page.locator('#dataPanel').innerText();
+  for(const label of ['Collecting since','Latest event','Internal installs','Suggested internal installs']) assert.ok(dataText.includes(label),'Data quality is missing '+label);
   await page.getByRole('tab',{name:'Campaigns',exact:true}).click();
   await page.locator('.ad-card').first().click();
   assert.equal(await page.locator('label[for=cta]').innerText(),'Link button text');

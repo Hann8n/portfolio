@@ -18,6 +18,7 @@ Cloudflare Worker serving ad config at `gymtracker.jackhannon.net/api/ads`.
    ```bash
    npx wrangler d1 migrations apply METRICS --remote
    ```
+   Migration `0002` adds an installation index used by new-install and engagement queries.
    No external analytics account or SDK is required. See [analytics-reporting.md](docs/analytics-reporting.md) for definitions, privacy, retention, validation, and reporting conventions.
 
 ## Initial KV State
@@ -33,9 +34,12 @@ Before any ad has been PUT, GET returns `404` with `{ "error": "No active ad" }`
 | PUT | /api/ads | X-API-Key header | Upsert ad config (by id) |
 | OPTIONS | /api/ads | None | CORS preflight |
 | POST | /api/events | Public, rate limited | Allowlisted first-party events |
-| GET | /api/admin/stats?days=7 | Cloudflare Access | Overview statistics (7, 30, 90, 180, or 365 days) |
+| GET | /api/admin/stats?days=7 | Cloudflare Access | Overview statistics (7, 30, 90, 180, or 365 days, Eastern Time) |
 | GET | /api/admin/events?days=7&campaign=ID | Cloudflare Access | Aggregated event readouts |
-| GET | /api/admin/campaign-report?id=ID&days=30 | Cloudflare Access | Print-ready campaign report; optional download=1 or format=json |
+| GET | /api/admin/campaign-report?id=ID&days=30 | Cloudflare Access | Print-ready sponsor report; optional download=1 or format=json |
+| GET / PUT | /api/admin/audience | Cloudflare Access | Data coverage, internal (test) installs, and suggested ones |
+
+Analytics endpoints exclude internal installs by default; add `internal=include` to count them.
 
 The API filters ads by `start_at` and `end_at` on the server. Multiple ads can be scheduled; the public GET returns the one active "now". Legacy single-ad config is auto-migrated on first request.
 

@@ -8,6 +8,7 @@
  *   GET /api/admin/ads — return all scheduled ads
  *   PUT /api/admin/ads — upsert ad by id
  *   DELETE /api/admin/ads?id=... — delete ad by id
+ *   /api/admin/stats, /events, /audience, /campaign-report — analytics, see admin/api.ts
  *
  * Legacy (API key, for backward compat):
  *   GET /api/ads?schedule=1 — return all ads (X-API-Key)
@@ -312,13 +313,13 @@ async function getAdsArray(kv: KVNamespace): Promise<AdConfig[]> {
   }
 }
 
-import { getAdminHtml } from "./admin-html";
+import { getAdminHtml } from "./admin/page";
 import { getAdsLandingHtml } from "./ads-landing-html";
 import { getMainLandingHtml } from "./main-landing-html";
 
 import { hasAccessAuth } from "./access-auth";
-import { captureMetric, fetchAppStats, fetchEventStats } from "./metrics";
-import { buildCampaignReport, campaignReportHtml } from "./campaign-report";
+import { captureMetric } from "./analytics/ingest";
+import { ADMIN_ANALYTICS_ROUTES } from "./admin/api";
 
 /** True if request is from local dev (host=localhost; prod uses gymtracker.jackhannon.net). */
 function isLocalRequest(request: Request): boolean {
@@ -369,54 +370,16 @@ export default {
       return captureMetric(request, env);
     }
 
-    if (path === "/api/admin/campaign-report") {
-      if (!(await hasAccessAuth(request, env))) return jsonResponse({ error: "Unauthorized" }, 401, request);
-      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
-      const id = url.searchParams.get("id");
-      const days = url.searchParams.get("days");
-      if (days !== null && !["7", "30", "90", "180", "365", "campaign"].includes(days)) return jsonResponse({ error: "Invalid report period" }, 400, request);
-      const ads = await getAdsArray(env.AD_CONFIG);
-      const ad = ads.find(a => a.id === id);
-      if (!ad) return jsonResponse({ error: "Campaign not found" }, 404, request);
-      try {
-        const report = await buildCampaignReport(env, ad, days);
-        if (url.searchParams.get("format") === "json") return jsonResponse(report, 200, request);
-        const download = new URL(url);
-        download.searchParams.set("download", "1");
-        const filename = ad.id.replace(/[^a-z0-9_-]/gi, "-").slice(0, 80) || "campaign";
-        return new Response(campaignReportHtml(report, download.pathname + download.search, url.searchParams.get("download") === "1"), {
-          headers: { "Content-Type": "text/html; charset=utf-8", ...ADMIN_HTML_CACHE_HEADERS,
-            "Content-Disposition": (url.searchParams.get("download") === "1" ? "attachment" : "inline") + '; filename="' + filename + '-report.html"' },
-        });
-      } catch {
-        return jsonResponse({ error: "Campaign reporting temporarily unavailable" }, 503, request);
-      }
-    }
-
-    if (path === "/api/admin/events") {
-      if (!(await hasAccessAuth(request, env))) return jsonResponse({ error: "Unauthorized" }, 401, request);
-      if (request.method !== "GET") return jsonResponse({ error: "Method not allowed" }, 405, request);
-      const days = url.searchParams.get("days") || "7";
-      const campaign = url.searchParams.get("campaign");
-      if (!["7", "30", "90", "180", "365"].includes(days) || (campaign && campaign.length > 128)) return jsonResponse({ error: "Invalid event filters" }, 400, request);
-      try { return jsonResponse(await fetchEventStats(env, Number(days), campaign), 200, request); }
-      catch { return jsonResponse({ error: "Events temporarily unavailable" }, 503, request); }
-    }
-
-    if (path === "/api/admin/stats") {
-      if (!(await hasAccessAuth(request, env))) {
-        return jsonResponse({ error: "Unauthorized" }, 401, request);
-      }
-      if (request.method !== "GET") {
-        return jsonResponse({ error: "Method not allowed" }, 405, request);
-      }
-      try {
-        const days = url.searchParams.get("days") || "7";
-        if (!["7", "30", "90", "180", "365"].includes(days)) return jsonResponse({ error: "Invalid reporting period" }, 400, request);
-        return jsonResponse(await fetchAppStats(env, new Date(), Number(days)), 200, request);
-      } catch {
-        return jsonResponse({ configured: true, error: "Analytics temporarily unavailable" }, 503, request);
-      }
+    const analyticsRoute = ADMIN_ANALYTICS_ROUTES[path];
+    if (analyticsRoute) {
+      const json = (body: object, status = 200) => jsonResponse(body, status, request);
+      if (!(await hasAccessAuth(request, env))) return json({ error: "Unauthorized" }, 401);
+      const handler = analyticsRoute[request.method];
+      if (!handler) return json({ error: "Method not allowed" }, 405);
+      return handler({
+        request, env, url, json, campaigns: () => getAdsArray(env.AD_CONFIG),
+        html: (body, headers = {}) => new Response(body, { headers: { "Content-Type": "text/html; charset=utf-8", ...ADMIN_HTML_CACHE_HEADERS, ...headers } }),
+      });
     }
 
     if (path === "/api/admin/ads") {

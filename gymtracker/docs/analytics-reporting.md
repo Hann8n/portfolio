@@ -1,6 +1,25 @@
 # Analytics and advertiser reporting
 
-The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overview shows active app installs, visits, feature usage, daily app activity, and release/Siri reliability. Campaigns contains a selected-campaign reporting workspace: the saved ad preview sits beside delivery, reach, link taps, tap rate, schedule, format, label, destination, version, editing, and export. Campaign metrics and creative are kept out of the app overview. The campaign schedule and creative manager follow below. Events provides aggregated occurrences, unique app installs, last receipt times, campaign/category filtering, and CSV export. Campaign reports support the last 7, 30, 90, 180, or 365 days, or campaign dates (retained up to 366 days), print-to-PDF, and downloadable HTML with inline styles (artwork still requires its source URL).
+The admin dashboard has four workspaces, registered in `src/admin/views.ts`:
+
+- **Overview** — five KPI cards (active installs, new installs, app visits, returning installs, Campus ID reach), each with a change chip against the previous period and a sparkline. Clicking a card drives the **Trend** chart, which overlays the previous period as dashed outlines once enough history exists. Below: a weekday × hour heatmap of app visits, visit frequency, feature usage, Siri reliability, and platform (each install counted once on its latest app and iOS version). Ad metrics stay in Campaigns.
+- **Campaigns** — selected campaign's saved creative beside views, unique reach, taps, tap rate, daily delivery, views per reached install, schedule, and links to the sponsor report (selected period or full flight). The schedule calendar and editor follow below.
+- **Events** — aggregated occurrences, unique installs, and last receipt per event with category/campaign filters and CSV export (the CSV records the period and whether internal installs were excluded).
+- **Data quality** — collection coverage, the internal-install list, and suggested internal installs ranked by test-device signals (several app builds, a build seen on three or fewer installs, beta iOS, unusually frequent visits, frequent Settings opens, repeated ad taps).
+
+Global controls apply to every workspace and to exported reports: reporting period and **Exclude internal installs** (on by default).
+
+## Campus time and comparison windows
+
+Storage stays UTC. Every day and hour breakdown uses America/New_York, because Gym Tracker serves Virginia Tech and most use happens in the evening, when UTC dates roll over. D1 has no time zone database, so `src/analytics/time.ts` converts DST transitions inside a window into SQL `CASE` boundaries. "Last N days" means today plus the previous N−1 local calendar days. The comparison window has the same length and elapsed time, so a partial today is compared with a partial day. Comparisons appear only when recorded history covers the previous window.
+
+## Internal installs
+
+Developer, TestFlight, and demo devices skew small datasets. On launch data, one developer install produced 6 of 7 ad taps, which inflated tap rate from 0.68% to 4.49%. Installs marked in Data quality are stored in KV (`analytics_internal_installations`) and excluded with a bound JSON list in every dashboard and report query. Raw events are kept, so an exclusion can be reversed. Sponsor reports disclose how many views and taps were excluded.
+
+## Sponsor report
+
+`src/report/campaign-report.ts` renders an A4, print-first document: a masthead, a facts strip (period, recorded activity, flight, placement and format), summary highlights, a KPI band (views, unique reach, taps, tap rate) with average frequency, delivery days and peak hours, daily delivery and time-of-day charts, views-per-install distribution, a daily table with totals, version comparison when more than one version ran, the creative with its details, and methodology. Page footers carry the sponsor, campaign ID, and "Page X of Y". Charts come from `src/charts.ts`, which the dashboard also uses.
 
 ## Measurement and design references
 
@@ -19,7 +38,7 @@ The admin dashboard has three workspaces: Overview, Campaigns, and Events. Overv
 - **Session:** a foreground launch, or return after 30 minutes in background. Siri-only sessions do not count as foreground app sessions.
 - **Active installations:** distinct installation IDs with any recorded event in the period, including Siri activity. Feature users count installations that open that feature, without collecting its content.
 - **Siri data returned:** live or cached responses; unavailable, missing event, and invalid requests are separate failures. Per-action statuses remain in the statistics API and release breakdowns are shown in Overview.
-- Counts use server receipt time. Reporting windows are rolling 7/30/90/180/365 days; UTC daily charts have partial first and last days. Preset reporting windows preserve the selected length even when campaign settings change. The Campaign dates option uses the configured schedule, limited to available retention. Campaign metadata is the current configuration, not a historical snapshot. Use new IDs for new bookings and increment creative versions when replacing content.
+- Counts use server receipt time, shown in Eastern Time. Overview windows are aligned to local calendar days; campaign report presets are exact rolling 7/30/90/180/365-day windows. Preset reporting windows preserve the selected length even when campaign settings change. The Campaign dates option uses the configured schedule, limited to available retention. Campaign metadata is the current configuration, not a historical snapshot. Use new IDs for new bookings and increment creative versions when replacing content.
 - No spend, CPM, CPC, sales, registrations, ROAS, conversion, or attribution figures are invented. These require actual billing or downstream conversion data before they can be reported accurately.
 
 ## First-party storage and deployment
@@ -40,6 +59,8 @@ npx wrangler dev --port 8788
 # In another terminal; local fixtures only:
 python3 tests/integration.py
 node --experimental-strip-types tests/access-auth.mjs
+for t in report analytics; do npx esbuild tests/$t.mjs --bundle --platform=node --format=esm --outfile=/tmp/$t.mjs && node /tmp/$t.mjs; done
+# Browser checks (Playwright): tests/clarity.mjs, tests/dashboard-state.mjs, tests/responsive.mjs
 # Production schema, then Worker:
 npx wrangler d1 migrations apply METRICS --remote
 npm run deploy
@@ -55,6 +76,6 @@ Editing contains fields and a live preview. Campaign metrics and the export link
 
 The browser remembers the current workspace, period, campaign, event filters, chart metric, campaign search/status, calendar month and content scroll position. Invalid or deleted selections fall back safely, and blocked storage does not prevent use. This stores dashboard preferences only; edit-form values are not saved as drafts.
 
-Feature usage aggregates Events detail opens, Campus ID display opens and Settings screen opens. Each row shows total opens, distinct anonymous app installs, share of all active installs, repeat installs (at least two opens in the period), and opens per install that used the feature. Shares overlap across features and include background-only active installs in their denominator. The chart can show these opens by UTC day. This measures event-detail use, not merely seeing the Events feed.
+Feature usage aggregates Events detail opens, Campus ID display opens and Settings screen opens. Each row shows total opens, distinct anonymous app installs, share of all active installs, repeat installs (at least two opens in the period), and opens per install that used the feature. Shares overlap across features and include background-only active installs in their denominator. The Trend chart can show these opens by Eastern Time day. This measures event-detail use, not merely seeing the Events feed.
 
 Siri has separate per-action requests, answered requests and distinct app installs. Crowd recommendations share the existing crowds event. Only actions invoked in the app can be measured; speech Siri never matched is not reported as a failed intent. All counts remain best effort and anonymous. No campus ID contents or event text are collected.

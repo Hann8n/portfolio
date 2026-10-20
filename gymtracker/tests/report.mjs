@@ -1,7 +1,7 @@
 // Bundle with esbuild (provided by Wrangler) before running; exercises report logic, not browser snapshots.
 import assert from 'node:assert/strict';
 import {renderAdPreview} from '../src/ad-preview.ts';
-import {campaignRange,campaignReportHtml} from '../src/campaign-report.ts';
+import {campaignRange,campaignReportHtml} from '../src/report/campaign-report.ts';
 const now=new Date('2026-10-17T18:00:00Z');
 const ad={id:'test',sponsor:'Campus Partners <Sample>',headline:'Community offer',cta:'See offer',destination_url:'https://example.com',tier:'text',start_at:'2026-10-17T17:59:00Z'};
 for (const days of [7,30,90,180,365]) {
