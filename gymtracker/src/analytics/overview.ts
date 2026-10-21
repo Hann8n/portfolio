@@ -9,6 +9,12 @@ const iso = (at: number) => new Date(at).toISOString();
 const num = (value: unknown) => Number(value) || 0;
 const failed = raw(SIRI_FAILED.map(status => `'${status}'`).join(", "));
 
+/** "iOS 26" from "Version 26.0 (Build …)", "Android 15" from "Android 15". */
+export function osMajor(platform: string, osVersion: string) {
+  const major = platform === "android" ? /^Android (\d+)/.exec(osVersion)?.[1] : /^Version (\d+)/.exec(osVersion)?.[1];
+  return major ? (platform === "android" ? "Android " : "iOS ") + major : "Other";
+}
+
 export function ctr(impressions: number, clicks: number) { return impressions > 0 ? clicks / impressions * 100 : 0; }
 
 /** Headline totals for one window. Every unique count is distinct within that window only. */
@@ -83,9 +89,9 @@ export async function fetchOverview(env: Env, audience: Audience, days: number, 
     sql`SELECT app_version, build, COUNT(*) AS installs FROM (
         SELECT installation_id, app_version, build, MAX(received_at) FROM metric_events WHERE ${span} AND ${filter} GROUP BY installation_id)
       GROUP BY app_version, build ORDER BY installs DESC LIMIT 30`,
-    sql`SELECT os_version, COUNT(*) AS installs FROM (
-        SELECT installation_id, os_version, MAX(received_at) FROM metric_events WHERE ${span} AND ${filter} GROUP BY installation_id)
-      GROUP BY os_version`,
+    sql`SELECT platform, os_version, COUNT(*) AS installs FROM (
+        SELECT installation_id, platform, os_version, MAX(received_at) FROM metric_events WHERE ${span} AND ${filter} GROUP BY installation_id)
+      GROUP BY platform, os_version`,
     sql`SELECT ad_id, SUM(event = 'ad_impression') AS impressions, SUM(event = 'ad_tap') AS clicks,
       COUNT(DISTINCT CASE WHEN event = 'ad_impression' THEN installation_id END) AS reach
       FROM metric_events WHERE ${span} AND ${filter} AND event IN ('ad_impression', 'ad_tap') AND placement = 'home_feed'
@@ -113,10 +119,11 @@ export async function fetchOverview(env: Env, audience: Audience, days: number, 
   const summary = { ...totals(cur[0]), new_installs: firstSeen.reduce((sum, row) => sum + num(row.current), 0), returning_installs: sumWindow("current", "repeat_days") };
   const prior = { ...totals(prev[0]), new_installs: firstSeen.reduce((sum, row) => sum + num(row.previous), 0), returning_installs: sumWindow("previous", "repeat_days") };
   const osMajors = new Map<string, number>();
+  const platformInstalls = new Map<string, number>();
   for (const row of os) {
-    const major = /^Version (\d+)/.exec(String(row.os_version))?.[1];
-    const key = major ? "iOS " + major : "Other";
+    const key = osMajor(String(row.platform), String(row.os_version));
     osMajors.set(key, (osMajors.get(key) || 0) + num(row.installs));
+    platformInstalls.set(String(row.platform), (platformInstalls.get(String(row.platform)) || 0) + num(row.installs));
   }
 
   return {
@@ -125,7 +132,7 @@ export async function fetchOverview(env: Env, audience: Audience, days: number, 
     previous_period: { from: iso(previous.from), before: iso(previous.before) },
     comparison_available, coverage_since: since, latest_event: coverage[0]?.latest ?? null,
     audience: {
-      internal_excluded: audience.excludeInternal, internal_installations: audience.internal.length,
+      internal_excluded: audience.excludeInternal, internal_installations: audience.internal.length, platform: audience.platform ?? "all",
       ...Object.fromEntries(Object.entries(internal[0] || {}).map(([key, value]) => ["internal_" + key, num(value)])),
     },
     ...summary,
@@ -136,6 +143,7 @@ export async function fetchOverview(env: Env, audience: Audience, days: number, 
     engagement: engagement.filter(row => row.period_key === "current").map(row => ({ visits: num(row.visits), installs: num(row.installs) })),
     features, siri,
     versions: versions.map(row => ({ app_version: row.app_version, build: row.build, installs: num(row.installs) })),
+    platforms: [...platformInstalls].map(([platform, installs]) => ({ platform, installs })).sort((a, b) => b.installs - a.installs),
     os: [...osMajors].map(([name, installs]) => ({ name, installs })).sort((a, b) => b.installs - a.installs),
     per_ad: perAd.map(row => ({ ...row, ctr_percent: ctr(num(row.impressions), num(row.clicks)) })),
   };

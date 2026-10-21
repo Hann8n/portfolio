@@ -152,7 +152,7 @@ function OverviewContent({ data, series, setSeries }: { data: OverviewData; seri
           <CardHeader><CardTitle>Platform</CardTitle><CardDescription>Each install counted once, on its latest version</CardDescription></CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <div className="space-y-3"><h3 className="text-sm font-medium">App version</h3><BarList label="Installs by app version" items={data.versions.slice(0, 5).map(v => ({ name: `${v.app_version} (${v.build})`, value: v.installs, display: pct(v.installs, data.active_period) }))} /></div>
-            <div className="space-y-3"><h3 className="text-sm font-medium">iOS</h3><BarList label="Installs by iOS version" items={data.os.slice(0, 5).map(v => ({ name: v.name, value: v.installs, display: pct(v.installs, data.active_period) }))} /></div>
+            <div className="space-y-3"><h3 className="text-sm font-medium">OS</h3><BarList label="Installs by OS version" items={data.os.slice(0, 5).map(v => ({ name: v.name, value: v.installs, display: pct(v.installs, data.active_period) }))} /></div>
           </CardContent>
         </Card>
       </div>

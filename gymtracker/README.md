@@ -36,7 +36,7 @@ Cloudflare Worker serving ad config at `gymtracker.jackhannon.net/api/ads`, firs
    ```bash
    npx wrangler d1 migrations apply METRICS --remote
    ```
-   Migration `0002` adds an installation index used by new-install and engagement queries.
+   Migration `0002` adds an installation index used by new-install and engagement queries. Migration `0003` adds the `platform` column (`ios` or `android`; earlier rows are iOS) used by the dashboard's app filter.
    No external analytics account or SDK is required. See [analytics-reporting.md](docs/analytics-reporting.md) for definitions, privacy, retention, validation, and reporting conventions.
 
 ## Initial KV State
