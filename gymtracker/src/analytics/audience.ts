@@ -8,8 +8,12 @@ const KV_KEY = "analytics_internal_installations";
 const MAX_INTERNAL = 200;
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+export const PLATFORMS: readonly string[] = ["ios", "android"];
+export type Platform = "ios" | "android";
+
 export interface InternalInstall { id: string; label: string; added_at: string }
-export interface Audience { excludeInternal: boolean; internal: InternalInstall[] }
+/** `platform` null reports both apps together. */
+export interface Audience { excludeInternal: boolean; internal: InternalInstall[]; platform?: Platform | null }
 
 export async function getInternalInstalls(kv: KVNamespace | undefined): Promise<InternalInstall[]> {
   if (!kv) return [];
@@ -27,18 +31,27 @@ export async function setInternalInstall(kv: KVNamespace, id: string, label: str
   return next;
 }
 
-export async function resolveAudience(env: Env, mode: string | null): Promise<Audience> {
-  return { excludeInternal: mode !== "include", internal: await getInternalInstalls(env.AD_CONFIG) };
+export function parsePlatform(value: string | null): Platform | null | undefined {
+  if (value === null || value === "" || value === "all") return null;
+  return PLATFORMS.includes(value) ? value as Platform : undefined;
+}
+
+export async function resolveAudience(env: Env, mode: string | null, platform: Platform | null = null): Promise<Audience> {
+  return { excludeInternal: mode !== "include", internal: await getInternalInstalls(env.AD_CONFIG), platform };
+}
+
+function platformFilter(audience: Audience): Fragment {
+  return audience.platform ? sql`platform = ${audience.platform}` : sql`1 = 1`;
 }
 
 /** Rows counted in reports. */
 export function audienceFilter(audience: Audience): Fragment {
-  if (!audience.excludeInternal || !audience.internal.length) return sql`1 = 1`;
-  return sql`installation_id NOT IN (SELECT value FROM json_each(${JSON.stringify(audience.internal.map(row => row.id))}))`;
+  if (!audience.excludeInternal || !audience.internal.length) return audience.platform ? platformFilter(audience) : sql`1 = 1`;
+  return sql`installation_id NOT IN (SELECT value FROM json_each(${JSON.stringify(audience.internal.map(row => row.id))})) AND ${platformFilter(audience)}`;
 }
 
 /** Rows removed by the internal filter, for disclosure next to the numbers they would have changed. */
 export function internalOnlyFilter(audience: Audience): Fragment {
   if (!audience.excludeInternal || !audience.internal.length) return sql`1 = 0`;
-  return sql`installation_id IN (SELECT value FROM json_each(${JSON.stringify(audience.internal.map(row => row.id))}))`;
+  return sql`installation_id IN (SELECT value FROM json_each(${JSON.stringify(audience.internal.map(row => row.id))})) AND ${platformFilter(audience)}`;
 }

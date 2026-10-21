@@ -103,7 +103,20 @@ assert next(x for x in data('/api/admin/stats?days=7')['per_ad'] if x['ad_id']==
 assert next(x for x in data('/api/admin/stats?days=7&internal=include')['per_ad'] if x['ad_id']==campaign)['reach']==2
 assert request('/api/admin/audience',{'id':installations[1],'internal':False},'PUT')[0]==200
 assert not any(row['id']==installations[1] for row in data('/api/admin/audience')['internal'])
+# Platform: explicit property, or inferred from os_version for builds that predate it; reports can split by app.
+android=str(uuid.uuid4())
+assert request('/api/events',{**event('app_session'),'distinct_id':android,'properties':{**event('app_session')['properties'],'os_version':'Android 15','platform':'android'}},'POST')[0]==204
+assert request('/api/events',{**event('event_open'),'distinct_id':android,'properties':{**event('event_open')['properties'],'os_version':'Android 15'}},'POST')[0]==204
+assert request('/api/events',{**event('app_session'),'properties':{**event('app_session')['properties'],'platform':'web'}},'POST')[0]==400
+droid=data('/api/admin/stats?days=7&platform=android')
+assert droid['active_period']==1 and droid['sessions']==1 and droid['audience']['platform']=='android',droid
+assert any(row['name']=='Android 15' for row in droid['os']),droid['os']
+assert not any(x['ad_id']==campaign for x in droid['per_ad'])
+apple=data('/api/admin/stats?days=7&platform=ios')
+assert apple['sessions']==data('/api/admin/stats?days=7')['sessions']-1
+assert request('/api/admin/stats?platform=web')[0]==400
+assert data('/api/admin/campaign-report?id='+campaign+'&days=30&format=json&platform=android')['impressions']==0
 assert request('/privacy')[0]==200
 Path('/tmp/gymtracker-qa-campaign.txt').write_text(campaign)
 Path('/tmp/gymtracker-report-sample.html').write_text(html)
-print('PASS: labels, backwards compatibility, validation, event idempotency, metrics, reach/CTR, campaign export, internal-install exclusion, and privacy route')
+print('PASS: labels, backwards compatibility, validation, event idempotency, metrics, reach/CTR, campaign export, internal-install exclusion, platform split, and privacy route')

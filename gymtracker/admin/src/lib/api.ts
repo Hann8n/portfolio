@@ -43,13 +43,14 @@ export interface Overview extends Totals {
   configured: boolean; days: number; time_zone: string; comparison_available: boolean;
   period: { from: string; before: string }; previous_period: { from: string; before: string };
   coverage_since: string | null; latest_event: string | null;
-  audience: { internal_excluded: boolean; internal_installations: number; internal_events: number; internal_impressions: number; internal_clicks: number };
+  audience: { internal_excluded: boolean; internal_installations: number; platform?: string; internal_events: number; internal_impressions: number; internal_clicks: number };
   previous: Totals | null; daily: DailyRow[]; previous_daily: DailyRow[];
   hourly: { dow: number; hour: number; sessions: number; installs: number }[];
   engagement: { visits: number; installs: number }[];
   features: { event: string; opens: number; installations: number; repeat_installations: number }[];
   siri: { event: string; status: string; count: number }[];
   versions: { app_version: string; build: string; installs: number }[];
+  platforms?: { platform: string; installs: number }[];
   os: { name: string; installs: number }[];
   per_ad: { ad_id: string; impressions: number; clicks: number; reach: number; ctr_percent: number }[];
 }
@@ -83,7 +84,7 @@ export const useCampaigns = () =>
 
 export const useCampaignReport = (id: string | undefined, filters: Filters, days: string = filters.days) =>
   useQuery({
-    queryKey: ["campaign-report", id, days, filters.excludeInternal], enabled: !!id,
+    queryKey: ["campaign-report", id, days, filters.excludeInternal, filters.platform], enabled: !!id,
     queryFn: () => request<CampaignReport>("/api/admin/campaign-report?" + filterQuery({ ...filters, days: days as Filters["days"] }, { id: id!, format: "json" })),
   });
 

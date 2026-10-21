@@ -1,4 +1,4 @@
-import { UUID, resolveAudience, setInternalInstall } from "../analytics/audience";
+import { UUID, parsePlatform, resolveAudience, setInternalInstall } from "../analytics/audience";
 import { fetchAudienceReview, fetchEventStats } from "../analytics/events";
 import { fetchOverview } from "../analytics/overview";
 import { OVERVIEW_PERIODS } from "../analytics/windows";
@@ -18,13 +18,16 @@ type Handler = (ctx: AdminContext) => Promise<Response>;
 
 const periods = new Set<string>(OVERVIEW_PERIODS.map(String));
 const internalMode = (url: URL) => url.searchParams.get("internal");
+const platformOf = (url: URL) => parsePlatform(url.searchParams.get("platform"));
 
 export const ADMIN_ANALYTICS_ROUTES: Record<string, Partial<Record<string, Handler>>> = {
   "/api/admin/stats": {
     async GET({ env, url, json }) {
       const days = url.searchParams.get("days") || "7";
+      const platform = platformOf(url);
       if (!periods.has(days)) return json({ error: "Invalid reporting period" }, 400);
-      try { return json(await fetchOverview(env, await resolveAudience(env, internalMode(url)), Number(days))); }
+      if (platform === undefined) return json({ error: "Invalid platform" }, 400);
+      try { return json(await fetchOverview(env, await resolveAudience(env, internalMode(url), platform), Number(days))); }
       catch (error) { console.error("stats failed", error); return json({ configured: true, error: "Analytics temporarily unavailable" }, 503); }
     },
   },
@@ -32,8 +35,9 @@ export const ADMIN_ANALYTICS_ROUTES: Record<string, Partial<Record<string, Handl
     async GET({ env, url, json }) {
       const days = url.searchParams.get("days") || "7";
       const campaign = url.searchParams.get("campaign");
-      if (!periods.has(days) || (campaign && campaign.length > 128)) return json({ error: "Invalid event filters" }, 400);
-      try { return json(await fetchEventStats(env, await resolveAudience(env, internalMode(url)), Number(days), campaign)); }
+      const platform = platformOf(url);
+      if (!periods.has(days) || (campaign && campaign.length > 128) || platform === undefined) return json({ error: "Invalid event filters" }, 400);
+      try { return json(await fetchEventStats(env, await resolveAudience(env, internalMode(url), platform), Number(days), campaign)); }
       catch (error) { console.error("events failed", error); return json({ error: "Events temporarily unavailable" }, 503); }
     },
   },
@@ -55,11 +59,13 @@ export const ADMIN_ANALYTICS_ROUTES: Record<string, Partial<Record<string, Handl
     async GET({ env, url, json, html, campaigns }) {
       const id = url.searchParams.get("id");
       const days = url.searchParams.get("days");
+      const platform = platformOf(url);
       if (days !== null && !REPORT_PERIODS.includes(days)) return json({ error: "Invalid report period" }, 400);
+      if (platform === undefined) return json({ error: "Invalid platform" }, 400);
       const ad = (await campaigns()).find(a => a.id === id);
       if (!ad) return json({ error: "Campaign not found" }, 404);
       try {
-        const report = await buildCampaignReport(env, ad, days, await resolveAudience(env, internalMode(url)));
+        const report = await buildCampaignReport(env, ad, days, await resolveAudience(env, internalMode(url), platform));
         if (url.searchParams.get("format") === "json") return json(report);
         const download = new URL(url);
         download.searchParams.set("download", "1");

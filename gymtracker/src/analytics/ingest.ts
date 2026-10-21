@@ -1,4 +1,4 @@
-import { UUID as uuid } from "./audience";
+import { PLATFORMS, UUID as uuid } from "./audience";
 import { EVENT_NAMES, SIRI_ANSWERED, SIRI_FAILED } from "./catalog";
 
 /** First-party analytics: bounded explicit events, no IP addresses or user content. */
@@ -42,6 +42,9 @@ export async function captureMetric(request: Request, env: Env): Promise<Respons
       properties[key] = value;
     }
   }
+  // Builds before the platform property are iOS; Android always reports "Android <release>" as its OS.
+  const platform = input.platform ?? (properties.os_version?.startsWith("Android") ? "android" : "ios");
+  if (!PLATFORMS.includes(platform)) return reply(400);
   if (input.status !== undefined) {
     if (!statuses.has(input.status)) return reply(400);
     properties.status = input.status;
@@ -50,11 +53,11 @@ export async function captureMetric(request: Request, env: Env): Promise<Respons
   if (body.event.startsWith("siri_") && !properties.status) return reply(400);
   try {
     await env.METRICS.prepare(`INSERT OR IGNORE INTO metric_events
-      (event_id, event, installation_id, session_id, received_at, app_version, build, os_version, ad_id, creative_version, placement, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      (event_id, event, installation_id, session_id, received_at, app_version, build, os_version, ad_id, creative_version, placement, status, platform)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
       .bind(body.event_id, body.event, body.distinct_id, input.session_id, new Date().toISOString(),
         properties.app_version || "unknown", properties.build || "unknown", properties.os_version || "unknown",
-        properties.ad_id || null, properties.creative_version || "", properties.placement || null, properties.status || null).run();
+        properties.ad_id || null, properties.creative_version || "", properties.placement || null, properties.status || null, platform).run();
     return reply(204);
   } catch { return reply(503); }
 }

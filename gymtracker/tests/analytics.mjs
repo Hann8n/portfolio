@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {localDateKey,localDates,localTimeSql,offsetSegments,zoneOffsetMinutes} from '../src/analytics/time.ts';
 import {localMidnight,overviewWindows} from '../src/analytics/windows.ts';
 import {raw,sql} from '../src/analytics/sql.ts';
-import {audienceFilter,internalOnlyFilter} from '../src/analytics/audience.ts';
+import {audienceFilter,internalOnlyFilter,parsePlatform} from '../src/analytics/audience.ts';
+import {osMajor} from '../src/analytics/overview.ts';
 import {barChartSvg,shareBarsHtml} from '../src/charts.ts';
 import {campaignReportHtml} from '../src/report/campaign-report.ts';
 
@@ -38,7 +39,13 @@ assert.equal(audienceFilter({excludeInternal:true,internal:[]}).sql,'1 = 1');
 assert.equal(audienceFilter({excludeInternal:false,internal}).sql,'1 = 1');
 assert.ok(audienceFilter({excludeInternal:true,internal}).sql.includes('NOT IN')&&audienceFilter({excludeInternal:true,internal}).params[0].includes(internal[0].id));
 assert.equal(internalOnlyFilter({excludeInternal:false,internal}).sql,'1 = 0');
-console.log('PASS: parameterized SQL composition and internal-install filters');
+assert.equal(audienceFilter({excludeInternal:false,internal,platform:'android'}).sql,'platform = ?');
+assert.deepEqual(audienceFilter({excludeInternal:false,internal,platform:'android'}).params,['android']);
+assert.ok(audienceFilter({excludeInternal:true,internal,platform:'ios'}).sql.endsWith('AND platform = ?'));
+assert.ok(internalOnlyFilter({excludeInternal:true,internal,platform:'ios'}).params.includes('ios'));
+assert.equal(parsePlatform(null),null);assert.equal(parsePlatform('all'),null);assert.equal(parsePlatform('android'),'android');assert.equal(parsePlatform('web'),undefined);
+assert.equal(osMajor('ios','Version 26.0 (Build 23A341)'),'iOS 26');assert.equal(osMajor('android','Android 15'),'Android 15');assert.equal(osMajor('android','Version 26.0'),'Other');
+console.log('PASS: parameterized SQL composition and internal-install and platform filters');
 
 const chart=barChartSvg([{label:'<Mon>',value:3},{label:'Tue',value:0}],{ariaLabel:'Views "daily"',comparison:[1,null]});
 assert.ok(chart.includes('&lt;Mon&gt;')&&chart.includes('&quot;daily&quot;')&&chart.includes('chart-compare'));
