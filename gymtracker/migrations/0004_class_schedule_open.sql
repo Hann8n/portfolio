@@ -1,8 +1,8 @@
--- Accepts class_schedule_open (the apps' full class schedule). SQLite can't change a CHECK constraint,
+-- Accepts class_schedule_open (the apps' full class schedule) and class_signup_tap (its Sign Up button). SQLite can't change a CHECK constraint,
 -- so the table is rebuilt with the same columns, defaults and indexes, and every row is copied.
 CREATE TABLE metric_events_new (
   event_id TEXT PRIMARY KEY,
-  event TEXT NOT NULL CHECK(event IN ('app_session','event_open','passport_open','settings_open','class_schedule_open','siri_crowds','siri_events','siri_event_details','ad_impression','ad_tap')),
+  event TEXT NOT NULL CHECK(event IN ('app_session','event_open','passport_open','settings_open','class_schedule_open','class_signup_tap','siri_crowds','siri_events','siri_event_details','ad_impression','ad_tap')),
   installation_id TEXT NOT NULL,
   session_id TEXT NOT NULL,
   received_at TEXT NOT NULL,

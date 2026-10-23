@@ -80,7 +80,7 @@ export async function fetchOverview(env: Env, audience: Audience, days: number, 
       FROM metric_events WHERE ${span} AND event = 'app_session' AND ${filter} GROUP BY dow, hour`,
     sql`SELECT event, SUM(uses) AS opens, COUNT(*) AS installations, SUM(uses > 1) AS repeat_installations, MAX(last_received) AS last_received
       FROM (SELECT event, installation_id, COUNT(*) AS uses, MAX(received_at) AS last_received FROM metric_events
-        WHERE ${span} AND ${filter} AND event IN ('event_open','passport_open','settings_open','class_schedule_open','siri_crowds','siri_events','siri_event_details')
+        WHERE ${span} AND ${filter} AND event IN ('event_open','passport_open','settings_open','class_schedule_open','class_signup_tap','siri_crowds','siri_events','siri_event_details')
         GROUP BY event, installation_id)
       GROUP BY event ORDER BY opens DESC`,
     sql`SELECT event, status, COUNT(*) AS count FROM metric_events WHERE ${span} AND ${filter} AND event LIKE 'siri_%'
