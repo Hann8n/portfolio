@@ -59,7 +59,7 @@ function OverviewContent({ data, series, setSeries }: { data: OverviewData; seri
   }));
   const timing = timingInsight(data.hourly);
   const feature = (event: string) => data.features.find(f => f.event === event) || { opens: 0, installations: 0, repeat_installations: 0 };
-  const features = [["passport_open", "Campus ID"], ["event_open", "Recreation events"], ["settings_open", "Settings"]] as const;
+  const features = [["passport_open", "Campus ID"], ["event_open", "Recreation events"], ["class_schedule_open", "Class schedule"], ["settings_open", "Settings"]] as const;
   const buckets: [string, number[]][] = [["Background only", [0]], ["1 visit", [1]], ["2 visits", [2]], ["3–4 visits", [3, 4]], ["5–9 visits", [5, 6, 7, 8, 9]], ["10+ visits", [10]]];
   const answered = Math.max(0, data.siri_actions - data.siri_unavailable);
 

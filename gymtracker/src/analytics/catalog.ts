@@ -9,6 +9,7 @@ export const EVENT_CATALOG = {
   passport_open: { label: "Campus ID opened", description: "Campus ID screen viewed", category: "product" },
   event_open: { label: "Recreation event opened", description: "Recreation event details viewed", category: "product" },
   settings_open: { label: "Settings opened", description: "Settings screen viewed", category: "product" },
+  class_schedule_open: { label: "Class schedule opened", description: "Full class schedule viewed", category: "product" },
   ad_impression: { label: "Ad viewed", description: "Qualified view in the home feed", category: "ads" },
   ad_tap: { label: "Ad link tapped", description: "Ad link button tapped", category: "ads" },
   siri_crowds: { label: "Siri · Current crowds", description: "Crowd checks and gym recommendations", category: "siri" },
