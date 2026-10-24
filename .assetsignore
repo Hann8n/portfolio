@@ -1,5 +1,4 @@
 # Exclude subprojects and dependencies from asset upload
-gymtracker/
 node_modules/
 .wrangler/
 .git/

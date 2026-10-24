@@ -7,13 +7,12 @@ my website :)
 ## Structure
 
 - **/** — Main site (Cloudflare Pages)
-- **[gymtracker/](gymtracker/)** — Gym Tracker subdomain (`gymtracker.jackhannon.net`): landing page, ads API, admin UI
+- Gym Tracker (`gymtracker.jackhannon.net`: landing page, ads API, admin UI) moved to the `Hann8n/gym-tracker` monorepo (`backend/`)
 
 ## Deployment
 
 - **Platform:** Cloudflare Pages
 - **Config:** [wrangler.jsonc](wrangler.jsonc)
-- **Gym Tracker:** `cd gymtracker && npx wrangler deploy`
 
 ## Attributions
 
