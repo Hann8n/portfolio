@@ -24,7 +24,7 @@ const HEVY_API_URL = "https://api.hevyapp.com/v1";
 const GITHUB_CONTRIBUTIONS_URL = "https://github.com/users/Hann8n/contributions";
 const PAGE_SIZE = 1;
 const EDGE_CACHE_SECONDS = 600;
-const ASSET_VERSION = "2026-10-20-work-pages-3";
+const ASSET_VERSION = "2026-10-21-eagle-scout";
 
 export default {
   async fetch(request, env, ctx) {
