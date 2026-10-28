@@ -37,6 +37,11 @@ export default {
       return githubActivity(request, ctx);
     }
 
+    // API failures stay machine-readable rather than serving the website 404.
+    if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
+      return response({ error: "Not found" }, 404);
+    }
+
     // Version the internal asset request so custom-domain edge caches cannot
     // serve a previous site shell after a Worker deployment.
     const assetUrl = new URL(request.url);
