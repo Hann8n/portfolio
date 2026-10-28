@@ -10,3 +10,6 @@ dist/
 # OS and misc
 .DS_Store
 *.log
+
+# Local regression checks
+tests/

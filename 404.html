@@ -9,7 +9,7 @@
   <link rel="preload" href="/fonts/mozilla-text-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/mozilla-text-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/mozilla-text-600.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=404-20261028">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
@@ -18,19 +18,14 @@
 </head>
 <body>
   <main>
-    <article class="profile">
-      <header class="profile-header">
-        <div class="profile-info">
-          <h1 class="name">404</h1>
-          <p class="subtitle">Page not found</p>
-        </div>
+    <article class="profile not-found" aria-labelledby="not-found-title">
+      <p class="subtitle">Jack Hannon</p>
+      <header class="profile-info">
+        <p class="not-found-code" aria-hidden="true">404</p>
+        <h1 class="name" id="not-found-title">404 · Page not found</h1>
       </header>
-      <p style="color: var(--color-text-muted); margin-bottom: 1.25rem;">
-        The page you're looking for doesn't exist or has been moved.
-      </p>
-      <a href="/" class="social-link" style="display: inline-flex; width: fit-content;">
-        ← Back to home
-      </a>
+      <p class="not-found-copy">This page may have moved, or the link may be out of date. My work is still right here.</p>
+      <a href="/" class="social-link not-found-home"><span aria-hidden="true">←</span> Back to home</a>
     </article>
   </main>
 </body>
