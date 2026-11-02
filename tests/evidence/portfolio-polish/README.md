@@ -1,11 +1,11 @@
 # Portfolio polish review evidence
 
 Baseline: `f2893b522a29725e8eb0a285eee8f99dc9c163e6` (`origin/main`).
-The homepage keeps the original compact column and exact social chip links, icons, labels, order, and sizing. Selected work now pairs brief audience/contribution stories with existing project images, following the owner-selected theme: “I make technology clear and give people a reason to use it.” Case-study navigation remains.
+The homepage keeps the original compact column and exact social chip links, icons, labels, order, and sizing. Selected work pairs brief audience/contribution stories with existing project images in consistent 16:10 collage covers, following the owner-selected theme: “I make technology clear and give people a reason to use it.” Case-study navigation remains.
 
 Screenshots were captured from local static HTTP previews in the installed Chromium headless browser, with fonts and images fully loaded. The `tests/` directory is excluded from Worker asset uploads by `.assetsignore`.
 
-- Homepage: desktop (1440 × 1000) and mobile (390 × 844), before and after.
+- Homepage: desktop (1440 × 1000) and mobile (390 × 844), before and after. Collage geometry also checked at 1440, 390, and 320 CSS pixels: all three covers share exact dimensions and the 16:10 ratio at each width.
 - Case studies: after screenshots at 390 × 844.
 - `checks.json`: all four pages checked at 1440, 390, and 320 CSS pixels. The 320px check used dark mode; other checks used light mode. Each passed horizontal-overflow, image-loading, single-h1, internal-link HTTP 200, JavaScript-error, and first keyboard-focus checks. This is browser emulation, not a physical-device or Safari test.
 - Existing `node tests/not-found.mjs` passes with Node 24.18.0 (source/config and mocked Worker routing contracts). No Worker routing or deployment changes were made. The optional Wrangler HTTP integration checks were not run.
@@ -17,3 +17,13 @@ Screenshots were captured from local static HTTP previews in the installed Chrom
 - Gym Tracker sponsorship wording now identifies an offering/tools built, with no revenue yet and a clearly marked sample advertiser. No sales or client results were added.
 - Vicino work and a portrait replacement/crop are deferred. No employer materials or new work samples were published.
 - Existing app-development claims were retained; a broader rewrite of how AI-assisted development is described needs owner wording and is outside this pass.
+
+## Editorial design references
+
+- [NN/g: Why Does a Design Look Good?](https://www.nngroup.com/articles/why-does-design-look-good/) — consistent grids, typography, padding, and image treatment informed the shared cover ratio, gutters, and caption alignment.
+- [Pentagram: Pienso](https://www.pentagram.com/work/pienso) — reviewed the use of actual product/brand work alongside concise technical context.
+- [Instrument: Work](https://www.instrument.com/work) — reviewed image-led project presentation and concise project framing.
+
+The implementation is an original composition of existing portfolio images in HTML/CSS. No reference artwork was copied. The same 16:10 canvas, frame, padding, and caption system is used across projects, with a controlled grid inside each cover. The original social chips and 25rem profile width remain intact. References were visually inspected in the installed Chromium browser; their screenshot files are not included in the repository.
+
+Vicino remains a case-study planning item, pending confirmation of shareable deliverables and individual authorship. No Vicino page or employer materials were published.
