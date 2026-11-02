@@ -1,7 +1,7 @@
 # Portfolio polish review evidence
 
 Baseline: `f2893b522a29725e8eb0a285eee8f99dc9c163e6` (`origin/main`).
-The homepage keeps the original compact column, spacing, and exact social chip links, icons, labels, and order. Clearer contribution copy and case-study navigation remain.
+The homepage keeps the original compact column and exact social chip links, icons, labels, order, and sizing. Selected work now pairs brief audience/contribution stories with existing project images, following the owner-selected theme: “I make technology clear and give people a reason to use it.” Case-study navigation remains.
 
 Screenshots were captured from local static HTTP previews in the installed Chromium headless browser, with fonts and images fully loaded. The `tests/` directory is excluded from Worker asset uploads by `.assetsignore`.
 
