@@ -28,7 +28,7 @@
     "device": "desktop",
     "overflow": false,
     "brokenImages": 0,
-    "links": 5,
+    "links": 6,
     "keyboardFocus": "solid"
   },
   {
@@ -60,7 +60,7 @@
     "device": "mobile",
     "overflow": false,
     "brokenImages": 0,
-    "links": 5,
+    "links": 6,
     "keyboardFocus": "solid"
   },
   {
@@ -92,7 +92,7 @@
     "device": "narrow-dark",
     "overflow": false,
     "brokenImages": 0,
-    "links": 5,
+    "links": 6,
     "keyboardFocus": "solid"
   }
 ]

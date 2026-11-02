@@ -1,7 +1,7 @@
 # Portfolio polish review evidence
 
 Baseline: `f2893b522a29725e8eb0a285eee8f99dc9c163e6` (`origin/main`).
-The homepage keeps the original compact column and exact social chip links, icons, labels, order, and sizing. Selected work pairs brief audience/contribution stories with existing project images in consistent 16:10 collage covers, following the owner-selected theme: “I make technology clear and give people a reason to use it.” Case-study navigation remains.
+The homepage keeps the original compact column and exact social chip links, icons, labels, order, and sizing. Selected work pairs brief audience/contribution stories with existing project images in complete cards with consistent 16:10 artwork covers, following the owner-selected theme: “I make technology clear and give people a reason to use it.” Case-study navigation remains.
 
 Screenshots were captured from local static HTTP previews in the installed Chromium headless browser, with fonts and images fully loaded. The `tests/` directory is excluded from Worker asset uploads by `.assetsignore`.
 
@@ -24,6 +24,14 @@ Screenshots were captured from local static HTTP previews in the installed Chrom
 - [Pentagram: Pienso](https://www.pentagram.com/work/pienso) — reviewed the use of actual product/brand work alongside concise technical context.
 - [Instrument: Work](https://www.instrument.com/work) — reviewed image-led project presentation and concise project framing.
 
-The implementation is an original composition of existing portfolio images in HTML/CSS. No reference artwork was copied. The same 16:10 canvas, frame, padding, and caption system is used across projects, with a controlled grid inside each cover. The original social chips and 25rem profile width remain intact. References were visually inspected in the installed Chromium browser; their screenshot files are not included in the repository.
+Each project is one complete linked card containing both its artwork and caption, with one outer boundary and no nested image frame. Covers keep the same 16:10 canvas. Gym Tracker and Yik Yak use existing portfolio images; Orbyt uses its public brand lockup as a simpler cover. No design-reference artwork was copied. The original social chips and 25rem profile width remain intact. References were visually inspected in the installed Chromium browser; their screenshot files are not included in the repository.
 
 Vicino remains a case-study planning item, pending confirmation of shareable deliverables and individual authorship. No Vicino page or employer materials were published.
+
+## Orbyt image sources
+
+- `orbyt-logotype.png`: existing public brand artwork from `https://getorbyt.com/images/orbyt-logotype.png`; SHA-256 `2865d26cd57d391e4e2daaf6eed812ef2ff3a7f4330562c504ca6d8bdaf57770`. Used as the homepage cover.
+- `orbyt-web-launch.png`: browser capture of the current public `https://getorbyt.com/` at 1440 × 810, with fonts loaded and reduced motion. Leads the case study's visuals.
+- `orbyt-early-launch.png`: the owner's existing 1920 × 1080 launch graphic, copied without edits. The owner requested both current and earlier work, with older work clearly labeled. The case study labels it “Earlier launch artwork, showing an earlier version of the interface.” No date was inferred.
+
+The Orbyt source repository was read only. No app code, app deployment, or unrelated work was changed. The original social-chip markup remains exact.
