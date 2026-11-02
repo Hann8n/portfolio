@@ -21,11 +21,20 @@ img{max-width:100%}
 @font-face{font-family:"Mozilla Text";font-weight:600;font-display:swap;src:url("/fonts/mozilla-text-600.woff2") format("woff2")}
 body{margin:0;background:#060709}
 a{color:#00DDE6}a:hover{color:#F4F7FF}
+.case-back{display:inline-flex;align-items:center;min-height:44px;margin:0 0 24px;font-size:14px;text-underline-offset:3px}
+.case-summary{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 0 0;padding:20px 0;border-top:1px solid #262a33;border-bottom:1px solid #262a33}
+.case-summary dt{font-size:12px;font-weight:600;margin-bottom:6px;color:#a7adbd}
+.case-summary dd{margin:0;font-size:14px;line-height:1.6;color:#F4F7FF}
+.case-footer{display:flex;flex-wrap:wrap;gap:8px 24px;margin:64px 0 0;padding-top:24px;border-top:1px solid #262a33;font-size:14px}
+.case-footer a{display:inline-flex;align-items:center;min-height:44px;text-underline-offset:3px}
+a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+@media(max-width:480px){.case-summary{grid-template-columns:1fr;gap:16px}.case-gallery{grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
   </style>
 </head>
 <body>
 <div style="background: #060709; color: #e6e9f2; font-family: 'Mozilla Text', ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.65; padding: 48px 20px 80px;">
 <main style="max-width: 640px; margin: 0 auto; display: flex; flex-direction: column;">
+<a class="case-back" href="/#work">← All work</a>
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 18px; margin: 0 0 28px;">
 <img loading="lazy" decoding="async" src="/images/work/icon-orbyt.webp" alt="" style="width: 72px; height: 72px; flex-shrink: 0;">
 <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
@@ -38,12 +47,16 @@ a{color:#00DDE6}a:hover{color:#F4F7FF}
 
 <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 0; font-size: 13px; line-height: 1.4; font-weight: 500;">
 <span style="padding: 6px 12px; border: 1px solid #262a33; border-radius: 999px; color: #c3c8d4;">iOS and web</span>
-<span style="padding: 6px 12px; border: 1px solid #262a33; border-radius: 999px; color: #c3c8d4;">Product, brand, launch</span>
 <a href="https://getorbyt.com" style="padding: 6px 12px; border: 1px solid #3A2BF0; border-radius: 999px; background: #3A2BF0; color: #F4F7FF; text-decoration: none;">getorbyt.com ↗</a>
 </div>
 
+<dl class="case-summary" aria-label="Project summary">
+<div><dt>My work</dt><dd>Product direction, name and icon, store screenshots, and web presence.</dd></div>
+<div><dt>Status</dt><dd>In beta on iOS and the web; still in active development.</dd></div>
+</dl>
+
 <figure style="margin: 48px 0 0;">
-<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+<div class="case-gallery" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
 <img loading="lazy" decoding="async" src="/images/work/orbyt-feed2.webp" alt="The video feed, with Following and Your mix tabs" style="width: 100%; height: auto; display: block; border: 1px solid #262a33; border-radius: 14px;">
 <img loading="lazy" decoding="async" src="/images/work/orbyt-chill.webp" alt="The /chill community page with members, videos and a Post button" style="width: 100%; height: auto; display: block; border: 1px solid #262a33; border-radius: 14px;">
 <img loading="lazy" decoding="async" src="/images/work/orbyt-search.webp" alt="Search results for funny, showing communities, people, tags and videos" style="width: 100%; height: auto; display: block; border: 1px solid #262a33; border-radius: 14px;">
@@ -74,7 +87,11 @@ a{color:#00DDE6}a:hover{color:#F4F7FF}
 <p style="margin: 0 0 16px;">Orbyt is where I learned how platforms actually work. With Gym Tracker I knew my audience personally: Virginia Tech students with one specific problem. With Orbyt I aimed for mass appeal, and a social video app doesn't grow that way. It needs a niche to start from and the right moment to catch. I plan for both from day one now.</p>
 <p style="margin: 0;">Orbyt is still in active development. If people go looking for an open alternative to today's vertical video apps, one where they own everything they post, it's ready for them.</p>
 
-<p style="margin: 64px 0 0; padding-top: 24px; border-top: 1px solid #262a33; font-size: 14px; line-height: 1.5; color: #a7adbd;">Previous: <a href="/work/gym-tracker/">Gym Tracker</a> · Next: <a href="/work/yik-yak/">Yik Yak</a> · <a href="mailto:hi@jackhannon.net">hi@jackhannon.net</a></p>
+<nav class="case-footer" aria-label="Portfolio navigation">
+<a href="/#work">Work</a>
+<a href="/Jack_Hannon__Resume_Web.pdf">Resume</a>
+<a href="mailto:hi@jackhannon.net">Contact</a>
+</nav>
 </main>
 </div>
 </body>
