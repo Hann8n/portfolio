@@ -1,6 +1,8 @@
 # Portfolio polish review evidence
 
 Baseline: `f2893b522a29725e8eb0a285eee8f99dc9c163e6` (`origin/main`).
+The homepage keeps the original compact column, spacing, and exact social chip links, icons, labels, and order. Clearer contribution copy and case-study navigation remain.
+
 Screenshots were captured from local static HTTP previews in the installed Chromium headless browser, with fonts and images fully loaded. The `tests/` directory is excluded from Worker asset uploads by `.assetsignore`.
 
 - Homepage: desktop (1440 × 1000) and mobile (390 × 844), before and after.

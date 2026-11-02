@@ -87,14 +87,15 @@ main {
 .profile {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  max-width: 32rem;
+  gap: 1.25rem;
+  max-width: 25rem;
   width: 100%;
 }
 
 .profile-header {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   font-weight: 500;
   letter-spacing: -0.0125em;
 }
@@ -109,8 +110,6 @@ main {
 
 /* Profile Info */
 .profile-info {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -437,9 +436,9 @@ main {
 
 .section-label {
   margin-bottom: 0.5rem;
-  color: var(--color-text);
-  font-size: 1rem;
-  font-weight: 600;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .work-list {
@@ -451,7 +450,7 @@ main {
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
-  padding: 1.1rem 0;
+  padding: 0.6rem 0;
 }
 
 .work-item + .work-item {
@@ -478,7 +477,7 @@ main {
 .work-copy {
   min-width: 0;
   flex: 1;
-  line-height: 1.5;
+  line-height: 1.3;
 }
 
 .work-title {
@@ -754,23 +753,15 @@ figcaption.center {
   .not-found-home:active { transform: none; }
 }
 
-/* Quiet secondary profiles keep selected work in focus. */
+/* Secondary code link beneath the original compact profile and chips. */
 .profile-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  padding-top: 1rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: 0.8rem;
 }
 .profile-footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
 a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
-.social-link { min-height: 44px; }
-@media (max-width: 30rem) {
-  main { padding: 2rem 1.25rem; }
-  .profile-header { flex-direction: column; }
-}
 @media (prefers-reduced-motion: reduce) {
   .social-link, .work-arrow { transition: none; }
   .social-link:active { transform: none; }
