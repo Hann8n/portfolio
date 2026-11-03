@@ -10,46 +10,10 @@
   <link rel="preload" href="fonts/mozilla-text-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/mozilla-text-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="expect" href="#work-list" blocking="render">
-  <link rel="stylesheet" href="/transitions.css?v=5">
-  <script blocking="render">
-    // Name only the row being opened or returned to, so no other row
-    // takes part in the transition.
-    (function () {
-      function mark(row, on) {
-        var k = row.dataset.vt;
-        [[row, "surface", "vt-surface"],
-         [row.querySelector(".work-thumb"), "icon", "vt-icon"],
-         [row.querySelector(".work-title"), "title", "vt-title"]].forEach(function (p) {
-          if (!p[0]) return;
-          p[0].style.viewTransitionName = on ? p[1] + "-" + k : "";
-          p[0].style.viewTransitionClass = on ? p[2] : "";
-        });
-      }
-      function rowFor(url) {
-        return Array.prototype.find.call(document.querySelectorAll("a[data-vt]"), function (a) {
-          return a.href === url;
-        });
-      }
-      function settle(t, row) {
-        var done = function () { mark(row, false); };
-        t.finished.then(done, done);
-      }
-      addEventListener("pageswap", function (e) {
-        var to = e.activation && e.activation.entry && e.activation.entry.url;
-        var row = e.viewTransition && to && rowFor(to);
-        if (!row) return;
-        mark(row, true);
-        settle(e.viewTransition, row);
-      });
-      addEventListener("pagereveal", function (e) {
-        document.querySelectorAll("a[data-vt]").forEach(function (a) { mark(a, false); });
-        var from = window.navigation && navigation.activation && navigation.activation.from;
-        var row = e.viewTransition && from && rowFor(from.url);
-        if (!row) return;
-        mark(row, true);
-        settle(e.viewTransition, row);
-      });
-    })();
+  <link rel="stylesheet" href="/transitions.css?v=8">
+  <script src="/transitions.js?v=2" async blocking="render"></script>
+  <script type="speculationrules">
+    { "prerender": [{ "where": { "href_matches": "/work/*" }, "eagerness": "moderate" }] }
   </script>
   <link rel="stylesheet" href="style.css?v=20261103d">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
@@ -159,25 +123,25 @@
         <h2 id="work-label" class="section-label">Work</h2>
         <div class="work-list" id="work-list">
           <a class="work-item" href="/work/gym-tracker/" data-vt="gym">
-            <img class="work-thumb work-thumb--icon" src="images/work/icon-gym.webp" alt="" width="44" height="44" loading="lazy">
+            <img data-vt-part="icon" class="work-thumb work-thumb--icon" src="images/work/icon-gym.webp" alt="" width="44" height="44" loading="lazy">
             <span class="work-copy">
-              <span class="work-title">Gym Tracker</span><br>
+              <span class="work-title" data-vt-part="title">Gym Tracker</span><br>
               <span class="work-desc">An app for checking how busy the VT gyms are. 4,000+ installs, $0 spent on ads.</span>
             </span>
             <span class="work-arrow" aria-hidden="true">→</span>
           </a>
           <a class="work-item" href="/work/orbyt/" data-vt="orbyt">
-            <img class="work-thumb work-thumb--icon" src="images/work/icon-orbyt.webp" alt="" width="44" height="44" loading="lazy">
+            <img data-vt-part="icon" class="work-thumb work-thumb--icon" src="images/work/icon-orbyt.webp" alt="" width="44" height="44" loading="lazy">
             <span class="work-copy">
-              <span class="work-title">Orbyt</span><br>
+              <span class="work-title" data-vt-part="title">Orbyt</span><br>
               <span class="work-desc">An open short video app built around communities. About 300 people in beta.</span>
             </span>
             <span class="work-arrow" aria-hidden="true">→</span>
           </a>
           <a class="work-item" href="/work/yik-yak/" data-vt="yy">
-            <img class="work-thumb work-thumb--round" src="images/work/yy-logo.webp" alt="" width="44" height="44" loading="lazy">
+            <img data-vt-part="icon" class="work-thumb work-thumb--round" src="images/work/yy-logo.webp" alt="" width="44" height="44" loading="lazy">
             <span class="work-copy">
-              <span class="work-title">Yik Yak, Virginia Tech</span><br>
+              <span class="work-title" data-vt-part="title">Yik Yak, Virginia Tech</span><br>
               <span class="work-desc">Grew Virginia Tech's Yik Yak Instagram past 5.5k followers.</span>
             </span>
             <span class="work-arrow" aria-hidden="true">→</span>

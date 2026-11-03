@@ -1,88 +1,117 @@
 /*
-  Project transitions.
+  Project transitions: the tapped row opens like a card into its page.
 
-  Model: the tapped row is a card that opens into its page and closes back
-  into its row on return.
-  - The surface is a sheet the size of the screen, in the page's colour.
-    It grows out of the row's exact bounds; nothing is stretched or
-    squeezed to get there.
-  - The homepage stays where it is, under the sheet, and settles back a
-    touch. Nothing slides across it, so the other rows never collide with
-    the card.
-  - The icon and title travel with the sheet to where they sit on the page.
-  - The page's text waits until the sheet is in place, then settles in.
-    Closing runs the same story backwards: text leaves first, the sheet
-    shrinks into the row, and the row's text returns last.
-  Only the tapped row takes part (named from script on the homepage).
+  Opening   1. The row's text fades off as a sheet in the page's colour grows
+               out of the row's exact bounds.
+            2. The homepage stays put underneath and eases back slightly;
+               nothing slides across it, so no other row collides with the card.
+            3. The icon and title ride with the sheet to their places.
+            4. The page's text rises in once the sheet has nearly settled.
+  Closing   The same story in reverse: the text fades into the sheet, the
+            sheet shrinks into its row, the row's text returns on top.
+
+  Which elements are named, and when a transition is skipped, is decided in
+  transitions.js. Only transform and opacity are animated.
 */
 @view-transition { navigation: auto; }
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
 }
 
-::view-transition-group(*) {
-  animation-duration: 0.44s;
-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+:root {
+  /* Critically damped spring: quick to start, long soft settle, no bounce. */
+  --vt-spring: linear(0, 0.0605, 0.1884, 0.3331, 0.47, 0.5888, 0.6866, 0.7645,
+    0.825, 0.8713, 0.906, 0.9319, 0.951, 0.965, 0.9751, 0.9825, 0.9878, 0.9915,
+    0.9942, 0.9962, 0.9975, 0.9985, 0.9992, 0.9997, 1);
+  --vt-open: 0.5s;
+  --vt-close: 0.4s;
 }
-::view-transition-old(*.vt-surface),
-::view-transition-new(*.vt-surface) {
-  animation-duration: 0.44s;
-  animation-timing-function: linear;
+
+::view-transition-group(vt-surface),
+::view-transition-group(vt-icon),
+::view-transition-group(vt-title) {
+  animation-duration: var(--vt-open);
+  animation-timing-function: var(--vt-spring);
+  animation-fill-mode: both;
 }
-/* The sheet is a flat colour, so it simply fills whatever bounds it has.
-   The row's own snapshot keeps its real size and sits at the top left,
-   so its text never stretches as the sheet grows past it. */
-.page-case::view-transition-new(*.vt-surface),
-.page-home::view-transition-old(*.vt-surface) {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
+
+/* ---- Opening: homepage -> case study (0.5s) ---------------------------- */
+
+/* The homepage behind the card eases back slightly. */
+.page-case::view-transition-old(root) {
+  animation: vt-ease-back var(--vt-open) var(--vt-spring) both;
 }
-.page-case::view-transition-old(*.vt-surface),
-.page-home::view-transition-new(*.vt-surface) {
+/* The row's text sits above the sheet at its real size and fades off. */
+.page-case::view-transition-old(vt-surface) {
   inset: 0 auto auto 0;
   width: auto;
   height: auto;
+  z-index: 1;
+  animation: vt-fade-out 0.12s ease-out both;
 }
-
-/* Opening: arriving on a case study. */
-.page-case::view-transition-old(root) {
-  animation: vt-settle-back 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+/* The sheet is a flat colour, solid while it grows. Once it covers the
+   screen, the real page is put in place underneath and the sheet fades
+   away to reveal its text, which settles up a few pixels. */
+.page-case::view-transition-new(vt-surface) {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: vt-fade-out 0.2s ease-out 0.3s both;
 }
 .page-case::view-transition-new(root) {
-  animation: vt-content-in 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: vt-arrive var(--vt-open) cubic-bezier(0.2, 0, 0, 1) both;
 }
-/* The sheet is solid from the first frame; the row sits on top of it and
-   fades off as the sheet grows, so the colour change stays on the card. */
-.page-case::view-transition-old(*.vt-surface) { animation-name: vt-fade-out-early; z-index: 1; }
-.page-case::view-transition-new(*.vt-surface) { animation: none; }
+/* An icon or title with no partner (scrolled out of view) leaves with the
+   row's text. */
+.page-case::view-transition-old(*):only-child {
+  animation: vt-fade-out 0.12s ease-out both;
+}
 
-/* Closing: returning to the homepage. */
-.page-home::view-transition-old(root) {
-  animation: vt-content-out 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+/* ---- Closing: case study -> homepage (0.5s) ---------------------------- */
+
+/* First the page's text fades into its sheet while the sheet holds still... */
+.page-home::view-transition-old(vt-surface) {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: vt-fade-in 0.12s ease-out both;
 }
+/* ...then the sheet, icon and title travel home, slightly quicker than they
+   came. */
+.page-home::view-transition-group(vt-surface),
+.page-home::view-transition-group(vt-icon),
+.page-home::view-transition-group(vt-title) {
+  animation-duration: var(--vt-close);
+  animation-delay: 0.12s;
+}
+/* The homepage appears under the sheet as it starts to move, and comes
+   forward as the card lands. */
+.page-home::view-transition-old(root) { animation: none; }
 .page-home::view-transition-new(root) {
-  animation: vt-come-forward 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: vt-return calc(var(--vt-close) + 0.12s) var(--vt-spring) both;
 }
-/* Closing mirrors it: the sheet stays solid, and the row fades back in on
-   top once the sheet has nearly reached it. */
-.page-home::view-transition-old(*.vt-surface) { animation: none; }
-.page-home::view-transition-new(*.vt-surface) { animation-name: vt-fade-in-late; z-index: 1; }
+/* The row's text returns on top as the sheet lands. */
+.page-home::view-transition-new(vt-surface) {
+  inset: 0 auto auto 0;
+  width: auto;
+  height: auto;
+  z-index: 1;
+  animation: vt-fade-in 0.12s ease-out 0.3s both;
+}
+.page-home::view-transition-new(*):only-child {
+  animation: vt-fade-in 0.12s ease-out 0.3s both;
+}
 
-/* Between two case studies there is no card to open, so swap instantly. */
-.page-case::view-transition-old(*.vt-surface):only-child { animation: none; opacity: 0; }
-.page-case::view-transition-new(*.vt-surface):only-child { animation: none; }
-
-@keyframes vt-settle-back { to { transform: scale(0.97); filter: brightness(0.94); } }
-@keyframes vt-come-forward { from { transform: scale(0.97); filter: brightness(0.94); } }
-@keyframes vt-content-in {
-  0%, 45% { opacity: 0; transform: translateY(8px); }
+@keyframes vt-ease-back { to { transform: scale(0.98); } }
+@keyframes vt-arrive {
+  0%, 60% { opacity: 0; transform: translateY(6px); }
+  60.01% { opacity: 1; transform: translateY(6px); }
   100% { opacity: 1; transform: none; }
 }
-@keyframes vt-content-out {
-  0% { opacity: 1; transform: none; }
-  30%, 100% { opacity: 0; transform: translateY(8px); }
+@keyframes vt-return {
+  0%, 24% { opacity: 0; transform: scale(0.98); }
+  24.01% { opacity: 1; transform: scale(0.98); }
+  100% { opacity: 1; transform: none; }
 }
-@keyframes vt-fade-out-early { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
-@keyframes vt-fade-in-late { 0%, 62% { opacity: 0; } 85%, 100% { opacity: 1; } }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }

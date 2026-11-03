@@ -447,6 +447,7 @@ main {
 }
 
 .work-item {
+  -webkit-tap-highlight-color: transparent; /* the icon press is the feedback */
   background: var(--color-bg); /* opaque, so it reads as a card when it opens */
   display: flex;
   align-items: flex-start;
