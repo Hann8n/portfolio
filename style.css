@@ -447,6 +447,7 @@ main {
 }
 
 .work-item {
+  background: var(--color-bg); /* opaque, so it reads as a card when it opens */
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
@@ -753,23 +754,7 @@ figcaption.center {
   .not-found-home:active { transform: none; }
 }
 
-/* One shared element, nothing else: the project icon travels to the
-   case-study header. Pages swap instantly (no cross-fade, so no ghosted
-   text or grey wash between light and dark pages). Press feedback only;
-   no hover motion. */
-@view-transition { navigation: auto; }
-@media (prefers-reduced-motion: reduce) {
-  @view-transition { navigation: none; }
-}
-::view-transition-old(root),
-::view-transition-new(root) { animation: none; }
-/* Icons without a partner on the other page just appear or vanish. */
-::view-transition-old(*):only-child { animation: none; opacity: 0; }
-::view-transition-new(*):only-child { animation: none; }
-::view-transition-group(*) {
-  animation-duration: 0.25s;
-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-}
+/* Press feedback on project rows; navigation motion lives in transitions.css. */
 .work-thumb { transition: transform 0.1s ease-out; }
 a.work-item:active .work-thumb { transform: scale(0.96); }
 @media (prefers-reduced-motion: reduce) {

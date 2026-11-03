@@ -1,0 +1,88 @@
+/*
+  Project transitions.
+
+  Model: the tapped row is a card that opens into its page and closes back
+  into its row on return.
+  - The surface is a sheet the size of the screen, in the page's colour.
+    It grows out of the row's exact bounds; nothing is stretched or
+    squeezed to get there.
+  - The homepage stays where it is, under the sheet, and settles back a
+    touch. Nothing slides across it, so the other rows never collide with
+    the card.
+  - The icon and title travel with the sheet to where they sit on the page.
+  - The page's text waits until the sheet is in place, then settles in.
+    Closing runs the same story backwards: text leaves first, the sheet
+    shrinks into the row, and the row's text returns last.
+  Only the tapped row takes part (named from script on the homepage).
+*/
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.44s;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+::view-transition-old(*.vt-surface),
+::view-transition-new(*.vt-surface) {
+  animation-duration: 0.44s;
+  animation-timing-function: linear;
+}
+/* The sheet is a flat colour, so it simply fills whatever bounds it has.
+   The row's own snapshot keeps its real size and sits at the top left,
+   so its text never stretches as the sheet grows past it. */
+.page-case::view-transition-new(*.vt-surface),
+.page-home::view-transition-old(*.vt-surface) {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.page-case::view-transition-old(*.vt-surface),
+.page-home::view-transition-new(*.vt-surface) {
+  inset: 0 auto auto 0;
+  width: auto;
+  height: auto;
+}
+
+/* Opening: arriving on a case study. */
+.page-case::view-transition-old(root) {
+  animation: vt-settle-back 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+.page-case::view-transition-new(root) {
+  animation: vt-content-in 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+/* The sheet is solid from the first frame; the row sits on top of it and
+   fades off as the sheet grows, so the colour change stays on the card. */
+.page-case::view-transition-old(*.vt-surface) { animation-name: vt-fade-out-early; z-index: 1; }
+.page-case::view-transition-new(*.vt-surface) { animation: none; }
+
+/* Closing: returning to the homepage. */
+.page-home::view-transition-old(root) {
+  animation: vt-content-out 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+.page-home::view-transition-new(root) {
+  animation: vt-come-forward 0.44s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+/* Closing mirrors it: the sheet stays solid, and the row fades back in on
+   top once the sheet has nearly reached it. */
+.page-home::view-transition-old(*.vt-surface) { animation: none; }
+.page-home::view-transition-new(*.vt-surface) { animation-name: vt-fade-in-late; z-index: 1; }
+
+/* Between two case studies there is no card to open, so swap instantly. */
+.page-case::view-transition-old(*.vt-surface):only-child { animation: none; opacity: 0; }
+.page-case::view-transition-new(*.vt-surface):only-child { animation: none; }
+
+@keyframes vt-settle-back { to { transform: scale(0.97); filter: brightness(0.94); } }
+@keyframes vt-come-forward { from { transform: scale(0.97); filter: brightness(0.94); } }
+@keyframes vt-content-in {
+  0%, 45% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes vt-content-out {
+  0% { opacity: 1; transform: none; }
+  30%, 100% { opacity: 0; transform: translateY(8px); }
+}
+@keyframes vt-fade-out-early { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes vt-fade-in-late { 0%, 62% { opacity: 0; } 85%, 100% { opacity: 1; } }
