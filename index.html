@@ -9,7 +9,7 @@
   <link rel="preload" href="fonts/mozilla-text-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/mozilla-text-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/mozilla-text-600.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=20261103a">
+  <link rel="stylesheet" href="style.css?v=20261020c">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
@@ -70,7 +70,7 @@
           <p class="subtitle">Marketer who builds his own apps. I make technology clear and give people a reason to use it.</p>
         </div>
       </header>
-      <ul class="social-links" aria-label="Contact and profiles">
+      <ul class="social-links">
         <li>
           <a class="social-link" href="https://www.linkedin.com/in/jackphannon/" rel="noopener noreferrer external" target="_blank">
             <svg class="icon" viewBox="0 0 448 512" aria-hidden="true">
@@ -113,49 +113,139 @@
           </a>
         </li>
       </ul>
-      <section id="work" class="work" aria-labelledby="work-label">
-        <h2 id="work-label" class="section-label">Selected work</h2>
-        <p class="work-intro">Each project starts with an audience.</p>
+      <section class="work" aria-labelledby="work-label">
+        <h2 id="work-label" class="section-label">Work</h2>
         <div class="work-list">
           <a class="work-item" href="/work/gym-tracker/">
-            <div class="work-collage work-collage--gym" aria-hidden="true">
-              <img src="images/work/gt-store-live.webp" alt="" width="600" height="1299" loading="lazy" decoding="async">
-              <img src="images/work/gt-store-widgets.webp" alt="" width="600" height="1299" loading="lazy" decoding="async">
-              <img src="images/work/gt-store-id.webp" alt="" width="600" height="1299" loading="lazy" decoding="async">
-            </div>
-            <div class="work-copy">
-              <span class="work-discipline">Growth marketing</span>
-              <h3 class="work-title">Gym Tracker <span class="work-arrow" aria-hidden="true">↗</span></h3>
-              <p class="work-desc">I built and launched an app that shows how busy Virginia Tech&rsquo;s gyms are, then grew it to 4,000+ installs and a 5.0 rating with $0 in ads.</p>
-            </div>
-          </a>
-          <a class="work-item" href="/work/yik-yak/">
-            <div class="work-collage work-collage--yik-yak" aria-hidden="true">
-              <img src="images/work/yy-vt.webp" alt="" width="1180" height="665" loading="lazy" decoding="async">
-            </div>
-            <div class="work-copy">
-              <span class="work-discipline">Community &amp; content</span>
-              <h3 class="work-title">Yik Yak, Virginia Tech <span class="work-arrow" aria-hidden="true">↗</span></h3>
-              <p class="work-desc">As campus ambassador I ran Virginia Tech&rsquo;s Yik Yak page, gave it a look students recognized, and grew it past 5.5k followers.</p>
-            </div>
+            <img class="work-thumb work-thumb--icon" src="images/work/icon-gym.webp" alt="" width="44" height="44" loading="lazy">
+            <span class="work-copy">
+              <span class="work-title">Gym Tracker</span><br>
+              <span class="work-desc">An app for checking how busy the VT gyms are. 4,000+ installs, $0 spent on ads.</span>
+            </span>
+            <span class="work-arrow" aria-hidden="true">→</span>
           </a>
           <a class="work-item" href="/work/orbyt/">
-            <div class="work-collage work-collage--orbyt" aria-hidden="true">
-              <img src="images/work/orbyt-early-launch.png" alt="" width="1920" height="1080" loading="lazy" decoding="async">
-            </div>
-            <div class="work-copy">
-              <span class="work-discipline">Product launch</span>
-              <h3 class="work-title">Orbyt <span class="work-arrow" aria-hidden="true">↗</span></h3>
-              <p class="work-desc">I founded, built, and launched a short video app for creators and communities on Bluesky&rsquo;s open network. About 300 people are in the beta.</p>
-            </div>
+            <img class="work-thumb work-thumb--icon" src="images/work/icon-orbyt.webp" alt="" width="44" height="44" loading="lazy">
+            <span class="work-copy">
+              <span class="work-title">Orbyt</span><br>
+              <span class="work-desc">An open short video app built around communities. About 300 people in beta.</span>
+            </span>
+            <span class="work-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="work-item" href="/work/yik-yak/">
+            <img class="work-thumb work-thumb--round" src="images/work/yy-logo.webp" alt="" width="44" height="44" loading="lazy">
+            <span class="work-copy">
+              <span class="work-title">Yik Yak, Virginia Tech</span><br>
+              <span class="work-desc">Grew Virginia Tech's Yik Yak Instagram past 5.5k followers.</span>
+            </span>
+            <span class="work-arrow" aria-hidden="true">→</span>
           </a>
         </div>
       </section>
-      <footer class="profile-footer" aria-label="Contact and more profiles">
-        <p class="profile-cta">I&rsquo;m looking for growth, community, or product marketing work at an early-stage consumer or AI company. <a href="mailto:hi@jackhannon.net">Say hi</a>.</p>
-        <a href="https://github.com/Hann8n" rel="noopener noreferrer external" target="_blank">Code on GitHub ↗</a>
-      </footer>
+      <section id="github-activity" class="github-activity" data-state="loading" aria-label="GitHub contribution activity">
+        <a class="github-activity-header" href="https://github.com/Hann8n" rel="noopener noreferrer external" target="_blank" aria-label="Hann8n on GitHub">
+          <span class="activity-profile">
+            <svg class="activity-github" viewBox="0 0 496 512" aria-hidden="true">
+              <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 31.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/>
+            </svg>
+            <span class="activity-name">Hann8n</span>
+          </span>
+          <span class="github-total" data-github="total">
+            <span data-github="total-value">–</span>
+            <span class="github-total-full">contributions this year</span>
+            <span class="github-total-compact">this year</span>
+          </span>
+        </a>
+        <div class="github-graph" data-github="graph" role="img" aria-label="GitHub contribution graph"></div>
+      </section>
     </article>
   </main>
+  <script>
+    (function () {
+      const github = document.getElementById("github-activity");
+      if (!github) return;
+
+      const graph = github.querySelector('[data-github="graph"]');
+      const total = github.querySelector('[data-github="total"]');
+      const totalValue = github.querySelector('[data-github="total-value"]');
+      if (!graph) return;
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let days = null;
+
+      const renderGraph = (animate) => {
+        const gap = Number.parseFloat(getComputedStyle(graph).columnGap) || 0;
+        const cellSize = (graph.clientHeight - gap * 6) / 7;
+        if (cellSize <= 0) return;
+
+        graph.style.setProperty("--github-cell-size", `${cellSize}px`);
+        const availableWeeks = Math.floor((graph.clientWidth + gap) / (cellSize + gap));
+        const weeks = Math.max(1, Math.min(53, availableWeeks));
+        const visibleDays = days ? days.slice(-(weeks * 7)) : null;
+        const cells = document.createDocumentFragment();
+
+        for (let i = 0; i < weeks * 7; i++) {
+          const cell = document.createElement("span");
+          cell.className = "github-cell";
+          if (visibleDays && visibleDays[i]) {
+            cell.dataset.level = String(visibleDays[i].level ?? 0);
+            cell.title = visibleDays[i].date;
+          }
+          if (animate) cell.style.animationDelay = `${Math.floor(i / 7) * 14}ms`;
+          cells.append(cell);
+        }
+
+        graph.replaceChildren(cells);
+        if (visibleDays) {
+          graph.setAttribute("aria-label", `GitHub contributions across the most recent ${weeks} weeks`);
+        }
+      };
+
+      const countUp = (target) => {
+        if (reduceMotion) {
+          totalValue.textContent = target.toLocaleString();
+          return;
+        }
+        const startedAt = performance.now();
+        const duration = 900;
+        const tick = (now) => {
+          const progress = Math.min(1, (now - startedAt) / duration);
+          totalValue.textContent = Math.round(target * (1 - Math.pow(1 - progress, 3))).toLocaleString();
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+
+      // Skeleton first: reserve the exact final footprint so nothing flashes or shifts.
+      renderGraph(false);
+      new ResizeObserver(() => renderGraph(false)).observe(graph);
+
+      (async () => {
+        try {
+          const result = await fetch("/api/github?v=1");
+          if (!result.ok) throw new Error("GitHub activity is unavailable.");
+          const data = await result.json();
+          if (!Array.isArray(data.days) || data.days.length === 0) return;
+
+          days = data.days;
+          const contributions = Number(data.contributions ?? 0);
+          if (totalValue) countUp(contributions);
+          if (total) total.setAttribute("aria-label", `${contributions.toLocaleString()} contributions this year`);
+
+          github.dataset.state = "loaded";
+          if (reduceMotion) {
+            renderGraph(false);
+          } else {
+            graph.classList.add("is-revealing");
+            renderGraph(true);
+            setTimeout(() => graph.classList.remove("is-revealing"), 1500);
+          }
+        } catch (_) {
+          // GitHub activity is optional: settle the skeleton instead of shifting layout.
+          github.dataset.state = "error";
+        }
+      })();
+    })();
+  </script>
 </body>
 </html>
