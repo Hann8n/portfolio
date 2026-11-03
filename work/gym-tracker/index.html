@@ -28,13 +28,16 @@ a{color:var(--gt-link);text-underline-offset:3px}a:hover{color:var(--gt-link-hov
 a:focus-visible{outline:2px solid var(--gt-link);outline-offset:4px}
 a.product-link{border-color:var(--gt-button);background:var(--gt-button);color:var(--gt-button-fg)}
 a.product-link:hover{background:var(--gt-button-hover);border-color:var(--gt-button-hover)}
+@view-transition{navigation:auto}
+::view-transition-group(*){animation-duration:.4s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
   </style>
 </head>
 <body>
 <div style="background: var(--gt-bg); color: var(--gt-fg); font-family: 'Mozilla Text', ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.65; padding: 48px 20px 80px;">
 <main style="max-width: 640px; margin: 0 auto; display: flex; flex-direction: column;">
 <header style="display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: start; gap: 16px 18px; margin: 0 0 28px;">
-<img loading="lazy" decoding="async" src="/images/work/icon-gym.webp" alt="" style="width: 72px; height: 72px; flex-shrink: 0;">
+<img decoding="async" src="/images/work/icon-gym.webp" alt="" style="view-transition-name: gym-icon; width: 72px; height: 72px; flex-shrink: 0;">
 <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
 <h1 style="margin: 0; font-size: clamp(30px, 7.5vw, 40px); line-height: 1.08; text-wrap: balance; font-weight: 600; letter-spacing: -0.03em;">Gym Tracker</h1>
 <p style="margin: 0; font-size: 15px; line-height: 1.35; font-weight: 500; color: var(--gt-link);">Founder · Oct 2024 to present</p>

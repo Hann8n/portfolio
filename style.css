@@ -752,3 +752,25 @@ figcaption.center {
   .not-found-home { transition: none; }
   .not-found-home:active { transform: none; }
 }
+
+/* Signature motion: tapping a project feels like opening an app.
+   The icon presses like a home-screen tap, then morphs into the case-study
+   header on navigation. Progressive enhancement; off for reduced motion. */
+@view-transition { navigation: auto; }
+::view-transition-group(*) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.work-thumb {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+a.work-item:hover .work-thumb { transform: scale(1.06); }
+a.work-item:active .work-thumb { transform: scale(0.92); transition-duration: 0.08s; }
+@media (prefers-reduced-motion: reduce) {
+  .work-thumb { transition: none; }
+  a.work-item:hover .work-thumb,
+  a.work-item:active .work-thumb { transform: none; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}

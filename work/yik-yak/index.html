@@ -21,13 +21,16 @@ img{max-width:100%}
 @font-face{font-family:"Mozilla Text";font-weight:600;font-display:swap;src:url("/fonts/mozilla-text-600.woff2") format("woff2")}
 body{margin:0;background:#faf6eb}
 a{color:#7b2d26}a:hover{color:#561f1a}
+@view-transition{navigation:auto}
+::view-transition-group(*){animation-duration:.4s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
   </style>
 </head>
 <body>
 <div style="background: #faf6eb; color: #2b2119; font-family: 'Mozilla Text', ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.65; padding: 48px 20px 80px;">
 <main style="max-width: 640px; margin: 0 auto; display: flex; flex-direction: column;">
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 18px; margin: 0 0 28px;">
-<img loading="lazy" decoding="async" src="/images/work/yy-logo.webp" alt="" style="width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;">
+<img decoding="async" src="/images/work/yy-logo.webp" alt="" style="view-transition-name: yy-icon; width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;">
 <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
 <h1 style="margin: 0; font-size: clamp(30px, 7.5vw, 40px); line-height: 1.08; text-wrap: balance; font-weight: 600; letter-spacing: -0.03em;">Yik Yak, Virginia Tech</h1>
 <p style="margin: 0; font-size: 15px; line-height: 1.35; font-weight: 500; color: #7b2d26;">Campus Ambassador · Feb 2022 to Feb 2024</p>
