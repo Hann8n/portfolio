@@ -24,7 +24,7 @@ Screenshots were captured from local static HTTP previews in the installed Chrom
 - [Pentagram: Pienso](https://www.pentagram.com/work/pienso) — reviewed the use of actual product/brand work alongside concise technical context.
 - [Instrument: Work](https://www.instrument.com/work) — reviewed image-led project presentation and concise project framing.
 
-Each project is one complete linked card containing both its artwork and caption, with one outer boundary and no nested image frame. Covers keep the same 16:9 canvas. Gym Tracker presents its three App Store panels on one black surface; Yik Yak uses the finished post composition; Orbyt uses the owner’s earlier launch artwork as its cover, explicitly labeled as earlier work. The current public website leads its case study. No design-reference artwork was copied. The original social chips and 25rem profile width remain intact. References were visually inspected in the installed Chromium browser; their screenshot files are not included in the repository.
+Each project is one complete linked card containing both its artwork and caption, with one outer boundary and no nested image frame. Covers keep the same 16:9 canvas. Gym Tracker presents its three App Store panels edge to edge, with no inset padding or gutters; Yik Yak uses the finished post composition; Orbyt uses the owner’s earlier launch artwork as its cover, explicitly labeled as earlier work. The current public website leads its case study. No design-reference artwork was copied. The original social chips and 25rem profile width remain intact. References were visually inspected in the installed Chromium browser; their screenshot files are not included in the repository.
 
 Vicino remains a case-study planning item, pending confirmation of shareable deliverables and individual authorship. No Vicino page or employer materials were published.
 
@@ -34,3 +34,7 @@ Vicino remains a case-study planning item, pending confirmation of shareable del
 - `orbyt-early-launch.png`: the owner's existing 1920 × 1080 launch graphic, copied without edits. The owner requested both current and earlier work, with older work clearly labeled. The case study labels it “Earlier launch artwork, showing an earlier version of the interface.” No date was inferred.
 
 The Orbyt source repository was read only. No app code, app deployment, or unrelated work was changed. The original social-chip markup remains exact.
+
+## Pending Yik Yak image replacements
+
+Yik Yak's page, theme color and cover background now use solid white. All homepage covers fill their artwork area edge to edge. The three new white-background Yik Yak exports still need to be added: their originals are not available as downloadable files in this execution session. The current `yy-vt.webp`, `yy-other.webp`, and `yy-collabs.webp` files remain the previous artwork. Local paths or direct file links are needed to complete the replacement; keep the PR in draft.
