@@ -8,7 +8,7 @@ Screenshots were captured from local static HTTP previews in the installed Chrom
 - Homepage: desktop (1440 × 1000) and mobile (390 × 844), before and after. Collage geometry also checked at 1440, 390, and 320 CSS pixels: all three covers share exact dimensions and the 16:9 ratio at each width.
 - Case studies: after screenshots at 390 × 844.
 - `checks.json`: all four pages checked at 1440, 390, and 320 CSS pixels. The 320px check used dark mode; other checks used light mode. Each passed horizontal-overflow, image-loading, single-h1, internal-link HTTP 200, JavaScript-error, and first keyboard-focus checks. This is browser emulation, not a physical-device or Safari test.
-- Existing `node tests/not-found.mjs` passes with Node 24.18.0 (source/config and mocked Worker routing contracts). No Worker routing or deployment changes were made. The optional Wrangler HTTP integration checks were not run.
+- Existing `node tests/not-found.mjs` passes with Node 24.18.0 (source/config and mocked Worker routing contracts). No Worker routing or deployment changes were made. The optional real-HTTP checks also pass against the hosted branch preview, including GET/HEAD 404s, existing routes/assets, and JSON API errors. A local Wrangler runtime was not started.
 
 ## Content decisions for review
 
@@ -38,3 +38,10 @@ The Orbyt source repository was read only. No app code, app deployment, or unrel
 ## Pending Yik Yak image replacements
 
 Yik Yak's page, theme color and cover background now use solid white. All homepage covers fill their artwork area edge to edge. The three new white-background Yik Yak exports still need to be added: their originals are not available as downloadable files in this execution session. The current `yy-vt.webp`, `yy-other.webp`, and `yy-collabs.webp` files remain the previous artwork. Local paths or direct file links are needed to complete the replacement; keep the PR in draft.
+
+## Follow-up verification
+
+- Rechecked the four portfolio pages at 1440px/light, 390px/light, and 320px/dark. No horizontal overflow, broken images, JavaScript errors, missing internal routes, or missing first-link keyboard focus. All covers have equal 16:9 dimensions, zero inset padding/gutters, and fill the card width; Yik Yak's page background is exactly white. Refreshed the Yik Yak mobile screenshot to reflect the white surface.
+- Corrected the Yik Yak hero alt text to describe the work without an inaccurate post count. No design, social-chip markup, or artwork bytes changed.
+- Rechecked original-file access: recent Library uploads did not contain the new artwork. Broader Library search returned earlier `@ VT` exports; their content is not a verified match for the newly supplied white-background versions. Native attachment download remains unavailable while the mini desktop is locked. The image swap is still pending the exact originals.
+- [Vicino's public company page](https://www.linkedin.com/company/vicino-ai) links to [vicino.ai](https://vicino.ai/), matching the company named on Jack's public profile. The public site provides company context, but it does not establish Jack's authorship of the current copy or imagery. No company assets, claims, or third-party designer work were added to the portfolio. A confirmed Jack-created, shareable deliverable is still needed for a case study.
