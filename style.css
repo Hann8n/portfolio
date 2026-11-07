@@ -447,6 +447,8 @@ main {
 }
 
 .work-item {
+  -webkit-tap-highlight-color: transparent; /* the icon press is the feedback */
+  background: var(--color-bg); /* opaque, so it reads as a card when it opens */
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
@@ -751,4 +753,165 @@ figcaption.center {
 @media (prefers-reduced-motion: reduce) {
   .not-found-home { transition: none; }
   .not-found-home:active { transform: none; }
+}
+
+/* Press feedback on project rows. */
+.work-thumb { transition: transform 0.1s ease-out; }
+a.work-item:active .work-thumb { transform: scale(0.96); }
+@media (prefers-reduced-motion: reduce) {
+  .work-thumb { transition: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Project sheet                                                       */
+/*                                                                     */
+/* A project opens as a sheet over the homepage, the way a detail view */
+/* opens in an iOS app: it rises from the bottom edge, the page behind */
+/* steps back, and it can be swiped down, closed, or undone with Back. */
+/* Real elements move, not screenshots, so motion can follow a finger  */
+/* and be interrupted. Behaviour lives in sheet.js.                    */
+/* ------------------------------------------------------------------ */
+
+:root {
+  /* Critically damped spring: fast start, soft settle, no bounce. */
+  --sheet-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --sheet-spring: linear(0, 0.0605, 0.1884, 0.3331, 0.47, 0.5888, 0.6866,
+    0.7645, 0.825, 0.8713, 0.906, 0.9319, 0.951, 0.965, 0.9751, 0.9825,
+    0.9878, 0.9915, 0.9942, 0.9962, 0.9975, 0.9985, 0.9992, 0.9997, 1);
+  --sheet-in: 0.5s;
+  --sheet-out: 0.32s;
+  --sheet-out-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --sheet-gap: calc(env(safe-area-inset-top, 0px) + 24px);
+  --sheet-peek: calc(env(safe-area-inset-top, 0px) + 12px);
+  --sheet-radius: 14px;
+}
+@media (min-width: 48rem) {
+  :root { --sheet-gap: 40px; }
+}
+
+html { scrollbar-gutter: stable; }
+html.sheet-locked { overflow: hidden; }
+
+.sheet {
+  position: fixed;
+  inset: var(--sheet-gap) 0 0;
+  width: min(100%, 44rem);
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+  overflow: hidden;
+  background: var(--sheet-bg, var(--color-bg));
+  color: inherit;
+  box-shadow: 0 -1px 0 rgb(0 0 0 / 0.04), 0 -12px 40px rgb(0 0 0 / 0.12);
+  transform: translateY(100%);
+  transition: transform var(--sheet-out) var(--sheet-out-ease);
+  will-change: transform;
+}
+.sheet.is-open {
+  transform: none;
+  transition-duration: var(--sheet-in);
+  transition-timing-function: var(--sheet-spring);
+}
+.sheet::backdrop {
+  background: rgb(0 0 0 / 0.36);
+  opacity: 0;
+  transition: opacity var(--sheet-out) ease-out;
+}
+.sheet.is-open::backdrop {
+  opacity: 1;
+  transition-duration: var(--sheet-in);
+}
+.sheet:focus { outline: none; }
+
+.sheet-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Grabber and close button sit on top of the content, never scroll away. */
+.sheet-grabber {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 36px;
+  height: 5px;
+  margin-left: -18px;
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 1;
+}
+.sheet-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease-out, transform 0.1s ease-out;
+}
+.sheet-close::before {
+  /* 44px touch target around the 30px visual */
+  content: "";
+  position: absolute;
+  inset: -7px;
+}
+.sheet-close:hover { background: color-mix(in srgb, currentColor 18%, transparent); }
+.sheet-close:active { transform: scale(0.92); }
+.sheet-close:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.sheet-close svg { width: 12px; height: 12px; opacity: 0.7; }
+
+/* While a finger is dragging, follow it exactly. */
+.sheet.is-dragging,
+html.sheet-dragging main { transition: none; }
+
+/* The page behind steps back (phones), like a stacked sheet in iOS. */
+@media (max-width: 47.99rem) {
+  html { transition: background-color var(--sheet-out) ease-out; }
+  html.sheet-presented { background: #000; transition-duration: var(--sheet-in); }
+  main {
+    /* Scale about the top of the screen, then drop a little so the page
+       peeks out above the sheet like the card behind it. */
+    transform-origin: 50% var(--sheet-origin, 0px);
+    transition: transform var(--sheet-out) var(--sheet-out-ease),
+      border-radius var(--sheet-out) var(--sheet-out-ease);
+  }
+  html.sheet-locked main { background: var(--color-bg); }
+  html.sheet-presented main {
+    transform: translateY(calc(var(--sheet-peek) * var(--sheet-recede-k, 1)))
+      scale(var(--sheet-recede, 0.94));
+    border-radius: 12px;
+    transition-duration: var(--sheet-in);
+    transition-timing-function: var(--sheet-spring);
+  }
+}
+
+/* Reduced motion: no travel or scaling, just a short fade. */
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet.is-open {
+    transform: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+  .sheet.is-open { opacity: 1; }
+  html.sheet-presented main { transform: none; }
+  main, html { transition: none; }
 }
