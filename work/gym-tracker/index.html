@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="page-case">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,9 +14,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
   <link rel="preload" href="/fonts/mozilla-text-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/transitions.css?v=8">
-  <script src="/transitions.js?v=2" async blocking="render"></script>
-  <link rel="expect" href="#gym-title" blocking="render">
   <style>
 *,*::before,*::after{box-sizing:border-box}
 img{max-width:100%}
@@ -35,14 +32,13 @@ a.product-link:hover{background:var(--gt-button-hover);border-color:var(--gt-but
   </style>
 </head>
 <body>
-<div class="vt-sheet" data-vt-part="surface" aria-hidden="true" style="position: fixed; inset: 0; z-index: -1; background: var(--gt-bg);"></div>
 <div style="background: var(--gt-bg); color: var(--gt-fg); font-family: 'Mozilla Text', ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.65; padding: 48px 20px 80px;">
 <main style="max-width: 640px; margin: 0 auto; display: flex; flex-direction: column;">
-<a class="case-back" href="/" data-vt-back>← Work</a>
+<a class="case-back" href="/">← Work</a>
 <header style="display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: start; gap: 16px 18px; margin: 0 0 28px;">
-<img decoding="async" src="/images/work/icon-gym.webp" alt="" data-vt-part="icon" style="width: 72px; height: 72px; flex-shrink: 0;">
+<img decoding="async" src="/images/work/icon-gym.webp" alt="" style="width: 72px; height: 72px; flex-shrink: 0;">
 <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
-<h1 id="gym-title" data-vt-part="title" style="width: fit-content; margin: 0; font-size: clamp(30px, 7.5vw, 40px); line-height: 1.08; text-wrap: balance; font-weight: 600; letter-spacing: -0.03em;">Gym Tracker</h1>
+<h1 style="width: fit-content; margin: 0; font-size: clamp(30px, 7.5vw, 40px); line-height: 1.08; text-wrap: balance; font-weight: 600; letter-spacing: -0.03em;">Gym Tracker</h1>
 <p style="margin: 0; font-size: 15px; line-height: 1.35; font-weight: 500; color: var(--gt-link);">Founder · Oct 2024 to present</p>
 </div>
 </header>
