@@ -62,7 +62,9 @@
     var theme = doc.querySelector('meta[name="theme-color"]');
     return {
       title: doc.title,
-      css: css + "\n:host{display:block}",
+      css: css + "\n:host{display:block}" +
+        // Use the wider sheet on larger screens and start closer to the top.
+        "\n@media (min-width:48rem){:host>div{padding-top:36px!important}main{max-width:760px!important}}",
       html: page.outerHTML,
       theme: theme && theme.content
     };

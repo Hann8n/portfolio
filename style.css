@@ -789,7 +789,7 @@ a.work-item:active .work-thumb { transform: scale(0.96); }
   --sheet-shade: #1c1c1e;
 }
 @media (min-width: 48rem) {
-  :root { --sheet-gap: 40px; }
+  :root { --sheet-gap: 16px; }
 }
 
 html { scrollbar-gutter: stable; }
@@ -798,7 +798,7 @@ html.sheet-locked { overflow: hidden; }
 .sheet {
   position: fixed;
   inset: var(--sheet-gap) 0 0;
-  width: min(100%, 44rem);
+  width: min(100%, 54rem);
   height: auto;
   max-width: none;
   max-height: none;
