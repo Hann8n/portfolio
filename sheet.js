@@ -9,7 +9,6 @@
   Ways out, all ending in the same animation:
   - Back (button, keyboard, Android gesture); on iOS a swipe back that the
     browser already animated just removes the sheet without animating again.
-  - Swipe down from the top of the sheet.
   - Close button, Escape, or a click on the dimmed page.
 */
 (function () {
@@ -29,7 +28,6 @@
   var current = null;      // URL of the project in the sheet
   var closing = false;
   var browserAnimatedBack = false; // the browser's own back animation ran
-  var alreadyGone = false;          // the sheet was swiped away before Back
 
   // ---- Loading -----------------------------------------------------------
 
@@ -180,8 +178,8 @@
 
   addEventListener("popstate", function (e) {
     var state = e.state && e.state.sheet;
-    var animated = browserAnimatedBack || alreadyGone;
-    browserAnimatedBack = alreadyGone = false;
+    var animated = browserAnimatedBack;
+    browserAnimatedBack = false;
     if (state) {
       open(state, false).catch(function () { location.reload(); });
     } else if (sheet.open) {
@@ -240,89 +238,6 @@
       e.clientX < r.left || e.clientX > r.right;
     if (outside) requestClose();
   });
-
-  // ---- Swipe down to dismiss ---------------------------------------------
-
-  var drag = null;
-
-  sheet.addEventListener("touchstart", function (e) {
-    if (closing || e.touches.length !== 1) return;
-    var t = e.touches[0];
-    drag = {
-      y0: t.clientY,
-      lastY: t.clientY,
-      lastT: e.timeStamp,
-      v: 0,
-      active: false,
-      atTop: scroller.scrollTop <= 0,
-      height: sheet.getBoundingClientRect().height
-    };
-  }, { passive: true });
-
-  sheet.addEventListener("touchmove", function (e) {
-    if (!drag || e.touches.length !== 1) return;
-    var t = e.touches[0];
-    var dy = t.clientY - drag.y0;
-    if (!drag.active) {
-      // Only take over when pulling down from the top of the content.
-      if (!drag.atTop || dy <= 4 || scroller.scrollTop > 0) {
-        if (dy < 0) drag.atTop = false;
-        return;
-      }
-      drag.active = true;
-      drag.y0 = t.clientY;
-      dy = 0;
-      sheet.classList.add("is-dragging");
-      root.classList.add("sheet-dragging");
-    }
-    e.preventDefault();
-    var dt = Math.max(1, e.timeStamp - drag.lastT);
-    drag.v = (t.clientY - drag.lastY) / dt;
-    drag.lastY = t.clientY;
-    drag.lastT = e.timeStamp;
-    var y = Math.max(0, dy);
-    var p = Math.min(1, y / drag.height);
-    sheet.style.transform = "translateY(" + y + "px)";
-    root.style.setProperty("--sheet-recede", (0.94 + 0.06 * p).toFixed(4));
-    root.style.setProperty("--sheet-recede-k", (1 - p).toFixed(4));
-  }, { passive: false });
-
-  function endDrag() {
-    if (!drag) return;
-    var d = drag;
-    drag = null;
-    if (!d.active) return;
-    var y = Math.max(0, d.lastY - d.y0);
-    sheet.classList.remove("is-dragging");
-    root.classList.remove("sheet-dragging");
-    if (y > d.height * 0.25 || d.v > 0.5) {
-      // Carry the finger's speed into the exit.
-      var remaining = d.height - y;
-      var ms = Math.max(160, Math.min(320, remaining / Math.max(d.v, 1.2)));
-      sheet.style.transition = "transform " + ms + "ms cubic-bezier(0.2, 0.6, 0.35, 1)";
-      sheet.style.transform = "translateY(100%)";
-      root.style.removeProperty("--sheet-recede");
-    root.style.removeProperty("--sheet-recede-k");
-      root.classList.remove("sheet-presented");
-      sheet.classList.remove("is-open");
-      closing = true;
-      setTimeout(function () {
-        closing = false;
-        if (history.state && history.state.sheet) {
-          alreadyGone = true;
-          history.back();
-        } else {
-          finish();
-        }
-      }, ms);
-    } else {
-      sheet.style.transform = "";
-      root.style.removeProperty("--sheet-recede");
-    root.style.removeProperty("--sheet-recede-k");
-    }
-  }
-  sheet.addEventListener("touchend", endDrag);
-  sheet.addEventListener("touchcancel", endDrag);
 
   // Restored from the back/forward cache with a sheet still showing.
   addEventListener("pageshow", function (e) {

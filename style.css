@@ -846,49 +846,43 @@ html.sheet-locked { overflow: hidden; }
 }
 
 /* Grabber and close button sit on top of the content, never scroll away. */
-.sheet-grabber {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  width: 36px;
-  height: 5px;
-  margin-left: -18px;
-  border-radius: 3px;
-  background: currentColor;
-  opacity: 0.22;
-  pointer-events: none;
-  z-index: 1;
-}
 .sheet-close {
+  /* Drawn like the page's own chips: a thin outline in the text colour. */
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   padding: 0;
-  border: 0;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
   border-radius: 50%;
-  background: color-mix(in srgb, currentColor 12%, transparent);
+  background: var(--sheet-bg, transparent);
   color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.15s ease-out, transform 0.1s ease-out;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out, transform 0.1s ease-out;
 }
 .sheet-close::before {
-  /* 44px touch target around the 30px visual */
+  /* 44px touch target */
   content: "";
   position: absolute;
-  inset: -7px;
+  inset: -3px;
 }
-.sheet-close:hover { background: color-mix(in srgb, currentColor 18%, transparent); }
-.sheet-close:active { transform: scale(0.92); }
+.sheet-close:hover {
+  background: color-mix(in srgb, currentColor 8%, var(--sheet-bg, transparent));
+  border-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+.sheet-close:active { transform: scale(0.94); }
 .sheet-close:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-.sheet-close svg { width: 12px; height: 12px; opacity: 0.7; }
+.sheet-close svg { width: 14px; height: 14px; }
+@media (min-width: 48rem) {
+  .sheet-close { top: 20px; right: 20px; }
+}
 
-/* While a finger is dragging, follow it exactly. */
+/* No transition when the sheet must vanish at once. */
 .sheet.is-dragging,
 html.sheet-dragging main { transition: none; }
 
