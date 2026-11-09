@@ -784,6 +784,14 @@ a.work-item:active .work-thumb { transform: scale(0.96); }
   --sheet-gap: calc(env(safe-area-inset-top, 0px) + 24px);
   --sheet-peek: calc(env(safe-area-inset-top, 0px) + 12px);
   --sheet-radius: 24px;
+  /* Superellipse (continuous) corners, like iOS and the app icons: one mask
+     piece per corner, since Safari has no corner-shape yet. */
+  --sq-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1 1 L0.0000 1.0000 L0.0009 0.6641 L0.0034 0.5571 L0.0077 0.4799 L0.0138 0.4176 L0.0216 0.3649 L0.0312 0.3190 L0.0426 0.2784 L0.0559 0.2421 L0.0712 0.2095 L0.0884 0.1801 L0.1078 0.1535 L0.1294 0.1294 L0.1535 0.1078 L0.1801 0.0884 L0.2095 0.0712 L0.2421 0.0559 L0.2784 0.0426 L0.3190 0.0312 L0.3649 0.0216 L0.4176 0.0138 L0.4799 0.0077 L0.5571 0.0034 L0.6641 0.0009 L1.0000 0.0000Z'/%3E%3C/svg%3E");
+  --sq-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0 1 L1.0000 1.0000 L0.9991 0.6641 L0.9966 0.5571 L0.9923 0.4799 L0.9862 0.4176 L0.9784 0.3649 L0.9688 0.3190 L0.9574 0.2784 L0.9441 0.2421 L0.9288 0.2095 L0.9116 0.1801 L0.8922 0.1535 L0.8706 0.1294 L0.8465 0.1078 L0.8199 0.0884 L0.7905 0.0712 L0.7579 0.0559 L0.7216 0.0426 L0.6810 0.0312 L0.6351 0.0216 L0.5824 0.0138 L0.5201 0.0077 L0.4429 0.0034 L0.3359 0.0009 L0.0000 0.0000Z'/%3E%3C/svg%3E");
+  --sq-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1 0 L0.0000 0.0000 L0.0009 0.3359 L0.0034 0.4429 L0.0077 0.5201 L0.0138 0.5824 L0.0216 0.6351 L0.0312 0.6810 L0.0426 0.7216 L0.0559 0.7579 L0.0712 0.7905 L0.0884 0.8199 L0.1078 0.8465 L0.1294 0.8706 L0.1535 0.8922 L0.1801 0.9116 L0.2095 0.9288 L0.2421 0.9441 L0.2784 0.9574 L0.3190 0.9688 L0.3649 0.9784 L0.4176 0.9862 L0.4799 0.9923 L0.5571 0.9966 L0.6641 0.9991 L1.0000 1.0000Z'/%3E%3C/svg%3E");
+  --sq-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0 0 L1.0000 0.0000 L0.9991 0.3359 L0.9966 0.4429 L0.9923 0.5201 L0.9862 0.5824 L0.9784 0.6351 L0.9688 0.6810 L0.9574 0.7216 L0.9441 0.7579 L0.9288 0.7905 L0.9116 0.8199 L0.8922 0.8465 L0.8706 0.8706 L0.8465 0.8922 L0.8199 0.9116 L0.7905 0.9288 L0.7579 0.9441 L0.7216 0.9574 L0.6810 0.9688 L0.6351 0.9784 L0.5824 0.9862 L0.5201 0.9923 L0.4429 0.9966 L0.3359 0.9991 L0.0000 1.0000Z'/%3E%3C/svg%3E");
+  /* A superellipse corner needs a larger box to look as round as a circle. */
+  --sq-r: calc(var(--sheet-radius) * 1.6);
   /* Shade behind an open sheet: Apple's elevated dark grey (#1c1c1e) rather than black, so
      dark case studies still read as a card lifted off the page. */
   --sheet-shade: #1c1c1e;
@@ -807,6 +815,14 @@ html.sheet-locked { overflow: hidden; }
   border: 0;
   border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
   overflow: hidden;
+  -webkit-mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
+    var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
+    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r)) var(--sq-r) no-repeat,
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
+  mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
+    var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
+    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r)) var(--sq-r) no-repeat,
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
   background: var(--sheet-bg, var(--color-bg));
   color: inherit;
   box-shadow: 0 -1px 0 rgb(0 0 0 / 0.04), 0 -12px 40px rgb(0 0 0 / 0.12);
@@ -905,6 +921,18 @@ html.sheet-dragging main { transition: none; }
     transform: translateY(calc(var(--sheet-peek) * var(--sheet-recede-k, 1)))
       scale(var(--sheet-recede, 0.94));
     border-radius: var(--sheet-radius);
+    -webkit-mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
+      var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
+      var(--sq-bl) bottom left / var(--sq-r) var(--sq-r) no-repeat,
+      var(--sq-br) bottom right / var(--sq-r) var(--sq-r) no-repeat,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--sq-r)) 100% no-repeat,
+      linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--sq-r) + 2px) no-repeat;
+    mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
+      var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
+      var(--sq-bl) bottom left / var(--sq-r) var(--sq-r) no-repeat,
+      var(--sq-br) bottom right / var(--sq-r) var(--sq-r) no-repeat,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--sq-r)) 100% no-repeat,
+      linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--sq-r) + 2px) no-repeat;
     transition-duration: var(--sheet-in);
     transition-timing-function: var(--sheet-spring);
   }
