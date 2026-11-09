@@ -783,7 +783,7 @@ a.work-item:active .work-thumb { transform: scale(0.96); }
   --sheet-out-ease: cubic-bezier(0.32, 0.72, 0, 1);
   --sheet-gap: calc(env(safe-area-inset-top, 0px) + 24px);
   --sheet-peek: calc(env(safe-area-inset-top, 0px) + 12px);
-  --sheet-radius: 14px;
+  --sheet-radius: 24px;
   /* Shade behind an open sheet: Apple's elevated dark grey (#1c1c1e) rather than black, so
      dark case studies still read as a card lifted off the page. */
   --sheet-shade: #1c1c1e;
@@ -904,7 +904,7 @@ html.sheet-dragging main { transition: none; }
   html.sheet-presented main {
     transform: translateY(calc(var(--sheet-peek) * var(--sheet-recede-k, 1)))
       scale(var(--sheet-recede, 0.94));
-    border-radius: 12px;
+    border-radius: var(--sheet-radius);
     transition-duration: var(--sheet-in);
     transition-timing-function: var(--sheet-spring);
   }
