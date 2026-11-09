@@ -784,6 +784,9 @@ a.work-item:active .work-thumb { transform: scale(0.96); }
   --sheet-gap: calc(env(safe-area-inset-top, 0px) + 24px);
   --sheet-peek: calc(env(safe-area-inset-top, 0px) + 12px);
   --sheet-radius: 14px;
+  /* Shade behind an open sheet: a dark blue-grey rather than black, so
+     dark case studies still read as a card lifted off the page. */
+  --sheet-shade: oklch(25% 0.03 255);
 }
 @media (min-width: 48rem) {
   :root { --sheet-gap: 40px; }
@@ -817,9 +820,16 @@ html.sheet-locked { overflow: hidden; }
   transition-timing-function: var(--sheet-spring);
 }
 .sheet::backdrop {
-  background: rgb(0 0 0 / 0.36);
+  /* Written out, since older browsers don't pass custom properties
+     into ::backdrop. Same blue-grey as --sheet-shade. */
+  background: oklch(25% 0.03 255 / 0.45);
   opacity: 0;
   transition: opacity var(--sheet-out) ease-out;
+}
+@media (prefers-color-scheme: dark) {
+  /* On a dark page the shade lifts the page instead of darkening it,
+     so a black sheet still stands apart. */
+  .sheet::backdrop { background: oklch(25% 0.03 255 / 0.85); }
 }
 .sheet.is-open::backdrop {
   opacity: 1;
@@ -885,7 +895,7 @@ html.sheet-dragging main { transition: none; }
 /* The page behind steps back (phones), like a stacked sheet in iOS. */
 @media (max-width: 47.99rem) {
   html { transition: background-color var(--sheet-out) ease-out; }
-  html.sheet-presented { background: #000; transition-duration: var(--sheet-in); }
+  html.sheet-presented { background: var(--sheet-shade); transition-duration: var(--sheet-in); }
   main {
     /* Scale about the top of the screen, then drop a little so the page
        peeks out above the sheet like the card behind it. */
