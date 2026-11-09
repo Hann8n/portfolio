@@ -18,6 +18,7 @@
   if (!sheet || typeof sheet.showModal !== "function") return;
 
   var root = document.documentElement;
+  var panel = sheet.querySelector(".sheet-panel");
   var scroller = sheet.querySelector(".sheet-scroll");
   var host = sheet.querySelector(".sheet-content");
   var closeButton = sheet.querySelector(".sheet-close");
@@ -124,7 +125,7 @@
       root.classList.add("sheet-locked");
       sheet.showModal();
       // Start from below the screen, then rise on the next frame.
-      sheet.getBoundingClientRect();
+      panel.getBoundingClientRect();
       // Two frames: the first paints the sheet below the screen, so the rise
       // starts from a committed frame instead of jumping.
       requestAnimationFrame(function () {
@@ -132,9 +133,9 @@
           sheet.classList.add("is-open");
           root.classList.add("sheet-presented");
           matchBrowserBars();
-          sheet.addEventListener("transitionend", function settle(e) {
-            if (e.target !== sheet) return;
-            sheet.removeEventListener("transitionend", settle);
+          panel.addEventListener("transitionend", function settle(e) {
+            if (e.target !== panel) return;
+            panel.removeEventListener("transitionend", settle);
             if (sheet.classList.contains("is-open")) sheet.classList.add("is-settled");
           });
         });
@@ -172,12 +173,12 @@
     sheet.style.transform = "";
     var done = false;
     function end(e) {
-      if (done || (e && (e.target !== sheet))) return;
+      if (done || (e && (e.target !== panel))) return;
       done = true;
-      sheet.removeEventListener("transitionend", end);
+      panel.removeEventListener("transitionend", end);
       finish();
     }
-    sheet.addEventListener("transitionend", end);
+    panel.addEventListener("transitionend", end);
     setTimeout(end, 600); // in case no transition runs
   }
 
@@ -254,11 +255,8 @@
     requestClose();
   });
   sheet.addEventListener("click", function (e) {
-    if (e.target !== sheet) return;
-    var r = sheet.getBoundingClientRect();
-    var outside = e.clientY < r.top || e.clientY > r.bottom ||
-      e.clientX < r.left || e.clientX > r.right;
-    if (outside) requestClose();
+    // The dialog is clear; a click that lands on it is beside the panel.
+    if (e.target === sheet) requestClose();
   });
 
   // ---- Opened directly ---------------------------------------------------

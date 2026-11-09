@@ -81,6 +81,10 @@ main {
   align-items: center;
   min-height: 100dvh;
   padding: 2rem;
+  /* viewport-fit=cover lets the page run under Safari's bars; keep the
+     content clear of them. */
+  padding: calc(2rem + env(safe-area-inset-top, 0px)) max(2rem, env(safe-area-inset-right, 0px))
+    calc(2rem + env(safe-area-inset-bottom, 0px)) max(2rem, env(safe-area-inset-left, 0px));
 }
 
 /* Profile Card */
@@ -803,17 +807,39 @@ html { scrollbar-gutter: stable; }
 html.sheet-locked { overflow: hidden; }
 
 .sheet {
+  /* A clear, full-screen container. Safari 26 colours its status bar and
+     toolbar from the fixed element at each screen edge, so the dialog itself
+     stays transparent (letting the shade decide the top) and the panel below
+     is its own fixed element (deciding the bottom). */
   position: fixed;
-  inset: var(--sheet-gap) 0 0;
-  width: min(100%, 54rem);
-  height: auto;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
   max-height: none;
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
   border: 0;
-  border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+  overflow: visible;
+  background: transparent;
+  color: inherit;
+  pointer-events: none;
+}
+@media (min-width: 48rem) {
+  /* Room to click beside the panel to close it. */
+  .sheet { pointer-events: auto; }
+}
+
+.sheet-panel {
+  position: fixed;
+  top: var(--sheet-gap);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: min(100%, 54rem);
+  margin: 0 auto;
   overflow: hidden;
+  pointer-events: auto;
   -webkit-mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
     var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
     linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r) + 2px) var(--sq-r) no-repeat,
@@ -823,12 +849,11 @@ html.sheet-locked { overflow: hidden; }
     linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r) + 2px) var(--sq-r) no-repeat,
     linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
   background: var(--sheet-bg, var(--color-bg));
-  color: inherit;
   transform: translateY(100%);
   transition: transform var(--sheet-out) var(--sheet-out-ease);
   will-change: transform;
 }
-.sheet.is-open {
+.sheet.is-open .sheet-panel {
   transform: none;
   transition-duration: var(--sheet-in);
   transition-timing-function: var(--sheet-spring);
@@ -851,6 +876,9 @@ html.sheet-locked { overflow: hidden; }
 html.sheet-presented .sheet-shade {
   opacity: 1;
   visibility: visible;
+  /* Hit-testable, so Safari's edge sampling finds it either way it looks.
+     The modal sheet makes it inert, so it never takes a tap. */
+  pointer-events: auto;
   transition: opacity var(--sheet-in) ease-out, visibility 0s;
 }
 @media (prefers-color-scheme: dark) {
@@ -864,6 +892,14 @@ html.sheet-presented .sheet-shade {
 }
 @media (max-width: 47.99rem) and (prefers-color-scheme: dark) {
   .sheet-shade { background: color-mix(in srgb, #1c1c1e 85%, var(--color-bg)); }
+}
+/* Safari falls back to the page background when it finds no fixed element
+   at an edge; give it the same colour. */
+@media (max-width: 47.99rem) {
+  html.sheet-presented { background: color-mix(in srgb, #1c1c1e 40%, var(--color-bg)); }
+}
+@media (max-width: 47.99rem) and (prefers-color-scheme: dark) {
+  html.sheet-presented { background: color-mix(in srgb, #1c1c1e 85%, var(--color-bg)); }
 }
 .sheet:focus { outline: none; }
 
@@ -924,17 +960,17 @@ html.sheet-presented .sheet-shade {
 }
 
 /* No transition when the sheet must vanish at once. */
-.sheet.is-dragging,
+.sheet.is-dragging .sheet-panel,
 html.sheet-dragging .sheet-shade { transition: none; }
 
 /* Reduced motion: no travel or scaling, just a short fade. */
 @media (prefers-reduced-motion: reduce) {
-  .sheet,
-  .sheet.is-open {
+  .sheet-panel,
+  .sheet.is-open .sheet-panel {
     transform: none;
     opacity: 0;
     transition: opacity 0.2s ease-out;
   }
-  .sheet.is-open { opacity: 1; }
+  .sheet.is-open .sheet-panel { opacity: 1; }
   .sheet-shade { transition: none; }
 }
