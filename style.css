@@ -857,12 +857,12 @@ html.sheet-locked { overflow: hidden; }
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border: 0.5px solid color-mix(in srgb, currentColor 16%, transparent);
   border-radius: 50%;
   /* Frosted: content scrolling underneath shows through, heavily blurred. */
-  background: color-mix(in srgb, var(--sheet-bg, transparent) 45%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  backdrop-filter: blur(24px) saturate(160%);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
   color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -876,7 +876,7 @@ html.sheet-locked { overflow: hidden; }
 }
 .sheet-close:hover {
   background: color-mix(in srgb, currentColor 10%, transparent);
-  border-color: color-mix(in srgb, currentColor 35%, transparent);
+  border-color: color-mix(in srgb, currentColor 26%, transparent);
 }
 .sheet-close:active { transform: scale(0.94); }
 .sheet-close:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
