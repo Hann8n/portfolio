@@ -781,8 +781,7 @@ a.work-item:active .work-thumb { transform: scale(0.96); }
   --sheet-in: 0.5s;
   --sheet-out: 0.32s;
   --sheet-out-ease: cubic-bezier(0.32, 0.72, 0, 1);
-  --sheet-gap: calc(env(safe-area-inset-top, 0px) + 24px);
-  --sheet-peek: calc(env(safe-area-inset-top, 0px) + 12px);
+  --sheet-gap: calc(env(safe-area-inset-top, 0px) + 10px);
   --sheet-radius: 24px;
   /* Superellipse (continuous) corners, like iOS and the app icons: one mask
      piece per corner, since Safari has no corner-shape yet. */
@@ -817,15 +816,14 @@ html.sheet-locked { overflow: hidden; }
   overflow: hidden;
   -webkit-mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
     var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
-    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r)) var(--sq-r) no-repeat,
+    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r) + 2px) var(--sq-r) no-repeat,
     linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
   mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
     var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
-    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r)) var(--sq-r) no-repeat,
+    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r) + 2px) var(--sq-r) no-repeat,
     linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
   background: var(--sheet-bg, var(--color-bg));
   color: inherit;
-  box-shadow: 0 -1px 0 rgb(0 0 0 / 0.04), 0 -12px 40px rgb(0 0 0 / 0.12);
   transform: translateY(100%);
   transition: transform var(--sheet-out) var(--sheet-out-ease);
   will-change: transform;
@@ -835,21 +833,37 @@ html.sheet-locked { overflow: hidden; }
   transition-duration: var(--sheet-in);
   transition-timing-function: var(--sheet-spring);
 }
-.sheet::backdrop {
-  /* Written out, since older browsers don't pass custom properties
-     into ::backdrop. Same grey as --sheet-shade. */
+.sheet::backdrop { background: transparent; }
+
+/* The shade behind the sheet. A real fixed element rather than ::backdrop,
+   so Safari tints its toolbar and status bar to match. Only opacity
+   animates, which stays smooth even in Low Power Mode. */
+.sheet-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
   background: rgb(28 28 30 / 0.4);
   opacity: 0;
-  transition: opacity var(--sheet-out) ease-out;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--sheet-out) ease-out, visibility 0s var(--sheet-out);
+}
+html.sheet-presented .sheet-shade {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--sheet-in) ease-out, visibility 0s;
 }
 @media (prefers-color-scheme: dark) {
   /* On a dark page the shade lifts the page instead of darkening it,
      so a black sheet still stands apart. */
-  .sheet::backdrop { background: rgb(28 28 30 / 0.85); }
+  .sheet-shade { background: rgb(28 28 30 / 0.85); }
 }
-.sheet.is-open::backdrop {
-  opacity: 1;
-  transition-duration: var(--sheet-in);
+@media (max-width: 47.99rem) {
+  /* Phones: solid, so the browser bars can take the same colour. */
+  .sheet-shade { background: color-mix(in srgb, #1c1c1e 40%, var(--color-bg)); }
+}
+@media (max-width: 47.99rem) and (prefers-color-scheme: dark) {
+  .sheet-shade { background: color-mix(in srgb, #1c1c1e 85%, var(--color-bg)); }
 }
 .sheet:focus { outline: none; }
 
@@ -876,9 +890,12 @@ html.sheet-locked { overflow: hidden; }
   border: 0.5px solid color-mix(in srgb, currentColor 16%, transparent);
   border-radius: 50%;
   /* Frosted: content scrolling underneath shows through, heavily blurred. */
-  background: color-mix(in srgb, currentColor 6%, transparent);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  backdrop-filter: blur(16px) saturate(180%);
+  /* A tinted material in the page's own background colour: light pages get a
+     light blur, dark pages a dark one, so a photo passing underneath softens
+     but never recolours the button. */
+  background: color-mix(in srgb, var(--sheet-bg, var(--color-bg)) 72%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(20px) saturate(120%);
   color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -891,10 +908,15 @@ html.sheet-locked { overflow: hidden; }
   inset: -3px;
 }
 .sheet-close:hover {
-  background: color-mix(in srgb, currentColor 10%, transparent);
+  background: color-mix(in srgb, currentColor 8%, color-mix(in srgb, var(--sheet-bg, var(--color-bg)) 72%, transparent));
   border-color: color-mix(in srgb, currentColor 26%, transparent);
 }
 .sheet-close:active { transform: scale(0.94); }
+/* Blurring under a moving layer is costly; turn it on once the sheet rests. */
+.sheet:not(.is-settled) .sheet-close {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 .sheet-close:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .sheet-close svg { width: 14px; height: 14px; }
 @media (min-width: 48rem) {
@@ -903,40 +925,7 @@ html.sheet-locked { overflow: hidden; }
 
 /* No transition when the sheet must vanish at once. */
 .sheet.is-dragging,
-html.sheet-dragging main { transition: none; }
-
-/* The page behind steps back (phones), like a stacked sheet in iOS. */
-@media (max-width: 47.99rem) {
-  html { transition: background-color var(--sheet-out) ease-out; }
-  html.sheet-presented { background: var(--sheet-shade); transition-duration: var(--sheet-in); }
-  main {
-    /* Scale about the top of the screen, then drop a little so the page
-       peeks out above the sheet like the card behind it. */
-    transform-origin: 50% var(--sheet-origin, 0px);
-    transition: transform var(--sheet-out) var(--sheet-out-ease),
-      border-radius var(--sheet-out) var(--sheet-out-ease);
-  }
-  html.sheet-locked main { background: var(--color-bg); }
-  html.sheet-presented main {
-    transform: translateY(calc(var(--sheet-peek) * var(--sheet-recede-k, 1)))
-      scale(var(--sheet-recede, 0.94));
-    border-radius: var(--sheet-radius);
-    -webkit-mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
-      var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
-      var(--sq-bl) bottom left / var(--sq-r) var(--sq-r) no-repeat,
-      var(--sq-br) bottom right / var(--sq-r) var(--sq-r) no-repeat,
-      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--sq-r)) 100% no-repeat,
-      linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--sq-r) + 2px) no-repeat;
-    mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
-      var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
-      var(--sq-bl) bottom left / var(--sq-r) var(--sq-r) no-repeat,
-      var(--sq-br) bottom right / var(--sq-r) var(--sq-r) no-repeat,
-      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--sq-r)) 100% no-repeat,
-      linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--sq-r) + 2px) no-repeat;
-    transition-duration: var(--sheet-in);
-    transition-timing-function: var(--sheet-spring);
-  }
-}
+html.sheet-dragging .sheet-shade { transition: none; }
 
 /* Reduced motion: no travel or scaling, just a short fade. */
 @media (prefers-reduced-motion: reduce) {
@@ -947,6 +936,5 @@ html.sheet-dragging main { transition: none; }
     transition: opacity 0.2s ease-out;
   }
   .sheet.is-open { opacity: 1; }
-  html.sheet-presented main { transform: none; }
-  main, html { transition: none; }
+  .sheet-shade { transition: none; }
 }

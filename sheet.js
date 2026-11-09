@@ -21,8 +21,9 @@
   var scroller = sheet.querySelector(".sheet-scroll");
   var host = sheet.querySelector(".sheet-content");
   var closeButton = sheet.querySelector(".sheet-close");
-  var shadow = host.attachShadow({ mode: "open" });
-  var homeTitle = document.title;
+  // Opened directly, the server already rendered the case study in place.
+  var shadow = host.shadowRoot || host.attachShadow({ mode: "open" });
+  var homeTitle = sheet.dataset.homeTitle || document.title;
   var themeMeta = null;
   var cache = new Map();
   var current = null;      // URL of the project in the sheet
@@ -34,7 +35,9 @@
   function load(url) {
     var key = new URL(url, location.href).pathname;
     if (!cache.has(key)) {
-      cache.set(key, fetch(key, { credentials: "same-origin" })
+      // "?sheet" asks for the bare case study, not the page the server
+      // builds for someone opening the link directly.
+      cache.set(key, fetch(key + "?sheet", { credentials: "same-origin" })
         .then(function (r) {
           if (!r.ok) throw new Error(r.status);
           return r.text();
@@ -62,6 +65,7 @@
     var theme = doc.querySelector('meta[name="theme-color"]');
     return {
       title: doc.title,
+      // Keep in step with SHEET_EXTRA_CSS in src/index.ts.
       css: css + "\n:host{display:block}" +
         // Use the wider sheet on larger screens and start closer to the top.
         "\n@media (min-width:48rem){:host>div{padding-top:36px!important}main{max-width:760px!important}}",
@@ -79,27 +83,35 @@
     var heading = shadow.querySelector("h1");
     sheet.setAttribute("aria-label", heading ? heading.textContent : "Project");
     document.title = data.title;
-    setTheme(bg);
     scroller.scrollTop = 0;
+  }
+
+  // Status bar and toolbar take the shade's colour while a sheet is up.
+  var shadeEl = document.querySelector(".sheet-shade");
+  function matchBrowserBars() {
+    if (!shadeEl) return;
+    // Read the colour back as plain rgb; color-mix() computes to a form some
+    // browsers won't take in theme-color.
+    var ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx) return;
+    ctx.fillStyle = getComputedStyle(shadeEl).backgroundColor;
+    ctx.fillRect(0, 0, 1, 1);
+    var p = ctx.getImageData(0, 0, 1, 1).data;
+    if (p[3] === 255) setTheme("rgb(" + p[0] + "," + p[1] + "," + p[2] + ")"); // phones only
   }
 
   function setTheme(color) {
     if (!themeMeta) {
       themeMeta = document.createElement("meta");
       themeMeta.name = "theme-color";
-      document.head.appendChild(themeMeta);
+      // Ahead of the page's own theme-color tags, so it takes precedence.
+      document.head.insertBefore(themeMeta, document.head.querySelector('meta[name="theme-color"]'));
     }
     if (color) themeMeta.content = color;
     else { themeMeta.remove(); themeMeta = null; }
   }
 
   // ---- Opening and closing -----------------------------------------------
-
-  function recedeOrigin() {
-    var main = document.querySelector("main");
-    var y = scrollY - main.offsetTop;
-    root.style.setProperty("--sheet-origin", y + "px");
-  }
 
   function open(url, push) {
     return load(url).then(function (data) {
@@ -109,14 +121,23 @@
       if (push) history.pushState({ sheet: path }, "", path);
       if (sheet.open) return;
       closing = false;
-      recedeOrigin();
       root.classList.add("sheet-locked");
       sheet.showModal();
       // Start from below the screen, then rise on the next frame.
       sheet.getBoundingClientRect();
+      // Two frames: the first paints the sheet below the screen, so the rise
+      // starts from a committed frame instead of jumping.
       requestAnimationFrame(function () {
-        sheet.classList.add("is-open");
-        root.classList.add("sheet-presented");
+        requestAnimationFrame(function () {
+          sheet.classList.add("is-open");
+          root.classList.add("sheet-presented");
+          matchBrowserBars();
+          sheet.addEventListener("transitionend", function settle(e) {
+            if (e.target !== sheet) return;
+            sheet.removeEventListener("transitionend", settle);
+            if (sheet.classList.contains("is-open")) sheet.classList.add("is-settled");
+          });
+        });
       });
     });
   }
@@ -128,8 +149,6 @@
     sheet.style.transform = "";
     sheet.style.transition = "";
     root.classList.remove("sheet-locked", "sheet-presented", "sheet-dragging");
-    root.style.removeProperty("--sheet-recede");
-    root.style.removeProperty("--sheet-recede-k");
     shadow.innerHTML = "";
     document.title = homeTitle;
     setTheme(null);
@@ -143,15 +162,13 @@
     closing = true;
     if (instant) {
       sheet.classList.add("is-dragging");
-      sheet.classList.remove("is-open");
+      sheet.classList.remove("is-open", "is-settled");
       root.classList.remove("sheet-presented");
       finish();
       return;
     }
-    sheet.classList.remove("is-open", "is-dragging");
+    sheet.classList.remove("is-open", "is-dragging", "is-settled");
     root.classList.remove("sheet-presented", "sheet-dragging");
-    root.style.removeProperty("--sheet-recede");
-    root.style.removeProperty("--sheet-recede-k");
     sheet.style.transform = "";
     var done = false;
     function end(e) {
@@ -166,8 +183,11 @@
 
   // Every way of closing goes through history, so Back stays in step.
   function requestClose() {
-    if (history.state && history.state.sheet) history.back();
-    else dismiss(false);
+    if (history.state && history.state.sheet) return history.back();
+    // Opened directly: there is no homepage entry to go back to, so turn
+    // this entry into the homepage instead.
+    if (location.pathname !== "/") history.replaceState(null, "", "/");
+    dismiss(false);
   }
 
   // ---- History -----------------------------------------------------------
@@ -240,6 +260,35 @@
       e.clientX < r.left || e.clientX > r.right;
     if (outside) requestClose();
   });
+
+  // ---- Opened directly ---------------------------------------------------
+
+  if (sheet.open && shadow.firstElementChild) {
+    // Already on screen from the server's HTML: make it modal without
+    // replaying the entrance.
+    current = location.pathname;
+    sheet.classList.add("is-dragging");
+    root.classList.add("sheet-dragging");
+    sheet.close();
+    sheet.showModal();
+    sheet.focus();
+    var page = shadow.firstElementChild.nextElementSibling;
+    if (page) {
+      var bg = getComputedStyle(page).backgroundColor;
+      sheet.style.setProperty("--sheet-bg", bg);
+      sheet.style.color = getComputedStyle(page).color;
+    }
+    sheet.classList.add("is-settled");
+    matchBrowserBars();
+    var heading = shadow.querySelector("h1");
+    if (heading) sheet.setAttribute("aria-label", heading.textContent);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        sheet.classList.remove("is-dragging");
+        root.classList.remove("sheet-dragging");
+      });
+    });
+  }
 
   // Restored from the back/forward cache with a sheet still showing.
   addEventListener("pageshow", function (e) {
