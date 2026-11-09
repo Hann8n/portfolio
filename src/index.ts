@@ -24,6 +24,7 @@ const HEVY_API_URL = "https://api.hevyapp.com/v1";
 const GITHUB_CONTRIBUTIONS_URL = "https://github.com/users/Hann8n/contributions";
 const PAGE_SIZE = 1;
 const EDGE_CACHE_SECONDS = 600;
+const CASE_PATH = /^\/work\/[^/]+\/$/;
 const ASSET_VERSION = "2026-10-20-work-pages-3";
 
 export default {
@@ -49,7 +50,15 @@ export default {
       assetUrl.searchParams.set("v", ASSET_VERSION);
     }
     assetUrl.searchParams.set("__asset_version", ASSET_VERSION);
-    return env.ASSETS.fetch(new Request(assetUrl, request));
+    const asset = await env.ASSETS.fetch(new Request(assetUrl, request));
+
+    // A case study opened directly is shown the same way as from the
+    // homepage: as a sheet over the work list, so closing it leads somewhere.
+    if (CASE_PATH.test(url.pathname) && request.method === "GET" && !url.searchParams.has("sheet")) {
+      const composed = await caseOverHome(asset, assetUrl, request, env).catch(() => null);
+      if (composed) return composed;
+    }
+    return asset;
   },
 } satisfies ExportedHandler<Env>;
 
@@ -168,4 +177,74 @@ function response(body: unknown, status = 200, headers: Record<string, string> =
     status,
     headers: { "content-type": "application/json; charset=utf-8", ...headers },
   });
+}
+
+// Keep in step with parse() in sheet.js, which does the same in the browser.
+const SHEET_EXTRA_CSS =
+  "\n:host{display:block}" +
+  "\n@media (min-width:48rem){:host>div{padding-top:36px!important}main{max-width:760px!important}}";
+
+async function caseOverHome(
+  asset: Response,
+  assetUrl: URL,
+  request: Request,
+  env: Env,
+): Promise<Response | null> {
+  if (!asset.ok || !(asset.headers.get("content-type") ?? "").includes("text/html")) return null;
+  const caseHtml = await asset.clone().text();
+
+  const homeUrl = new URL("/", assetUrl);
+  homeUrl.search = "";
+  homeUrl.searchParams.set("v", ASSET_VERSION);
+  homeUrl.searchParams.set("__asset_version", ASSET_VERSION);
+  const home = await env.ASSETS.fetch(new Request(homeUrl, { headers: request.headers }));
+  if (!home.ok) return null;
+  let html = await home.text();
+
+  const head = caseHtml.match(/<head[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
+  const body = caseHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1];
+  if (!body || !html.includes('<div class="sheet-content"></div>')) return null;
+
+  const css = [...head.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)]
+    .map((m) => m[1])
+    .join("\n")
+    .replace(/@font-face\s*\{[^}]*\}/g, "")
+    .replace(/:root/g, ":host")
+    .replace(/(^|\})\s*body\s*\{[^}]*\}/g, "$1");
+  const content = body
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<a class="case-back"[^>]*>[\s\S]*?<\/a>/, "")
+    .trim();
+
+  // Search and link previews describe the case study, not the homepage.
+  const pick = (re: RegExp) => [...head.matchAll(re)].map((m) => m[0]).join("\n  ");
+  const meta = [
+    pick(/<title>[\s\S]*?<\/title>/gi),
+    pick(/<meta name="description"[^>]*>/gi),
+    pick(/<meta property="og:[^>]*>/gi),
+    pick(/<link rel="canonical"[^>]*>/gi),
+  ].join("\n  ");
+  const homeTitle = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ?? "";
+  html = html
+    // The homepage links its files relatively; served from /work/x/ they
+    // must point at the root.
+    .replace(/\b(href|src|srcset)="(?![a-z][a-z0-9+.-]*:|\/|#)/gi, '$1="/')
+    .replace(/<title>[\s\S]*?<\/title>/i, "")
+    .replace(/\s*<meta (?:name="description"|name="twitter:[^"]*"|property="og:(?:title|description|url|type)")[^>]*>/gi, "")
+    .replace(/\s*<link rel="canonical"[^>]*>/i, "")
+    .replace("</head>", `  ${meta}\n</head>`)
+    .replace(/<html([^>]*)>/i, '<html$1 class="sheet-locked sheet-presented">')
+    .replace(
+      '<dialog class="sheet"',
+      `<dialog open data-home-title="${homeTitle.replace(/"/g, "&quot;")}" class="sheet is-open"`,
+    )
+    .replace(
+      '<div class="sheet-content"></div>',
+      `<div class="sheet-content"><template shadowrootmode="open"><style>${css}${SHEET_EXTRA_CSS}</style>${content}</template></div>`,
+    );
+
+  const headers = new Headers(asset.headers);
+  headers.delete("content-length");
+  headers.delete("etag");
+  return new Response(html, { status: 200, headers });
 }
