@@ -87,18 +87,17 @@
     scroller.scrollTop = 0;
   }
 
-  // Status bar and toolbar take the shade's colour while a sheet is up.
-  var shadeEl = document.querySelector(".sheet-shade");
+  // Older browsers that still read theme-color: on phones the project
+  // fills the screen, so its colour is the one for the bars.
   function matchBrowserBars() {
-    if (!shadeEl) return;
-    // Read the colour back as plain rgb; color-mix() computes to a form some
-    // browsers won't take in theme-color.
+    if (!matchMedia("(max-width: 47.99rem)").matches) return;
+    var bg = getComputedStyle(panel).backgroundColor;
     var ctx = document.createElement("canvas").getContext("2d");
     if (!ctx) return;
-    ctx.fillStyle = getComputedStyle(shadeEl).backgroundColor;
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 1, 1);
     var p = ctx.getImageData(0, 0, 1, 1).data;
-    if (p[3] === 255) setTheme("rgb(" + p[0] + "," + p[1] + "," + p[2] + ")"); // phones only
+    if (p[3] === 255) setTheme("rgb(" + p[0] + "," + p[1] + "," + p[2] + ")");
   }
 
   function setTheme(color) {

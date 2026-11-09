@@ -858,6 +858,27 @@ html.sheet-locked { overflow: hidden; }
   transition-duration: var(--sheet-in);
   transition-timing-function: var(--sheet-spring);
 }
+
+/* Phones: the project fills the screen and pushes in from the right, the
+   way an app opens a detail page. Full bleed, so Safari's status bar and
+   toolbar take the project's own colour, and the edge swipe back reads
+   as the natural way out. */
+@media (max-width: 47.99rem) {
+  .sheet-panel {
+    top: 0;
+    width: 100%;
+    -webkit-mask: none;
+    mask: none;
+    box-shadow: -10px 0 30px rgb(0 0 0 / 0.14);
+    transform: translateX(100%);
+    transition: transform 0.3s var(--sheet-out-ease);
+  }
+  .sheet.is-open .sheet-panel {
+    transition: transform 0.45s var(--sheet-out-ease);
+  }
+  .sheet-scroll { padding-top: env(safe-area-inset-top, 0px); }
+  .sheet-panel .sheet-close { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+}
 .sheet::backdrop { background: transparent; }
 
 /* The shade behind the sheet. A real fixed element rather than ::backdrop,
@@ -887,20 +908,10 @@ html.sheet-presented .sheet-shade {
   .sheet-shade { background: rgb(28 28 30 / 0.85); }
 }
 @media (max-width: 47.99rem) {
-  /* Phones: solid, so the browser bars can take the same colour. */
-  .sheet-shade { background: color-mix(in srgb, #1c1c1e 40%, var(--color-bg)); }
+  /* Phones: the page behind only dims a little as the project covers it. */
+  .sheet-shade { background: rgb(0 0 0 / 0.18); }
 }
-@media (max-width: 47.99rem) and (prefers-color-scheme: dark) {
-  .sheet-shade { background: color-mix(in srgb, #1c1c1e 85%, var(--color-bg)); }
-}
-/* Safari falls back to the page background when it finds no fixed element
-   at an edge; give it the same colour. */
-@media (max-width: 47.99rem) {
-  html.sheet-presented { background: color-mix(in srgb, #1c1c1e 40%, var(--color-bg)); }
-}
-@media (max-width: 47.99rem) and (prefers-color-scheme: dark) {
-  html.sheet-presented { background: color-mix(in srgb, #1c1c1e 85%, var(--color-bg)); }
-}
+
 .sheet:focus { outline: none; }
 
 .sheet-scroll {
