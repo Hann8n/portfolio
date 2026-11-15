@@ -29,6 +29,7 @@
   var cache = new Map();
   var current = null;      // URL of the project in the sheet
   var closing = false;
+  var navigationId = 0;   // only the latest navigation may change the sheet
   var browserAnimatedBack = false; // the browser's own back animation ran
 
   // ---- Loading -----------------------------------------------------------
@@ -114,12 +115,19 @@
   // ---- Opening and closing -----------------------------------------------
 
   function open(url, push) {
+    var id = ++navigationId;
     return load(url).then(function (data) {
+      if (id !== navigationId) return;
       var path = new URL(url, location.href).pathname;
       render(data);
       current = path;
-      if (push) history.pushState({ sheet: path }, "", path);
-      if (sheet.open) return;
+      if (push) history.pushState({ sheet: path, fromHome: true }, "", path);
+      if (sheet.open) {
+        closing = false;
+        sheet.classList.add("is-open");
+        root.classList.add("sheet-presented");
+        return;
+      }
       closing = false;
       root.classList.add("sheet-locked");
       sheet.showModal();
@@ -139,6 +147,8 @@
           });
         });
       });
+    }).catch(function (err) {
+      if (id === navigationId) throw err;
     });
   }
 
@@ -159,6 +169,7 @@
   // Animate the sheet away. `instant` when something else already animated.
   function dismiss(instant) {
     if (!sheet.open || closing) return;
+    var id = ++navigationId;
     closing = true;
     if (instant) {
       sheet.classList.add("is-dragging");
@@ -175,7 +186,7 @@
       if (done || (e && (e.target !== panel))) return;
       done = true;
       panel.removeEventListener("transitionend", end);
-      finish();
+      if (id === navigationId) finish();
     }
     panel.addEventListener("transitionend", end);
     setTimeout(end, 600); // in case no transition runs
@@ -183,7 +194,9 @@
 
   // Every way of closing goes through history, so Back stays in step.
   function requestClose() {
-    if (history.state && history.state.sheet) return history.back();
+    if (closing) return;
+    ++navigationId;
+    if (history.state && history.state.sheet && history.state.fromHome) return history.back();
     // Opened directly: there is no homepage entry to go back to, so turn
     // this entry into the homepage instead.
     if (location.pathname !== "/") history.replaceState(null, "", "/");
@@ -233,11 +246,16 @@
     var a = projectLink(e.composedPath()[0]);
     if (!a || !isPlainClick(e)) return;
     e.preventDefault();
+    if (!sheet.open || closing) return;
+    var id = ++navigationId;
     load(a.href).then(function (data) {
+      if (id !== navigationId || !sheet.open || closing) return;
       render(data);
       current = new URL(a.href).pathname;
-      history.replaceState({ sheet: current }, "", current);
-    }).catch(function () { location.href = a.href; });
+      history.replaceState({ sheet: current, fromHome: !!(history.state && history.state.fromHome) }, "", current);
+    }).catch(function () {
+      if (id === navigationId && sheet.open && !closing) location.href = a.href;
+    });
   });
 
   // Start loading as soon as someone shows intent.
@@ -292,6 +310,6 @@
 
   // Restored from the back/forward cache with a sheet still showing.
   addEventListener("pageshow", function (e) {
-    if (e.persisted && sheet.open && !(history.state && history.state.sheet)) finish();
+    if (e.persisted && sheet.open && location.pathname !== current) finish();
   });
 })();
