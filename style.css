@@ -769,32 +769,16 @@ a.work-item:active .work-thumb { transform: scale(0.96); }
 /* ------------------------------------------------------------------ */
 /* Project sheet                                                       */
 /*                                                                     */
-/* A project opens as a sheet over the homepage, the way a detail view */
-/* opens in an iOS app: it rises from the bottom edge, the page behind */
-/* steps back, and it can be swiped down, closed, or undone with Back. */
-/* Real elements move, not screenshots, so motion can follow a finger  */
-/* and be interrupted. Behaviour lives in sheet.js.                    */
+/* A project opens as a large card within the screen. The homepage stays */
+/* visible around it, and long content scrolls inside. Behaviour lives */
+/* in sheet.js.                                                       */
 /* ------------------------------------------------------------------ */
 
 :root {
-  /* Critically damped spring: fast start, soft settle, no bounce. */
-  --sheet-spring: cubic-bezier(0.22, 1, 0.36, 1);
-  --sheet-spring: linear(0, 0.0605, 0.1884, 0.3331, 0.47, 0.5888, 0.6866,
-    0.7645, 0.825, 0.8713, 0.906, 0.9319, 0.951, 0.965, 0.9751, 0.9825,
-    0.9878, 0.9915, 0.9942, 0.9962, 0.9975, 0.9985, 0.9992, 0.9997, 1);
-  --sheet-in: 0.5s;
-  --sheet-out: 0.32s;
-  --sheet-out-ease: cubic-bezier(0.32, 0.72, 0, 1);
-  --sheet-gap: calc(env(safe-area-inset-top, 0px) + 10px);
-  --sheet-radius: 24px;
-  /* Superellipse (continuous) corners, like iOS and the app icons: one mask
-     piece per corner, since Safari has no corner-shape yet. */
-  --sq-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1 1 L0.0000 1.0000 L0.0009 0.6641 L0.0034 0.5571 L0.0077 0.4799 L0.0138 0.4176 L0.0216 0.3649 L0.0312 0.3190 L0.0426 0.2784 L0.0559 0.2421 L0.0712 0.2095 L0.0884 0.1801 L0.1078 0.1535 L0.1294 0.1294 L0.1535 0.1078 L0.1801 0.0884 L0.2095 0.0712 L0.2421 0.0559 L0.2784 0.0426 L0.3190 0.0312 L0.3649 0.0216 L0.4176 0.0138 L0.4799 0.0077 L0.5571 0.0034 L0.6641 0.0009 L1.0000 0.0000Z'/%3E%3C/svg%3E");
-  --sq-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0 1 L1.0000 1.0000 L0.9991 0.6641 L0.9966 0.5571 L0.9923 0.4799 L0.9862 0.4176 L0.9784 0.3649 L0.9688 0.3190 L0.9574 0.2784 L0.9441 0.2421 L0.9288 0.2095 L0.9116 0.1801 L0.8922 0.1535 L0.8706 0.1294 L0.8465 0.1078 L0.8199 0.0884 L0.7905 0.0712 L0.7579 0.0559 L0.7216 0.0426 L0.6810 0.0312 L0.6351 0.0216 L0.5824 0.0138 L0.5201 0.0077 L0.4429 0.0034 L0.3359 0.0009 L0.0000 0.0000Z'/%3E%3C/svg%3E");
-  --sq-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1 0 L0.0000 0.0000 L0.0009 0.3359 L0.0034 0.4429 L0.0077 0.5201 L0.0138 0.5824 L0.0216 0.6351 L0.0312 0.6810 L0.0426 0.7216 L0.0559 0.7579 L0.0712 0.7905 L0.0884 0.8199 L0.1078 0.8465 L0.1294 0.8706 L0.1535 0.8922 L0.1801 0.9116 L0.2095 0.9288 L0.2421 0.9441 L0.2784 0.9574 L0.3190 0.9688 L0.3649 0.9784 L0.4176 0.9862 L0.4799 0.9923 L0.5571 0.9966 L0.6641 0.9991 L1.0000 1.0000Z'/%3E%3C/svg%3E");
-  --sq-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0 0 L1.0000 0.0000 L0.9991 0.3359 L0.9966 0.4429 L0.9923 0.5201 L0.9862 0.5824 L0.9784 0.6351 L0.9688 0.6810 L0.9574 0.7216 L0.9441 0.7579 L0.9288 0.7905 L0.9116 0.8199 L0.8922 0.8465 L0.8706 0.8706 L0.8465 0.8922 L0.8199 0.9116 L0.7905 0.9288 L0.7579 0.9441 L0.7216 0.9574 L0.6810 0.9688 L0.6351 0.9784 L0.5824 0.9862 L0.5201 0.9923 L0.4429 0.9966 L0.3359 0.9991 L0.0000 1.0000Z'/%3E%3C/svg%3E");
-  /* A superellipse corner needs a larger box to look as round as a circle. */
-  --sq-r: calc(var(--sheet-radius) * 1.6);
+  --sheet-in: 0.18s;
+  --sheet-out: 0.16s;
+  --sheet-gap: 12px;
+  --sheet-radius: 20px;
   /* Shade behind an open sheet: Apple's elevated dark grey (#1c1c1e) rather than black, so
      dark case studies still read as a card lifted off the page. */
   --sheet-shade: #1c1c1e;
@@ -823,62 +807,31 @@ html.sheet-locked { overflow: hidden; }
   overflow: visible;
   background: transparent;
   color: inherit;
-  pointer-events: none;
-}
-@media (min-width: 48rem) {
-  /* Room to click beside the panel to close it. */
-  .sheet { pointer-events: auto; }
+  pointer-events: auto;
 }
 
 .sheet-panel {
   position: fixed;
-  top: var(--sheet-gap);
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: min(100%, 54rem);
+  top: calc(env(safe-area-inset-top, 0px) + var(--sheet-gap));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--sheet-gap));
+  left: var(--sheet-gap);
+  right: var(--sheet-gap);
+  width: min(calc(100% - 2 * var(--sheet-gap)), 54rem);
   margin: 0 auto;
   overflow: hidden;
   pointer-events: auto;
-  -webkit-mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
-    var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
-    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r) + 2px) var(--sq-r) no-repeat,
-    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
-  mask: var(--sq-tl) top left / var(--sq-r) var(--sq-r) no-repeat,
-    var(--sq-tr) top right / var(--sq-r) var(--sq-r) no-repeat,
-    linear-gradient(#000 0 0) top center / calc(100% - 2 * var(--sq-r) + 2px) var(--sq-r) no-repeat,
-    linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--sq-r) + 1px) no-repeat;
+  border-radius: var(--sheet-radius);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.2);
   background: var(--sheet-bg, var(--color-bg));
-  transform: translateY(100%);
-  transition: transform var(--sheet-out) var(--sheet-out-ease);
-  will-change: transform;
+  opacity: 0;
+  transition: opacity var(--sheet-out) ease-out;
+  will-change: opacity;
 }
 .sheet.is-open .sheet-panel {
-  transform: none;
+  opacity: 1;
   transition-duration: var(--sheet-in);
-  transition-timing-function: var(--sheet-spring);
 }
 
-/* Phones: the project fills the screen and pushes in from the right, the
-   way an app opens a detail page. Full bleed, so Safari's status bar and
-   toolbar take the project's own colour, and the edge swipe back reads
-   as the natural way out. */
-@media (max-width: 47.99rem) {
-  .sheet-panel {
-    top: 0;
-    width: 100%;
-    -webkit-mask: none;
-    mask: none;
-    box-shadow: -10px 0 30px rgb(0 0 0 / 0.14);
-    transform: translateX(100%);
-    transition: transform 0.3s var(--sheet-out-ease);
-  }
-  .sheet.is-open .sheet-panel {
-    transition: transform 0.45s var(--sheet-out-ease);
-  }
-  .sheet-scroll { padding-top: env(safe-area-inset-top, 0px); }
-  .sheet-panel .sheet-close { top: calc(env(safe-area-inset-top, 0px) + 12px); }
-}
 .sheet::backdrop { background: transparent; }
 
 /* The shade behind the sheet. A real fixed element rather than ::backdrop,
@@ -919,10 +872,12 @@ html.sheet-presented .sheet-shade {
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  scrollbar-width: none;
 }
 
-/* Grabber and close button sit on top of the content, never scroll away. */
+.sheet-scroll::-webkit-scrollbar { display: none; }
+
+/* The close button stays visible while the content scrolls. */
 .sheet-close {
   /* Drawn like the page's own chips: a thin outline in the text colour. */
   position: absolute;
@@ -974,13 +929,12 @@ html.sheet-presented .sheet-shade {
 .sheet.is-dragging .sheet-panel,
 html.sheet-dragging .sheet-shade { transition: none; }
 
-/* Reduced motion: no travel or scaling, just a short fade. */
+/* Reduced motion keeps the card in place with a shorter fade. */
 @media (prefers-reduced-motion: reduce) {
   .sheet-panel,
   .sheet.is-open .sheet-panel {
-    transform: none;
     opacity: 0;
-    transition: opacity 0.2s ease-out;
+    transition: opacity 0.08s ease-out;
   }
   .sheet.is-open .sheet-panel { opacity: 1; }
   .sheet-shade { transition: none; }
