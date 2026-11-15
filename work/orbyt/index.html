@@ -22,6 +22,8 @@ img{max-width:100%}
 body{margin:0;background:#060709}
 .case-back{display:inline-flex;align-items:center;align-self:flex-start;min-height:44px;margin:-14px 0 10px;color:#a7adbd;font-size:15px;font-weight:500;text-decoration:none;-webkit-tap-highlight-color:transparent}.case-back:hover{color:inherit}
 a{color:#00DDE6}a:hover{color:#F4F7FF}
+.project-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media(max-width:600px){.project-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
   </style>
 </head>
 <body>
@@ -45,7 +47,7 @@ a{color:#00DDE6}a:hover{color:#F4F7FF}
 </div>
 
 <figure style="margin: 48px 0 0;">
-<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+<div class="project-gallery">
 <img loading="lazy" decoding="async" src="/images/work/orbyt-feed2.webp" alt="The video feed, with Following and Your mix tabs" style="width: 100%; height: auto; display: block; border: 1px solid #262a33; border-radius: 14px;">
 <img loading="lazy" decoding="async" src="/images/work/orbyt-chill.webp" alt="The /chill community page with members, videos and a Post button" style="width: 100%; height: auto; display: block; border: 1px solid #262a33; border-radius: 14px;">
 <img loading="lazy" decoding="async" src="/images/work/orbyt-search.webp" alt="Search results for funny, showing communities, people, tags and videos" style="width: 100%; height: auto; display: block; border: 1px solid #262a33; border-radius: 14px;">

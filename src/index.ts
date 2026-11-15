@@ -25,7 +25,7 @@ const GITHUB_CONTRIBUTIONS_URL = "https://github.com/users/Hann8n/contributions"
 const PAGE_SIZE = 1;
 const EDGE_CACHE_SECONDS = 600;
 const CASE_PATH = /^\/work\/[^/]+\/$/;
-const ASSET_VERSION = "2026-10-20-work-pages-3";
+const ASSET_VERSION = "2026-11-15-portfolio-release";
 
 export default {
   async fetch(request, env, ctx) {
@@ -213,7 +213,6 @@ async function caseOverHome(
     .replace(/(^|\})\s*body\s*\{[^}]*\}/g, "$1");
   const content = body
     .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<a class="case-back"[^>]*>[\s\S]*?<\/a>/, "")
     .trim();
 
   // Search and link previews describe the case study, not the homepage.

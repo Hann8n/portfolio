@@ -261,6 +261,9 @@
   // ---- Opened directly ---------------------------------------------------
 
   if (sheet.open && shadow.firstElementChild) {
+    // The server keeps a real link home for readers without JavaScript.
+    var back = shadow.querySelector(".case-back");
+    if (back) back.remove();
     // Already on screen from the server's HTML: make it modal without
     // replaying the entrance.
     current = location.pathname;
